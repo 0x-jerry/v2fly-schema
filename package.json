@@ -1,0 +1,14 @@
+{
+  "name": "v2ray-config-json-schema",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "typescript-json-schema V2Ray.Config.d.ts IV2Ray -o V2Ray.config.schema.json"
+  },
+  "dependencies": {
+    "typescript-json-schema": "^0.38.3"
+  },
+  "repository": "https://github.com/cwxyz007/v2ray-config-json-schema.git",
+  "author": "cwxyz007 <jie844067636@gmail.com>"
+}
