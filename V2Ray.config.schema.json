@@ -2,8 +2,6 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "definitions": {
         "IAccount": {
-            "additionalProperties": {
-            },
             "properties": {
                 "pass": {
                     "description": "密码",
@@ -17,12 +15,68 @@
             "type": "object"
         },
         "IBlackholeOutbound": {
-            "additionalProperties": {
-            },
             "properties": {
-                "response": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
+                    "enum": [
+                        "blackhole"
+                    ],
+                    "type": "string"
+                },
+                "proxySettings": {
                     "additionalProperties": {
                     },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IBlackholeOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/IV2rayTransport"
+                        },
+                        {
+                            "$ref": "#/definitions/IV2rayStreamSetting"
+                        }
+                    ],
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IBlackholeOutboundSettings": {
+            "properties": {
+                "response": {
                     "description": "配置黑洞的响应数据。Blackhole 会在收到待转发数据之后，发送指定的响应数据，然后关闭连接。待转发的数据将被丢弃。如不指定此项，Blackhole 将直接关闭连接",
                     "properties": {
                         "type": {
@@ -35,19 +89,71 @@
                         }
                     },
                     "type": "object"
-                },
-                "type": {
-                    "enum": [
-                        "Blackhole"
-                    ],
-                    "type": "string"
                 }
             },
             "type": "object"
         },
         "IDNSOutbound": {
-            "additionalProperties": {
+            "properties": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
+                    "enum": [
+                        "dns"
+                    ],
+                    "type": "string"
+                },
+                "proxySettings": {
+                    "additionalProperties": {
+                    },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IDNSOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/IV2rayTransport"
+                        },
+                        {
+                            "$ref": "#/definitions/IV2rayStreamSetting"
+                        }
+                    ],
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
+                    "type": "string"
+                }
             },
+            "type": "object"
+        },
+        "IDNSOutboundSettings": {
             "properties": {
                 "address": {
                     "description": "(V2Ray 4.16+) 修改 DNS 服务器地址。当不指定时，保持来源中指定的地址不变",
@@ -64,12 +170,6 @@
                 "port": {
                     "description": "(V2Ray 4.16+) 修改 DNS 服务器端口。当不指定时，保持来源中指定的端口不变",
                     "type": "number"
-                },
-                "type": {
-                    "enum": [
-                        "DNS"
-                    ],
-                    "type": "string"
                 }
             },
             "type": "object"
@@ -95,8 +195,52 @@
             "type": "object"
         },
         "IDokodemoInbound": {
-            "additionalProperties": {
+            "properties": {
+                "allocate": {
+                    "$ref": "#/definitions/IV2rayAllocate",
+                    "description": "端口分配设置"
+                },
+                "listen": {
+                    "description": "监听地址，只允许 IP 地址，默认值为\"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "端口",
+                    "type": "number"
+                },
+                "protocol": {
+                    "enum": [
+                        "dokodemo-door"
+                    ],
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IDokodemoInboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "sniffing": {
+                    "$ref": "#/definitions/IV2raySniffing",
+                    "description": "尝试探测流量的类型"
+                },
+                "streamSettings": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/IV2rayTransport"
+                        },
+                        {
+                            "$ref": "#/definitions/IV2rayStreamSetting"
+                        }
+                    ],
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
+                    "type": "string"
+                }
             },
+            "type": "object"
+        },
+        "IDokodemoInboundSettings": {
             "properties": {
                 "address": {
                     "description": "将流量转发到此地址。可以是一个 IP 地址，形如\"1.2.3.4\"，或者一个域名，形如\"v2ray.com\"。字符串类型",
@@ -123,12 +267,6 @@
                     "description": "入站数据的时间限制（秒），默认值为 300",
                     "type": "number"
                 },
-                "type": {
-                    "enum": [
-                        "Dokodemo"
-                    ],
-                    "type": "string"
-                },
                 "userLevel": {
                     "description": "用户等级，所有连接都会使用这个用户等级",
                     "type": "number"
@@ -137,8 +275,66 @@
             "type": "object"
         },
         "IFreedomOutbound": {
-            "additionalProperties": {
+            "properties": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
+                    "enum": [
+                        "freedom"
+                    ],
+                    "type": "string"
+                },
+                "proxySettings": {
+                    "additionalProperties": {
+                    },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IFreedomOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/IV2rayTransport"
+                        },
+                        {
+                            "$ref": "#/definitions/IV2rayStreamSetting"
+                        }
+                    ],
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
+                    "type": "string"
+                }
             },
+            "type": "object"
+        },
+        "IFreedomOutboundSettings": {
             "properties": {
                 "domainStrategy": {
                     "description": "在目标地址为域名时，Freedom 可以直接向此域名发出连接（\"AsIs\"），或者将域名解析为 IP 之后再建立连接（\"UseIP\"、\"UseIPv4\"、\"UseIPv6\"）。解析 IP 的步骤会使用 V2Ray 内建的 DNS。默认值为\"AsIs\"\n(V2Ray 4.6+) 当使用\"UseIP\"模式，并且出站连接配置中指定了sendThrough时，Freedom 会根据sendThrough的值自动判断所需的IP类型，IPv4 或 IPv6\n(V2Ray 4.7+) 当使用\"UseIPv4\"或\"UseIPv6\"模式时，Freedom 会只使用对应的 IPv4 或 IPv6 地址。当sendThrough指定了不匹配的本地地址时，将导致连接失败",
@@ -154,12 +350,6 @@
                     "description": "Freedom 会强制将所有数据发送到指定地址（而不是入站协议指定的地址）。其值为一个字符串，样例：\"127.0.0.1:80\", \":1234\"。当地址不指定时，如\":443\"，Freedom 不会修改原先的目标地址。当端口为0时，如\"v2ray.com:0\"，Freedom 不会修改原先的端口",
                     "type": "string"
                 },
-                "type": {
-                    "enum": [
-                        "Freedom"
-                    ],
-                    "type": "string"
-                },
                 "userLevel": {
                     "description": "用户等级，所有连接都使用这一等级",
                     "type": "string"
@@ -168,14 +358,56 @@
             "type": "object"
         },
         "IHttpInbound": {
-            "additionalProperties": {
+            "properties": {
+                "allocate": {
+                    "$ref": "#/definitions/IV2rayAllocate",
+                    "description": "端口分配设置"
+                },
+                "listen": {
+                    "description": "监听地址，只允许 IP 地址，默认值为\"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "端口",
+                    "type": "number"
+                },
+                "protocol": {
+                    "enum": [
+                        "http"
+                    ],
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IHttpInboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "sniffing": {
+                    "$ref": "#/definitions/IV2raySniffing",
+                    "description": "尝试探测流量的类型"
+                },
+                "streamSettings": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/IV2rayTransport"
+                        },
+                        {
+                            "$ref": "#/definitions/IV2rayStreamSetting"
+                        }
+                    ],
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
+                    "type": "string"
+                }
             },
+            "type": "object"
+        },
+        "IHttpInboundSettings": {
             "properties": {
                 "accounts": {
                     "description": "一个数组，数组中每个元素为一个用户帐号。默认值为空",
                     "items": {
-                        "additionalProperties": {
-                        },
                         "properties": {
                             "pass": {
                                 "description": "密码，字符串类型。必填",
@@ -198,12 +430,6 @@
                     "description": "从客户端读取数据的超时设置（秒），0 表示不限时。默认值为 300。 V2Ray 3.1 后等价于对应用户等级的 connIdle 策略",
                     "type": "number"
                 },
-                "type": {
-                    "enum": [
-                        "HTTP"
-                    ],
-                    "type": "string"
-                },
                 "userLevel": {
                     "description": "用户等级，所有连接使用这一等级",
                     "type": "number"
@@ -212,8 +438,6 @@
             "type": "object"
         },
         "IMTProtoAccount": {
-            "additionalProperties": {
-            },
             "properties": {
                 "email": {
                     "description": "用户邮箱，用于统计流量等辅助功能",
@@ -231,15 +455,53 @@
             "type": "object"
         },
         "IMTProtoInbound": {
-            "additionalProperties": {
-            },
             "properties": {
-                "type": {
+                "allocate": {
+                    "$ref": "#/definitions/IV2rayAllocate",
+                    "description": "端口分配设置"
+                },
+                "listen": {
+                    "description": "监听地址，只允许 IP 地址，默认值为\"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "端口",
+                    "type": "number"
+                },
+                "protocol": {
                     "enum": [
-                        "MTProto"
+                        "mtproto"
                     ],
                     "type": "string"
                 },
+                "settings": {
+                    "$ref": "#/definitions/IMTProtoInboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "sniffing": {
+                    "$ref": "#/definitions/IV2raySniffing",
+                    "description": "尝试探测流量的类型"
+                },
+                "streamSettings": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/IV2rayTransport"
+                        },
+                        {
+                            "$ref": "#/definitions/IV2rayStreamSetting"
+                        }
+                    ],
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IMTProtoInboundSettings": {
+            "properties": {
                 "users": {
                     "description": "一个数组，其中每一个元素表示一个用户。目前只有第一个用户会生效",
                     "items": {
@@ -251,32 +513,67 @@
             "type": "object"
         },
         "IMTProtoOutbound": {
-            "additionalProperties": {
-            },
             "properties": {
-                "type": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
                     "enum": [
-                        "MTProto"
+                        "mtproto"
                     ],
+                    "type": "string"
+                },
+                "proxySettings": {
+                    "additionalProperties": {
+                    },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IMTProtoOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/IV2rayTransport"
+                        },
+                        {
+                            "$ref": "#/definitions/IV2rayStreamSetting"
+                        }
+                    ],
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
                     "type": "string"
                 }
             },
             "type": "object"
         },
-        "IProtocol": {
-            "description": "连接协议名称",
-            "enum": [
-                "blackhole",
-                "dns",
-                "dokodemo-door",
-                "freedom",
-                "http",
-                "mtproto",
-                "shadowsocks",
-                "socks",
-                "vmess"
-            ],
-            "type": "string"
+        "IMTProtoOutboundSettings": {
+            "type": "object"
         },
         "IRoutingRule": {
             "properties": {
@@ -365,9 +662,53 @@
             },
             "type": "object"
         },
-        "IShadowsocksInbound": {
-            "additionalProperties": {
+        "IShadowSocksInbound": {
+            "properties": {
+                "allocate": {
+                    "$ref": "#/definitions/IV2rayAllocate",
+                    "description": "端口分配设置"
+                },
+                "listen": {
+                    "description": "监听地址，只允许 IP 地址，默认值为\"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "端口",
+                    "type": "number"
+                },
+                "protocol": {
+                    "enum": [
+                        "shadowsocks"
+                    ],
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IShadowSocksInboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "sniffing": {
+                    "$ref": "#/definitions/IV2raySniffing",
+                    "description": "尝试探测流量的类型"
+                },
+                "streamSettings": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/IV2rayTransport"
+                        },
+                        {
+                            "$ref": "#/definitions/IV2rayStreamSetting"
+                        }
+                    ],
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
+                    "type": "string"
+                }
             },
+            "type": "object"
+        },
+        "IShadowSocksInboundSettings": {
             "properties": {
                 "email": {
                     "description": "邮件地址，可选，用于标识用户",
@@ -378,7 +719,7 @@
                     "type": "number"
                 },
                 "method": {
-                    "$ref": "#/definitions/IShadowsocksMethod",
+                    "$ref": "#/definitions/ShadowSocksMethod",
                     "description": "必填。可选的值见加密方式列表"
                 },
                 "network": {
@@ -397,84 +738,165 @@
                 "password": {
                     "description": "必填，任意字符串。Shadowsocks 协议不限制密码长度，但短密码会更可能被破解，建议使用 16 字符或更长的密码",
                     "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IShadowSocksServer": {
+            "properties": {
+                "address": {
+                    "description": "Shadowsocks 服务器地址，支持 IPv4、IPv6 和域名。必填",
+                    "type": "string"
                 },
-                "type": {
+                "email": {
+                    "description": "邮件地址，可选，用于标识用户",
+                    "type": "string"
+                },
+                "level": {
+                    "description": "用户等级",
+                    "type": "number"
+                },
+                "method": {
+                    "$ref": "#/definitions/ShadowSocksMethod",
+                    "description": "必填。可选的值见加密方式列表"
+                },
+                "ota": {
+                    "description": "是否开启 Shadowsocks 的一次验证（One time auth），默认值为false",
+                    "type": "boolean"
+                },
+                "password": {
+                    "description": "必填。任意字符串。Shadowsocks 协议不限制密码长度，但短密码会更可能被破解，建议使用 16 字符或更长的密码",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "Shadowsocks 服务器端口。必填",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "IShadowsocksOutbound": {
+            "properties": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
                     "enum": [
-                        "Shadowsocks"
+                        "shadowsocks"
                     ],
+                    "type": "string"
+                },
+                "proxySettings": {
+                    "additionalProperties": {
+                    },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IShadowsocksOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/IV2rayTransport"
+                        },
+                        {
+                            "$ref": "#/definitions/IV2rayStreamSetting"
+                        }
+                    ],
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
                     "type": "string"
                 }
             },
             "type": "object"
         },
-        "IShadowsocksMethod": {
-            "enum": [
-                "aes-128-cfb",
-                "aes-256-cfb",
-                "aes-256-gcm",
-                "aes128-gcm",
-                "chacha20",
-                "chacha20-ietf",
-                "chacha20-ietf-poly1305",
-                "chacha20-poly1305"
-            ],
-            "type": "string"
-        },
-        "IShadowsocksOutbound": {
-            "additionalProperties": {
-            },
+        "IShadowsocksOutboundSettings": {
             "properties": {
                 "servers": {
                     "description": "一个数组，其中每一项是一个 ServerObject",
                     "items": {
-                        "additionalProperties": {
-                        },
-                        "properties": {
-                            "address": {
-                                "description": "Shadowsocks 服务器地址，支持 IPv4、IPv6 和域名。必填",
-                                "type": "string"
-                            },
-                            "email": {
-                                "description": "邮件地址，可选，用于标识用户",
-                                "type": "string"
-                            },
-                            "level": {
-                                "description": "用户等级",
-                                "type": "number"
-                            },
-                            "method": {
-                                "$ref": "#/definitions/IShadowsocksMethod",
-                                "description": "必填。可选的值见加密方式列表"
-                            },
-                            "ota": {
-                                "description": "是否开启 Shadowsocks 的一次验证（One time auth），默认值为false",
-                                "type": "boolean"
-                            },
-                            "password": {
-                                "description": "必填。任意字符串。Shadowsocks 协议不限制密码长度，但短密码会更可能被破解，建议使用 16 字符或更长的密码",
-                                "type": "string"
-                            },
-                            "port": {
-                                "description": "Shadowsocks 服务器端口。必填",
-                                "type": "string"
-                            }
-                        },
-                        "type": "object"
+                        "$ref": "#/definitions/IShadowSocksServer"
                     },
                     "type": "array"
-                },
-                "type": {
-                    "enum": [
-                        "Shadowsocks"
-                    ],
-                    "type": "string"
                 }
             },
             "type": "object"
         },
         "ISocksInbound": {
-            "additionalProperties": {
+            "properties": {
+                "allocate": {
+                    "$ref": "#/definitions/IV2rayAllocate",
+                    "description": "端口分配设置"
+                },
+                "listen": {
+                    "description": "监听地址，只允许 IP 地址，默认值为\"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "端口",
+                    "type": "number"
+                },
+                "protocol": {
+                    "enum": [
+                        "socks"
+                    ],
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/ISocksInboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "sniffing": {
+                    "$ref": "#/definitions/IV2raySniffing",
+                    "description": "尝试探测流量的类型"
+                },
+                "streamSettings": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/IV2rayTransport"
+                        },
+                        {
+                            "$ref": "#/definitions/IV2rayStreamSetting"
+                        }
+                    ],
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
+                    "type": "string"
+                }
             },
+            "type": "object"
+        },
+        "ISocksInboundSettings": {
             "properties": {
                 "accounts": {
                     "description": "一个数组，数组中每个元素为一个用户帐号。默认值为空。此选项仅当 auth 为 password 时有效",
@@ -495,12 +917,6 @@
                     "description": "当开启 UDP 时，V2Ray 需要知道本机的 IP 地址。默认值为\"127.0.0.1\"",
                     "type": "string"
                 },
-                "type": {
-                    "enum": [
-                        "Socks"
-                    ],
-                    "type": "string"
-                },
                 "udp": {
                     "description": "是否开启 UDP 协议的支持。默认值为 false",
                     "type": "boolean"
@@ -513,53 +929,108 @@
             "type": "object"
         },
         "ISocksOutbound": {
+            "properties": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
+                    "enum": [
+                        "socks"
+                    ],
+                    "type": "string"
+                },
+                "proxySettings": {
+                    "additionalProperties": {
+                    },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/ISocksOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/IV2rayTransport"
+                        },
+                        {
+                            "$ref": "#/definitions/IV2rayStreamSetting"
+                        }
+                    ],
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "ISocksOutboundSettings": {
             "additionalProperties": {
             },
             "properties": {
                 "servers": {
                     "description": "Socks 服务器列表，其中每一项是一个服务器配置",
                     "items": {
-                        "additionalProperties": {
-                        },
-                        "properties": {
-                            "address": {
-                                "description": "服务器地址，仅支持连接到 Socks 5 服务器",
-                                "type": "string"
-                            },
-                            "port": {
-                                "description": "服务器端口",
-                                "type": "number"
-                            },
-                            "users": {
-                                "description": "用户列表，其中每一项一个用户配置。当列表不为空时，Socks 客户端会使用此用户信息进行认证；如未指定，则不进行认证",
-                                "items": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/definitions/IAccount"
-                                        },
-                                        {
-                                            "properties": {
-                                                "level": {
-                                                    "description": "用户等级",
-                                                    "type": "number"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    ]
-                                },
-                                "type": "array"
-                            }
-                        },
-                        "type": "object"
+                        "$ref": "#/definitions/ISocksServer"
                     },
                     "type": "array"
-                },
-                "type": {
-                    "enum": [
-                        "Socks"
-                    ],
+                }
+            },
+            "type": "object"
+        },
+        "ISocksServer": {
+            "properties": {
+                "address": {
+                    "description": "服务器地址，仅支持连接到 Socks 5 服务器",
                     "type": "string"
+                },
+                "port": {
+                    "description": "服务器端口",
+                    "type": "number"
+                },
+                "users": {
+                    "description": "用户列表，其中每一项一个用户配置。当列表不为空时，Socks 客户端会使用此用户信息进行认证；如未指定，则不进行认证",
+                    "items": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/IAccount"
+                            },
+                            {
+                                "properties": {
+                                    "level": {
+                                        "description": "用户等级",
+                                        "type": "number"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        ]
+                    },
+                    "type": "array"
                 }
             },
             "type": "object"
@@ -586,8 +1057,6 @@
             "type": "object"
         },
         "IV2rayAllocate": {
-            "additionalProperties": {
-            },
             "properties": {
                 "concurrency": {
                     "description": "随机端口数量。最小值为1，最大值为port范围的三分之一。建议值为3",
@@ -641,68 +1110,6 @@
             },
             "type": "object"
         },
-        "IV2rayInbound": {
-            "properties": {
-                "allocate": {
-                    "$ref": "#/definitions/IV2rayAllocate",
-                    "description": "端口分配设置"
-                },
-                "listen": {
-                    "description": "监听地址，只允许 IP 地址，默认值为\"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址",
-                    "type": "string"
-                },
-                "port": {
-                    "description": "端口",
-                    "type": "number"
-                },
-                "protocol": {
-                    "$ref": "#/definitions/IProtocol"
-                },
-                "settings": {
-                    "anyOf": [
-                        {
-                            "$ref": "#/definitions/IDokodemoInbound"
-                        },
-                        {
-                            "$ref": "#/definitions/IHttpInbound"
-                        },
-                        {
-                            "$ref": "#/definitions/IMTProtoInbound"
-                        },
-                        {
-                            "$ref": "#/definitions/IShadowsocksInbound"
-                        },
-                        {
-                            "$ref": "#/definitions/ISocksInbound"
-                        },
-                        {
-                            "$ref": "#/definitions/IVmessInbound"
-                        }
-                    ],
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "sniffing": {
-                    "$ref": "#/definitions/IV2raySniffing",
-                    "description": "尝试探测流量的类型"
-                },
-                "streamSettings": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/IV2rayTransport"
-                        },
-                        {
-                            "$ref": "#/definitions/IV2rayStreamSetting"
-                        }
-                    ],
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
         "IV2rayLog": {
             "properties": {
                 "access": {
@@ -727,92 +1134,7 @@
             },
             "type": "object"
         },
-        "IV2rayOutbound": {
-            "additionalProperties": {
-            },
-            "properties": {
-                "mux": {
-                    "additionalProperties": {
-                    },
-                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
-                    "properties": {
-                        "concurrency": {
-                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
-                            "type": "number"
-                        },
-                        "enabled": {
-                            "description": "是否启用 Mux",
-                            "type": "boolean"
-                        }
-                    },
-                    "type": "object"
-                },
-                "protocol": {
-                    "$ref": "#/definitions/IProtocol"
-                },
-                "proxySettings": {
-                    "additionalProperties": {
-                    },
-                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
-                    "properties": {
-                        "tag": {
-                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                },
-                "sendThrough": {
-                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
-                    "type": "string"
-                },
-                "settings": {
-                    "anyOf": [
-                        {
-                            "$ref": "#/definitions/IBlackholeOutbound"
-                        },
-                        {
-                            "$ref": "#/definitions/IDNSOutbound"
-                        },
-                        {
-                            "$ref": "#/definitions/IFreedomOutbound"
-                        },
-                        {
-                            "$ref": "#/definitions/IMTProtoOutbound"
-                        },
-                        {
-                            "$ref": "#/definitions/IShadowsocksOutbound"
-                        },
-                        {
-                            "$ref": "#/definitions/ISocksOutbound"
-                        },
-                        {
-                            "$ref": "#/definitions/IVmessOutbound"
-                        }
-                    ],
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "streamSettings": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/IV2rayTransport"
-                        },
-                        {
-                            "$ref": "#/definitions/IV2rayStreamSetting"
-                        }
-                    ],
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
         "IV2rayPolicy": {
-            "additionalProperties": {
-            },
             "properties": {
                 "levels": {
                     "additionalProperties": {
@@ -830,14 +1152,10 @@
             "type": "object"
         },
         "IV2rayRouting": {
-            "additionalProperties": {
-            },
             "properties": {
                 "balancers": {
                     "description": "(V2Ray 4.4+)一个数组，数组中每个元素是一个负载均衡器的配置。当一个规则指向一个负载均衡器时，V2Ray 会通过此负载均衡器选出一个出站协议，然后由它转发流量",
                     "items": {
-                        "additionalProperties": {
-                        },
                         "properties": {
                             "selector": {
                                 "description": "一个字符串数组，其中每一个字符串将用于和出站协议标识的前缀匹配",
@@ -875,8 +1193,6 @@
             "type": "object"
         },
         "IV2raySniffing": {
-            "additionalProperties": {
-            },
             "properties": {
                 "destOverride": {
                     "description": "当流量为指定类型时，按其中包括的目标地址重置当前连接的目标",
@@ -897,8 +1213,6 @@
             "type": "object"
         },
         "IV2rayStreamSetting": {
-            "additionalProperties": {
-            },
             "properties": {
                 "network": {
                     "description": "数据流所使用的网络类型，默认值为 \"tcp\"",
@@ -921,8 +1235,6 @@
                     "type": "string"
                 },
                 "sockopt": {
-                    "additionalProperties": {
-                    },
                     "description": "连接选项",
                     "properties": {
                         "mark": {
@@ -949,8 +1261,6 @@
             "type": "object"
         },
         "IV2rayTransport": {
-            "additionalProperties": {
-            },
             "description": "TransportObject对应配置文件的transport项",
             "properties": {
                 "dsSettings": {
@@ -993,8 +1303,6 @@
             "type": "object"
         },
         "IVmessAccount": {
-            "additionalProperties": {
-            },
             "properties": {
                 "alterId": {
                     "description": "为了进一步防止被探测，一个用户可以在主 ID 的基础上，再额外生成多个 ID。这里只需要指定额外的 ID 的数量，推荐值为 4。不指定的话，默认值是 0。最大值 65535。这个值不能超过服务器端所指定的值",
@@ -1016,8 +1324,52 @@
             "type": "object"
         },
         "IVmessInbound": {
-            "additionalProperties": {
+            "properties": {
+                "allocate": {
+                    "$ref": "#/definitions/IV2rayAllocate",
+                    "description": "端口分配设置"
+                },
+                "listen": {
+                    "description": "监听地址，只允许 IP 地址，默认值为\"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "端口",
+                    "type": "number"
+                },
+                "protocol": {
+                    "enum": [
+                        "vmess"
+                    ],
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IVmessInboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "sniffing": {
+                    "$ref": "#/definitions/IV2raySniffing",
+                    "description": "尝试探测流量的类型"
+                },
+                "streamSettings": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/IV2rayTransport"
+                        },
+                        {
+                            "$ref": "#/definitions/IV2rayStreamSetting"
+                        }
+                    ],
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
+                    "type": "string"
+                }
             },
+            "type": "object"
+        },
+        "IVmessInboundSettings": {
             "properties": {
                 "clients": {
                     "description": "一组服务器认可的用户。clients 可以为空。当此配置用作动态端口时，V2Ray 会自动创建用户",
@@ -1027,8 +1379,6 @@
                     "type": "array"
                 },
                 "default": {
-                    "additionalProperties": {
-                    },
                     "description": "指示对应的出站协议使用另一个服务器",
                     "properties": {
                         "alterId": {
@@ -1043,8 +1393,6 @@
                     "type": "object"
                 },
                 "detour": {
-                    "additionalProperties": {
-                    },
                     "description": "可选，clients 的默认配置。仅在配合detour时有效",
                     "properties": {
                         "to": {
@@ -1057,31 +1405,75 @@
                 "disableInsecureEncryption": {
                     "description": "是否禁止客户端使用不安全的加密方式，当客户端指定下列加密方式时，服务器会主动断开连接。默认值为false",
                     "type": "boolean"
-                },
-                "type": {
-                    "enum": [
-                        "Vmess"
-                    ],
-                    "type": "string"
                 }
             },
             "type": "object"
         },
         "IVmessOutbound": {
-            "additionalProperties": {
-            },
             "properties": {
-                "type": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
                     "enum": [
-                        "VMess"
+                        "vmess"
                     ],
                     "type": "string"
                 },
+                "proxySettings": {
+                    "additionalProperties": {
+                    },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IVmessOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/IV2rayTransport"
+                        },
+                        {
+                            "$ref": "#/definitions/IV2rayStreamSetting"
+                        }
+                    ],
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IVmessOutboundSettings": {
+            "properties": {
                 "vnext": {
                     "description": "一个数组，包含一系列的服务器配置",
                     "items": {
-                        "additionalProperties": {
-                        },
                         "properties": {
                             "address": {
                                 "description": "服务器地址，支持 IP 地址或者域名",
@@ -1094,8 +1486,6 @@
                             "users": {
                                 "description": "一组服务器认可的用户",
                                 "items": {
-                                    "additionalProperties": {
-                                    },
                                     "properties": {
                                         "alterId": {
                                             "description": "为了进一步防止被探测，一个用户可以在主 ID 的基础上，再额外生成多个 ID。这里只需要指定额外的 ID 的数量，推荐值为 4。不指定的话，默认值是 0。最大值 65535。这个值不能超过服务器端所指定的值",
@@ -1131,6 +1521,19 @@
                 }
             },
             "type": "object"
+        },
+        "ShadowSocksMethod": {
+            "enum": [
+                "aes-128-cfb",
+                "aes-128-gcm",
+                "aes-256-cfb",
+                "aes-256-gcm",
+                "chacha20",
+                "chacha20-ietf",
+                "chacha20-ietf-poly1305",
+                "chacha20-poly1305"
+            ],
+            "type": "string"
         }
     },
     "description": "V2Ray config",
@@ -1146,7 +1549,26 @@
         "inbounds": {
             "description": "一个数组，每个元素是一个入站连接配置",
             "items": {
-                "$ref": "#/definitions/IV2rayInbound"
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/IDokodemoInbound"
+                    },
+                    {
+                        "$ref": "#/definitions/IHttpInbound"
+                    },
+                    {
+                        "$ref": "#/definitions/IMTProtoInbound"
+                    },
+                    {
+                        "$ref": "#/definitions/IShadowSocksInbound"
+                    },
+                    {
+                        "$ref": "#/definitions/ISocksInbound"
+                    },
+                    {
+                        "$ref": "#/definitions/IVmessInbound"
+                    }
+                ]
             },
             "type": "array"
         },
@@ -1157,7 +1579,29 @@
         "outbounds": {
             "description": "一个数组，每个元素是一个出站连接配置。列表中的第一个元素作为主出站协议。当路由匹配不存在或没有匹配成功时，流量由主出站协议发出",
             "items": {
-                "$ref": "#/definitions/IV2rayOutbound"
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/IBlackholeOutbound"
+                    },
+                    {
+                        "$ref": "#/definitions/IDNSOutbound"
+                    },
+                    {
+                        "$ref": "#/definitions/IFreedomOutbound"
+                    },
+                    {
+                        "$ref": "#/definitions/IMTProtoOutbound"
+                    },
+                    {
+                        "$ref": "#/definitions/IShadowsocksOutbound"
+                    },
+                    {
+                        "$ref": "#/definitions/ISocksOutbound"
+                    },
+                    {
+                        "$ref": "#/definitions/IVmessOutbound"
+                    }
+                ]
             },
             "type": "array"
         },

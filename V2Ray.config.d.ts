@@ -1,16 +1,17 @@
 /**
  * 连接协议名称
  */
-export type IProtocol =
-  | 'blackhole'
-  | 'dns'
-  | 'dokodemo-door'
-  | 'freedom'
-  | 'http'
-  | 'mtproto'
-  | 'shadowsocks'
-  | 'socks'
-  | 'vmess'
+export enum V2RayProtocol {
+  BLACKHOLE = 'blackhole',
+  DNS = 'dns',
+  DOKODEMO_DOOR = 'dokodemo-door',
+  FREEDOM = 'freedom',
+  HTTP = 'http',
+  MTPROTO = 'mtproto',
+  SHADOWSOCKS = 'shadowsocks',
+  SOCKS = 'socks',
+  VMESS = 'vmess'
+}
 
 export interface IV2rayLog {
   /**
@@ -148,9 +149,7 @@ export interface IV2rayRouting {
      * 一个字符串数组，其中每一个字符串将用于和出站协议标识的前缀匹配
      */
     selector?: string[]
-    [k: string]: any
   }[]
-  [k: string]: any
 }
 
 export interface IV2rayPolicy {
@@ -166,11 +165,9 @@ export interface IV2rayPolicy {
   system?: {
     [k: string]: any
   }
-  [k: string]: any
 }
 
-export interface IDokodemoInbound {
-  type?: 'Dokodemo'
+export interface IDokodemoInboundSettings {
   /**
    * 将流量转发到此地址。可以是一个 IP 地址，形如"1.2.3.4"，或者一个域名，形如"v2ray.com"。字符串类型
    */
@@ -195,11 +192,14 @@ export interface IDokodemoInbound {
    * 用户等级，所有连接都会使用这个用户等级
    */
   userLevel?: number
-  [k: string]: any
 }
 
-export interface IHttpInbound {
-  type?: 'HTTP'
+export interface IDokodemoInbound extends IV2rayInboundCommon {
+  protocol: V2RayProtocol.DOKODEMO_DOOR
+  settings: IDokodemoInboundSettings
+}
+
+export interface IHttpInboundSettings {
   /**
    * 从客户端读取数据的超时设置（秒），0 表示不限时。默认值为 300。 V2Ray 3.1 后等价于对应用户等级的 connIdle 策略
    */
@@ -216,7 +216,6 @@ export interface IHttpInbound {
      * 密码，字符串类型。必填
      */
     pass?: string
-    [k: string]: any
   }[]
   /**
    * 当为true时，会转发所有 HTTP 请求，而非只是代理请求。若配置不当，开启此选项会导致死循环
@@ -226,7 +225,11 @@ export interface IHttpInbound {
    * 用户等级，所有连接使用这一等级
    */
   userLevel?: number
-  [k: string]: any
+}
+
+export interface IHttpInbound extends IV2rayInboundCommon {
+  protocol: V2RayProtocol.HTTP
+  settings: IHttpInboundSettings
 }
 
 export interface IMTProtoAccount {
@@ -242,30 +245,32 @@ export interface IMTProtoAccount {
    * 用户密钥。必须为 32 个字符，仅可包含0到9和a到f之间的字符
    */
   secret?: string
-  [k: string]: any
 }
 
-export interface IMTProtoInbound {
-  type?: 'MTProto'
+export interface IMTProtoInboundSettings {
   /**
    * 一个数组，其中每一个元素表示一个用户。目前只有第一个用户会生效
    */
   users?: IMTProtoAccount[]
-  [k: string]: any
 }
 
-type IShadowsocksMethod =
-  | 'aes-256-cfb'
-  | 'aes-128-cfb'
-  | 'chacha20'
-  | 'chacha20-ietf'
-  | 'aes-256-gcm'
-  | 'aes128-gcm'
-  | 'chacha20-poly1305'
-  | 'chacha20-ietf-poly1305'
+export interface IMTProtoInbound extends IV2rayInboundCommon {
+  protocol: V2RayProtocol.MTPROTO
+  settings: IMTProtoInboundSettings
+}
 
-export interface IShadowsocksInbound {
-  type?: 'Shadowsocks'
+export enum ShadowSocksMethod {
+  AES_256_CFB = 'aes-256-cfb',
+  AES_128_CFB = 'aes-128-cfb',
+  CHACHA20 = 'chacha20',
+  CHACHA20_IETF = 'chacha20-ietf',
+  AES_256_GCM = 'aes-256-gcm',
+  AES_128_GCM = 'aes-128-gcm',
+  CHACHA20_POLY1305 = 'chacha20-poly1305',
+  CHACHA20_IETF_POLY1305 = 'chacha20-ietf-poly1305'
+}
+
+export interface IShadowSocksInboundSettings {
   /**
    * 邮件地址，可选，用于标识用户
    */
@@ -273,7 +278,7 @@ export interface IShadowsocksInbound {
   /**
    * 必填。可选的值见加密方式列表
    */
-  method?: IShadowsocksMethod
+  method?: ShadowSocksMethod
   /**
    * 必填，任意字符串。Shadowsocks 协议不限制密码长度，但短密码会更可能被破解，建议使用 16 字符或更长的密码
    */
@@ -290,11 +295,14 @@ export interface IShadowsocksInbound {
    * 可接收的网络连接类型，默认值为"tcp"
    */
   network?: 'tcp' | 'udp' | 'tcp,udp'
-  [k: string]: any
 }
 
-export interface ISocksInbound {
-  type?: 'Socks'
+export interface IShadowSocksInbound extends IV2rayInboundCommon {
+  protocol: V2RayProtocol.SHADOWSOCKS
+  settings: IShadowSocksInboundSettings
+}
+
+export interface ISocksInboundSettings {
   /**
    * Socks 协议的认证方式，支持"noauth"匿名方式和"password"用户密码方式。默认值为"noauth"
    */
@@ -315,7 +323,11 @@ export interface ISocksInbound {
    * 用户等级，所有连接使用这一等级
    */
   userLevel?: number
-  [k: string]: any
+}
+
+export interface ISocksInbound extends IV2rayInboundCommon {
+  protocol: V2RayProtocol.SOCKS
+  settings: ISocksInboundSettings
 }
 
 export interface IVmessAccount {
@@ -335,11 +347,9 @@ export interface IVmessAccount {
    * 用户邮箱地址，用于区分不同用户的流量
    */
   email?: string
-  [k: string]: any
 }
 
-export interface IVmessInbound {
-  type?: 'Vmess'
+export interface IVmessInboundSettings {
   /**
    * 一组服务器认可的用户。clients 可以为空。当此配置用作动态端口时，V2Ray 会自动创建用户
    */
@@ -356,7 +366,6 @@ export interface IVmessInbound {
      * 为了进一步防止被探测，一个用户可以在主 ID 的基础上，再额外生成多个 ID。这里只需要指定额外的 ID 的数量，推荐值为 4。不指定的话，默认值是 0。最大值 65535。这个值不能超过服务器端所指定的值
      */
     alterId?: number
-    [k: string]: any
   }
   /**
    * 可选，clients 的默认配置。仅在配合detour时有效
@@ -366,13 +375,16 @@ export interface IVmessInbound {
      * 一个入站协议的tag，详见配置文件。指定的入站协议必须是一个 VMess
      */
     to?: string
-    [k: string]: any
   }
   /**
    * 是否禁止客户端使用不安全的加密方式，当客户端指定下列加密方式时，服务器会主动断开连接。默认值为false
    */
   disableInsecureEncryption?: boolean
-  [k: string]: any
+}
+
+export interface IVmessInbound extends IV2rayInboundCommon {
+  protocol: V2RayProtocol.VMESS
+  settings: IVmessInboundSettings
 }
 
 export interface IV2rayStreamSetting {
@@ -400,9 +412,7 @@ export interface IV2rayStreamSetting {
      * 是否开启透明代理 (仅适用于 Linux)
      */
     tproxy?: 'redirect' | 'tproxy' | 'off'
-    [k: string]: any
   }
-  [k: string]: any
 }
 
 export interface IV2raySniffing {
@@ -414,7 +424,6 @@ export interface IV2raySniffing {
    * 当流量为指定类型时，按其中包括的目标地址重置当前连接的目标
    */
   destOverride?: ('http' | 'tls')[]
-  [k: string]: any
 }
 
 export interface IV2rayAllocate {
@@ -430,18 +439,11 @@ export interface IV2rayAllocate {
    * 随机端口数量。最小值为1，最大值为port范围的三分之一。建议值为3
    */
   concurrency?: number
-  [k: string]: any
 }
 
-type IInboundSetting =
-  | IDokodemoInbound
-  | IHttpInbound
-  | IMTProtoInbound
-  | IShadowsocksInbound
-  | ISocksInbound
-  | IVmessInbound
+export type IV2RayInbound = IDokodemoInbound | IHttpInbound | IMTProtoInbound | IShadowSocksInbound|ISocksInbound|IVmessInbound
 
-export interface IV2rayInbound {
+export interface IV2rayInboundCommon {
   /**
    * 端口
    */
@@ -450,11 +452,11 @@ export interface IV2rayInbound {
    * 监听地址，只允许 IP 地址，默认值为"0.0.0.0"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址
    */
   listen?: string
-  protocol?: IProtocol
+  protocol?: V2RayProtocol
   /**
    * 具体的配置内容，视协议不同而不同
    */
-  settings?: IInboundSetting
+  settings?: any
   /**
    * 底层传输配置
    */
@@ -473,8 +475,7 @@ export interface IV2rayInbound {
   allocate?: IV2rayAllocate
 }
 
-export interface IBlackholeOutbound {
-  type?: 'Blackhole'
+export interface IBlackholeOutboundSettings {
   /**
    * 配置黑洞的响应数据。Blackhole 会在收到待转发数据之后，发送指定的响应数据，然后关闭连接。待转发的数据将被丢弃。如不指定此项，Blackhole 将直接关闭连接
    */
@@ -483,13 +484,15 @@ export interface IBlackholeOutbound {
      * type为"none"（默认值）时，Blackhole将直接关闭连接。当type为"http"时，Blackhole会发回一个简单的 HTTP 403 数据包，然后关闭连接
      */
     type?: 'http' | 'none'
-    [k: string]: any
   }
-  [k: string]: any
 }
 
-export interface IDNSOutbound {
-  type?: 'DNS'
+export interface IBlackholeOutbound extends IV2rayOutboundCommon {
+  protocol: V2RayProtocol.BLACKHOLE
+  settings: IBlackholeOutboundSettings
+}
+
+export interface IDNSOutboundSettings {
   /**
    * (V2Ray 4.16+) 修改 DNS 流量的传输层协议，可选的值有"tcp"和"udp"。当不指定时，保持来源的传输方式不变
    */
@@ -502,11 +505,14 @@ export interface IDNSOutbound {
    * (V2Ray 4.16+) 修改 DNS 服务器端口。当不指定时，保持来源中指定的端口不变
    */
   port?: number
-  [k: string]: any
 }
 
-export interface IFreedomOutbound {
-  type?: 'Freedom'
+export interface IDNSOutbound extends IV2rayOutboundCommon {
+  protocol: V2RayProtocol.DNS
+  settings: IDNSOutboundSettings
+}
+
+export interface IFreedomOutboundSettings {
   /**
    * 在目标地址为域名时，Freedom 可以直接向此域名发出连接（"AsIs"），或者将域名解析为 IP 之后再建立连接（"UseIP"、"UseIPv4"、"UseIPv6"）。解析 IP 的步骤会使用 V2Ray 内建的 DNS。默认值为"AsIs"
    * (V2Ray 4.6+) 当使用"UseIP"模式，并且出站连接配置中指定了sendThrough时，Freedom 会根据sendThrough的值自动判断所需的IP类型，IPv4 或 IPv6
@@ -521,54 +527,65 @@ export interface IFreedomOutbound {
    * 用户等级，所有连接都使用这一等级
    */
   userLevel?: string
-  [k: string]: any
 }
 
-export interface IMTProtoOutbound {
-  type?: 'MTProto'
-  [k: string]: any
+export interface IFreedomOutbound extends IV2rayOutboundCommon {
+  protocol: V2RayProtocol.FREEDOM
+  settings: IFreedomOutboundSettings
 }
 
-export interface IShadowsocksOutbound {
-  type?: 'Shadowsocks'
+export interface IMTProtoOutboundSettings {
+}
+
+export interface IMTProtoOutbound extends IV2rayOutboundCommon {
+  protocol: V2RayProtocol.MTPROTO
+  settings: IMTProtoOutboundSettings
+}
+
+export interface IShadowSocksServer {
+  /**
+   * 邮件地址，可选，用于标识用户
+   */
+  email?: string
+  /**
+   * Shadowsocks 服务器地址，支持 IPv4、IPv6 和域名。必填
+   */
+  address: string
+  /**
+   * Shadowsocks 服务器端口。必填
+   */
+  port: number | string
+  /**
+   * 必填。可选的值见加密方式列表
+   */
+  method: ShadowSocksMethod
+  /**
+   * 必填。任意字符串。Shadowsocks 协议不限制密码长度，但短密码会更可能被破解，建议使用 16 字符或更长的密码
+   */
+  password: string
+  /**
+   * 是否开启 Shadowsocks 的一次验证（One time auth），默认值为false
+   */
+  ota?: boolean
+  /**
+   * 用户等级
+   */
+  level?: number
+}
+
+export interface IShadowsocksOutboundSettings {
   /**
    * 一个数组，其中每一项是一个 ServerObject
    */
-  servers?: {
-    /**
-     * 邮件地址，可选，用于标识用户
-     */
-    email?: string
-    /**
-     * Shadowsocks 服务器地址，支持 IPv4、IPv6 和域名。必填
-     */
-    address: string
-    /**
-     * Shadowsocks 服务器端口。必填
-     */
-    port: string
-    /**
-     * 必填。可选的值见加密方式列表
-     */
-    method: IShadowsocksMethod
-    /**
-     * 必填。任意字符串。Shadowsocks 协议不限制密码长度，但短密码会更可能被破解，建议使用 16 字符或更长的密码
-     */
-    password: string
-    /**
-     * 是否开启 Shadowsocks 的一次验证（One time auth），默认值为false
-     */
-    ota?: boolean
-    /**
-     * 用户等级
-     */
-    level?: number
-    [k: string]: any
-  }[]
-  [k: string]: any
+  servers?: IShadowSocksServer[]
 }
 
-type ISocksServer = {
+export interface IShadowsocksOutbound extends IV2rayOutboundCommon {
+  protocol: V2RayProtocol.SHADOWSOCKS
+  settings: IShadowsocksOutboundSettings
+}
+
+export interface ISocksServer {
   /**
    * 服务器地址，仅支持连接到 Socks 5 服务器
    */
@@ -586,11 +603,9 @@ type ISocksServer = {
      */
     level?: number
   })[]
-  [k: string]: any
 }
 
-export interface ISocksOutbound {
-  type?: 'Socks'
+export interface ISocksOutboundSettings {
   /**
    * Socks 服务器列表，其中每一项是一个服务器配置
    */
@@ -598,8 +613,12 @@ export interface ISocksOutbound {
   [k: string]: any
 }
 
-export interface IVmessOutbound {
-  type?: 'VMess'
+export interface ISocksOutbound extends IV2rayOutboundCommon {
+  protocol: V2RayProtocol.SOCKS
+  settings: ISocksOutboundSettings
+}
+
+export interface IVmessOutboundSettings {
   /**
    * 一个数组，包含一系列的服务器配置
    */
@@ -632,14 +651,16 @@ export interface IVmessOutbound {
        * 用户等级
        */
       level?: number
-      [k: string]: any
     }[]
-    [k: string]: any
   }[]
-  [k: string]: any
 }
 
-type IOutboundSetting =
+export interface IVmessOutbound extends IV2rayOutboundCommon {
+  protocol: V2RayProtocol.VMESS
+  settings: IVmessOutboundSettings
+}
+
+type IV2RayOutbound =
   | IBlackholeOutbound
   | IDNSOutbound
   | IFreedomOutbound
@@ -648,16 +669,16 @@ type IOutboundSetting =
   | ISocksOutbound
   | IVmessOutbound
 
-export interface IV2rayOutbound {
+export interface IV2rayOutboundCommon {
   /**
    * 用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为"0.0.0.0"
    */
   sendThrough?: string
-  protocol?: IProtocol
+  protocol?: V2RayProtocol
   /**
    * 具体的配置内容，视协议不同而不同
    */
-  settings?: IOutboundSetting
+  settings?: any
   /**
    * 此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一
    */
@@ -688,9 +709,7 @@ export interface IV2rayOutbound {
      * 最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输
      */
     concurrency?: number
-    [k: string]: any
   }
-  [k: string]: any
 }
 
 export interface IAccount {
@@ -702,7 +721,6 @@ export interface IAccount {
    * 密码
    */
   pass?: string
-  [k: string]: any
 }
 
 /**
@@ -745,7 +763,6 @@ export interface IV2rayTransport {
   quicSettings?: {
     [k: string]: any
   }
-  [k: string]: any
 }
 
 /**
@@ -785,11 +802,11 @@ export interface IV2Ray {
   /**
    * 一个数组，每个元素是一个入站连接配置
    */
-  inbounds?: IV2rayInbound[]
+  inbounds?: IV2RayInbound[]
   /**
    * 一个数组，每个元素是一个出站连接配置。列表中的第一个元素作为主出站协议。当路由匹配不存在或没有匹配成功时，流量由主出站协议发出
    */
-  outbounds?: IV2rayOutbound[]
+  outbounds?: IV2RayOutbound[]
   /**
    * 用于配置 V2Ray 如何与其它服务器建立和使用网络连接
    */
