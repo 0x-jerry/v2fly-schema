@@ -441,7 +441,13 @@ export interface IV2rayAllocate {
   concurrency?: number
 }
 
-export type IV2RayInbound = IDokodemoInbound | IHttpInbound | IMTProtoInbound | IShadowSocksInbound|ISocksInbound|IVmessInbound
+export type IV2RayInbound =
+  | IDokodemoInbound
+  | IHttpInbound
+  | IMTProtoInbound
+  | IShadowSocksInbound
+  | ISocksInbound
+  | IVmessInbound
 
 export interface IV2rayInboundCommon {
   /**
@@ -534,8 +540,7 @@ export interface IFreedomOutbound extends IV2rayOutboundCommon {
   settings: IFreedomOutboundSettings
 }
 
-export interface IMTProtoOutboundSettings {
-}
+export interface IMTProtoOutboundSettings {}
 
 export interface IMTProtoOutbound extends IV2rayOutboundCommon {
   protocol: V2RayProtocol.MTPROTO
@@ -723,6 +728,33 @@ export interface IAccount {
   pass?: string
 }
 
+export enum HeaderObjectType {
+  /**
+   *  默认值，不进行伪装，发送的数据是没有特征的数据包
+   */
+  NONE = 'none',
+  /**
+   * 伪装成 SRTP 数据包，会被识别为视频通话数据（如 FaceTime）
+   */
+  SRTP = 'srtp',
+  /**
+   * 伪装成 uTP 数据包，会被识别为 BT 下载数据
+   */
+  UTP = 'utp',
+  /**
+   * 伪装成微信视频通话的数据包
+   */
+  WECHAT_VIDEO = 'wechat-video',
+  /**
+   * 伪装成 DTLS 1.2 数据包
+   */
+  DTLS = 'dtls',
+  /**
+   * 伪装成 WireGuard 数据包。(并不是真正的 WireGuard 协议)
+   */
+  WIREGUARD = 'wireguard'
+}
+
 /**
  * TransportObject对应配置文件的transport项
  */
@@ -731,37 +763,115 @@ export interface IV2rayTransport {
    * 针对 TCP 连接的配置
    */
   tcpSettings?: {
-    [k: string]: any
+    header:
+      | {
+          type: 'none'
+        }
+      | {
+          type: 'http'
+          request: {
+            [key: string]: any
+          }
+          response: {
+            [key: string]: any
+          }
+        }
   }
   /**
    * 针对 mKCP 连接的配置
    */
-  kcpSettings?: {
-    [k: string]: any
+  mKcpSettings?: {
+    /**
+     * 最大传输单元（maximum transmission unit），请选择一个介于 576 - 1460 之间的值。默认值为 1350。
+     */
+    mtu: number
+    /**
+     * 传输时间间隔（transmission time interval），单位毫秒（ms），mKCP 将以这个时间频率发送数据。请选译一个介于 10 - 100 之间的值。默认值为 50
+     */
+    tti: number
+    /**
+     * 上行链路容量，即主机发出数据所用的最大带宽，单位 MB/s，默认值 5。注意是 Byte 而非 bit。可以设置为 0，表示一个非常小的带宽
+     */
+    uplinkCapacity: number
+    /**
+     * 下行链路容量，即主机接收数据所用的最大带宽，单位 MB/s，默认值 20。注意是 Byte 而非 bit。可以设置为 0，表示一个非常小的带宽
+     */
+    downlinkCapacity: number
+    /**
+     * 是否启用拥塞控制，默认值为 false。开启拥塞控制之后，V2Ray 会自动监测网络质量，当丢包严重时，会自动降低吞吐量；当网络畅通时，也会适当增加吞吐量
+     */
+    congestion: boolean
+    /**
+     * 单个连接的读取缓冲区大小，单位是 MB。默认值为 2
+     */
+    readBufferSize: number
+    /**
+     * 单个连接的写入缓冲区大小，单位是 MB。默认值为 2
+     */
+    writeBufferSize: number
+    /**
+     * 数据包头部伪装设置
+     */
+    header: {
+      /**
+       * 伪装类型
+       */
+      type: HeaderObjectType
+    }
   }
   /**
    * 针对 WebSocket 连接的配置
    */
   wsSettings?: {
-    [k: string]: any
+    /**
+     * WebSocket 所使用的 HTTP 协议路径，默认值为 "/"
+     */
+    path: string
+    /**
+     * 自定义 HTTP 头，一个键值对，每个键表示一个 HTTP 头的名称，对应的值是字符串。默认值为空
+     */
+    headers: {
+      [k: string]: any
+    }
   }
   /**
    * 针对 HTTP/2 连接的配置
    */
   httpSettings?: {
-    [k: string]: any
+    /**
+     * 一个字符串数组，每一个元素是一个域名。客户端会随机从列表中选出一个域名进行通信，服务器会验证域名是否在列表中
+     */
+    host: string[]
+    /**
+     * HTTP 路径，由/开头。客户端和服务器必须一致。可选参数，默认值为"/"
+     */
+    path: string
   }
   /**
    * 针于Domain Socket 连接的配置
    */
   dsSettings?: {
-    [k: string]: any
+    /**
+     * 一个合法的文件路径。在运行 V2Ray 之前，这个文件必须不存在
+     */
+    path: string
   }
   /**
    * (V2Ray 4.7+) 针于QUIC 连接的配置
+   * QUIC 的配置对应传输配置中的 quicSettings 项。对接的两端的配置必须完全一致，否则连接失败。QUIC 强制要求开启 TLS，在传输配置中没有开启 TLS 时，V2Ray 会自行签发一个证书进行 TLS 通讯。在使用 QUIC 传输时，可以关闭 VMess 的加密
    */
   quicSettings?: {
-    [k: string]: any
+    /**
+     * 加密方式。默认值为不加密
+     */
+    security: 'none' | 'aes-128-gcm' | 'chacha20-poly1305'
+    /**
+     * 加密时所用的密钥。可以是任意字符串。当security不为"none"时有效
+     */
+    key: string
+    header: {
+      type: HeaderObjectType
+    }
   }
 }
 
