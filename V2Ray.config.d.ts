@@ -387,7 +387,7 @@ export interface IVmessInbound extends IV2rayInboundCommon {
   settings: IVmessInboundSettings
 }
 
-export interface IV2rayStreamSetting {
+export interface IV2rayStreamSetting extends IV2rayTransport {
   /**
    * 数据流所使用的网络类型，默认值为 "tcp"
    */
@@ -452,8 +452,11 @@ export type IV2RayInbound =
 export interface IV2rayInboundCommon {
   /**
    * 端口
+   * 整型数值: 实际的端口号
+   * 环境变量: 以"env:"开头，后面是一个环境变量的名称，如"env:PORT"。V2Ray 会以字符串形式解析这个环境变量。
+   * 字符串: 可以是一个数值类型的字符串，如"1234"；或者一个数值范围，如"5-10"表示端口 5 到端口 10 这 6 个端口。
    */
-  port?: number
+  port?: number | 'env:variable' | string
   /**
    * 监听地址，只允许 IP 地址，默认值为"0.0.0.0"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址
    */
@@ -466,7 +469,7 @@ export interface IV2rayInboundCommon {
   /**
    * 底层传输配置
    */
-  streamSettings?: IV2rayTransport & IV2rayStreamSetting
+  streamSettings?: IV2rayStreamSetting
   /**
    * 此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一
    */
@@ -691,7 +694,7 @@ export interface IV2rayOutboundCommon {
   /**
    * 底层传输配置
    */
-  streamSettings?: IV2rayTransport & IV2rayStreamSetting
+  streamSettings?: IV2rayStreamSetting
   /**
    * 出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用
    */
