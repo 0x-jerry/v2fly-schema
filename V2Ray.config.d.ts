@@ -781,9 +781,9 @@ export interface IV2rayTransport {
         }
   }
   /**
-   * 针对 mKCP 连接的配置
+   * 针对 KCP 连接的配置
    */
-  mKcpSettings?: {
+  kcpSettings?: {
     /**
      * 最大传输单元（maximum transmission unit），请选择一个介于 576 - 1460 之间的值。默认值为 1350。
      */
