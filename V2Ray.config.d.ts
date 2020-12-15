@@ -1401,6 +1401,7 @@ export interface IV2Ray {
    * 一个数组，每个元素是一个出站连接配置。列表中的第一个元素作为主出站协议。当路由匹配不存在或没有匹配成功时，流量由主出站协议发出
    */
   outbounds?: IV2RayOutbound[]
+  // todo, 以下 schema 待检测 https://www.v2fly.org/config/transport/tcp.html#tcpobject
   /**
    * 用于配置 V2Ray 如何与其它服务器建立和使用网络连接
    */
