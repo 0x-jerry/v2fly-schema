@@ -12,14 +12,17 @@
             ],
             "type": "string"
         },
-        "IAccount": {
+        "IBalancerObject": {
             "properties": {
-                "pass": {
-                    "description": "密码",
-                    "type": "string"
+                "selector": {
+                    "description": "一个字符串数组，其中每一个字符串将用于和出站协议标识的前缀匹配",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
-                "user": {
-                    "description": "用户名",
+                "tag": {
+                    "description": "此负载均衡器的标识，用于匹配RuleObject中的balancerTag",
                     "type": "string"
                 }
             },
@@ -93,6 +96,42 @@
                         }
                     },
                     "type": "object"
+                }
+            },
+            "type": "object"
+        },
+        "ICertificateObject": {
+            "properties": {
+                "certificate": {
+                    "description": "一个字符串数组，表示证书内容，格式如样例所示。certificate 和 certificateFile 二者选一。",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "certificateFile": {
+                    "description": "证书文件路径，如使用 OpenSSL 生成，后缀名为 .crt。",
+                    "type": "string"
+                },
+                "key": {
+                    "description": "一个字符串数组，表示密钥内容，格式如样例如示。key 和 keyFile 二者选一。\n\n当 certificateFile 和 certificate 同时指定时，V2Ray 优先使用 certificateFile。keyFile 和 key 也一样。",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "keyFile": {
+                    "description": "密钥文件路径，如使用 OpenSSL 生成，后缀名为 .key。目前暂不支持需要密码的 key 文件。",
+                    "type": "string"
+                },
+                "usage": {
+                    "description": "- \"encipherment\"：证书用于 TLS 认证和加密。\n- \"verify\"：证书用于验证远端 TLS 的证书。当使用此项时，当前证书必须为 CA 证书。\n- \"issue\"：证书用于签发其它证书。当使用此项时，当前证书必须为 CA 证书。",
+                    "enum": [
+                        "encipherment",
+                        "issue",
+                        "verify"
+                    ],
+                    "type": "string"
                 }
             },
             "type": "object"
@@ -171,22 +210,24 @@
             },
             "type": "object"
         },
-        "IDNSServer": {
+        "IDefaultObject": {
             "properties": {
-                "address": {
-                    "description": "DNS 服务器地址，如\"8.8.8.8\"。目前只支持 UDP 协议的 DNS 服务器",
-                    "type": "string"
-                },
-                "domains": {
-                    "description": "一个域名列表，此列表包含的域名，将优先使用此服务器进行查询。域名格式和路由配置中相同",
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                },
-                "port": {
-                    "description": "DNS 服务器端口，如53",
+                "alterId": {
+                    "description": "为了进一步防止被探测，一个用户可以在主 ID 的基础上，再额外生成多个 ID。这里只需要指定额外的 ID 的数量，推荐值为 4。不指定的话，默认值是 0。最大值 65535。这个值不能超过服务器端所指定的值",
                     "type": "number"
+                },
+                "level": {
+                    "description": "用户等级，默认值为0",
+                    "type": "number"
+                }
+            },
+            "type": "object"
+        },
+        "IDetourObject": {
+            "properties": {
+                "to": {
+                    "description": "一个入站协议的tag，详见配置文件。指定的入站协议必须是一个 VMess",
+                    "type": "string"
                 }
             },
             "type": "object"
@@ -198,17 +239,18 @@
                     "description": "端口分配设置"
                 },
                 "listen": {
-                    "description": "监听地址，只允许 IP 地址，默认值为\"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址",
+                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
                     "type": "string"
                 },
                 "port": {
-                    "description": "端口\n整型数值: 实际的端口号\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
+                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
                     "type": [
                         "string",
                         "number"
                     ]
                 },
                 "protocol": {
+                    "description": "连接协议名称，可选的值见协议列表。",
                     "enum": [
                         "dokodemo-door"
                     ],
@@ -257,7 +299,7 @@
                     "type": "number"
                 },
                 "timeout": {
-                    "description": "入站数据的时间限制（秒），默认值为 300",
+                    "description": "入站数据的时间限制（秒），默认值为 300\n\nV2Ray 3.1 后等价于对应用户等级的 connIdle 策略",
                     "type": "number"
                 },
                 "userLevel": {
@@ -272,6 +314,30 @@
                 "path": {
                     "description": "一个合法的文件路径。在运行 V2Ray 之前，这个文件必须不存在",
                     "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IFallbacksObject": {
+            "properties": {
+                "alpn": {
+                    "description": "尝试匹配 TLS ALPN 协商结果，空为任意，默认为 \"\"\n\n有需要时，VLESS 才会尝试读取 TLS ALPN 协商结果，若成功，输出 info realAlpn = 到日志。\n\n用途：解决了 Nginx 的 h2c 服务不能同时兼容 http/1.1 的问题，Nginx 需要写两行 listen，分别用于 1.1 和 h2c。\n\n注意：fallbacks alpn 存在 \"h2\" 时，Inbound TLS 需设置 \"alpn\":[\"h2\",\"http/1.1\"]，以支持 h2 访问。",
+                    "type": "string"
+                },
+                "dest": {
+                    "description": "决定 TLS 解密后 TCP 流量的去向，目前支持两类地址：（该项必填，否则无法启动）\n\n1. TCP，格式为 \"addr:port\"，其中 addr 支持 IPv4、域名、IPv6，若填写域名，也将直接发起 TCP 连接（而不走内置的 DNS）。\n2. Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n若只填 port，数字或字符串均可，形如 80、\"80\"，通常指向一个明文 http 服务（addr 会被补为 \"127.0.0.1\"）。",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "path": {
+                    "description": "尝试匹配首包 HTTP PATH，空为任意，默认为空，非空则必须以 \"/\" 开头，不支持 h2c。\n\n智能：有需要时，VLESS 才会尝试看一眼 PATH（不超过 55 个字节；最快算法，并不完整解析 HTTP），若成功，输出 info realPath = 到日志。\n\n用途：分流其它 inbound 的 WebSocket 流量或 HTTP 伪装流量，没有多余处理、纯粹转发流量，实测比 Nginx 反代更强 (opens new window)。\n\n注意：fallbacks 所在入站本身必须是 TCP+TLS，这是分流至其它 WS 入站用的，被分流的入站则无需配置 TLS。",
+                    "type": "string"
+                },
+                "xver": {
+                    "description": "发送 PROXY protocol (opens new window)，专用于传递请求的真实来源 IP 和端口，填版本 1 或 2，默认为 0，即不发送。若有需要建议填 1。\n\n目前填 1 或 2，功能完全相同，只是结构不同，且前者可打印，后者为二进制。V2Ray 的 TCP 和 WS 入站均已支持接收 PROXY protocol。\n\n补充说明\n\n将匹配到最精确的子元素，与子元素的排列顺序无关。若配置了几个 alpn 和 path 均相同的子元素，则会以最后的为准。\n\n回落分流均是解密后 TCP 层的转发，而不是 HTTP 层，只在必要时检查首包 PATH。\n\n不支持按域名分流。若有此需求，建议前置 Nginx 等并配置 stream SNI 分流。",
+                    "type": "number"
                 }
             },
             "type": "object"
@@ -352,6 +418,19 @@
             },
             "type": "object"
         },
+        "IHttpAccountObject": {
+            "properties": {
+                "pass": {
+                    "description": "密码，字符串类型。必填",
+                    "type": "string"
+                },
+                "user": {
+                    "description": "用户名，字符串类型。必填",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
         "IHttpInbound": {
             "properties": {
                 "allocate": {
@@ -359,17 +438,18 @@
                     "description": "端口分配设置"
                 },
                 "listen": {
-                    "description": "监听地址，只允许 IP 地址，默认值为\"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址",
+                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
                     "type": "string"
                 },
                 "port": {
-                    "description": "端口\n整型数值: 实际的端口号\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
+                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
                     "type": [
                         "string",
                         "number"
                     ]
                 },
                 "protocol": {
+                    "description": "连接协议名称，可选的值见协议列表。",
                     "enum": [
                         "http"
                     ],
@@ -399,17 +479,7 @@
                 "accounts": {
                     "description": "一个数组，数组中每个元素为一个用户帐号。默认值为空",
                     "items": {
-                        "properties": {
-                            "pass": {
-                                "description": "密码，字符串类型。必填",
-                                "type": "string"
-                            },
-                            "user": {
-                                "description": "用户名，字符串类型。必填",
-                                "type": "string"
-                            }
-                        },
-                        "type": "object"
+                        "$ref": "#/definitions/IHttpAccountObject"
                     },
                     "type": "array"
                 },
@@ -424,6 +494,91 @@
                 "userLevel": {
                     "description": "用户等级，所有连接使用这一等级",
                     "type": "number"
+                }
+            },
+            "type": "object"
+        },
+        "IHttpOutbound": {
+            "properties": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
+                    "enum": [
+                        "http"
+                    ],
+                    "type": "string"
+                },
+                "proxySettings": {
+                    "additionalProperties": {
+                    },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IHttpOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IHttpOutboundSettings": {
+            "properties": {
+                "servers": {
+                    "description": "HTTP 代理服务器配置，若配置多个，循环使用 (RoundRobin)。",
+                    "items": {
+                        "$ref": "#/definitions/IHttpServer"
+                    },
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "IHttpServer": {
+            "properties": {
+                "address": {
+                    "description": "HTTP 代理服务器地址，必填。",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "HTTP 代理服务器端口，必填。",
+                    "type": "number"
+                },
+                "users": {
+                    "description": "一个数组，数组中每个元素为一个用户帐号。默认值为空。",
+                    "items": {
+                        "$ref": "#/definitions/IHttpAccountObject"
+                    },
+                    "type": "array"
                 }
             },
             "type": "object"
@@ -487,6 +642,39 @@
             },
             "type": "object"
         },
+        "ILevelPolicyObject": {
+            "properties": {
+                "bufferSize": {
+                    "description": "每个连接的内部缓存大小。单位为 kB。当值为 0 时，内部缓存被禁用。\n\n默认值 (V2Ray 4.4+):\n\n在 ARM、MIPS、MIPSLE 平台上，默认值为 0。\n\n在 ARM64、MIPS64、MIPS64LE 平台上，默认值为 4。\n\n在其它平台上，默认值为 512。\n\n默认值 (V2Ray 4.3-):\n\n在 ARM、MIPS、MIPSLE、ARM64、MIPS64、MIPS64LE 平台上，默认值为 16。\n\n在其它平台上，默认值为 2048。",
+                    "type": "number"
+                },
+                "connIdle": {
+                    "description": "连接空闲的时间限制。单位为秒。默认值为 300。在入站出站代理处理一个连接时，如果在 connIdle 时间内，没有任何数据被传输（包括上行和下行数据），则中断该连接。",
+                    "type": "number"
+                },
+                "downlinkOnly": {
+                    "description": "当连接上行线路关闭后的时间限制。单位为秒。默认值为 5。当客户端（如浏览器）关闭上行连接时，入站代理会在等待 downlinkOnly 时间后中断连接。",
+                    "type": "number"
+                },
+                "handshake": {
+                    "description": "连接建立时的握手时间限制。单位为秒。默认值为 4。在入站代理处理一个新连接时，在握手阶段（比如 VMess 读取头部数据，判断目标服务器地址），如果使用的时间超过这个时间，则中断该连接。",
+                    "type": "number"
+                },
+                "statsUserDownlink": {
+                    "description": "当值为 true 时，开启当前等级的所有用户的下行流量统计。",
+                    "type": "boolean"
+                },
+                "statsUserUplink": {
+                    "description": "当值为 true 时，开启当前等级的所有用户的上行流量统计。",
+                    "type": "boolean"
+                },
+                "uplinkOnly": {
+                    "description": "当连接下行线路关闭后的时间限制。单位为秒。默认值为 2。当服务器（如远端网站）关闭下行连接时，出站代理会在等待 uplinkOnly 时间后中断连接。",
+                    "type": "number"
+                }
+            },
+            "type": "object"
+        },
         "IMTProtoAccount": {
             "properties": {
                 "email": {
@@ -511,17 +699,18 @@
                     "description": "端口分配设置"
                 },
                 "listen": {
-                    "description": "监听地址，只允许 IP 地址，默认值为\"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址",
+                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
                     "type": "string"
                 },
                 "port": {
-                    "description": "端口\n整型数值: 实际的端口号\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
+                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
                     "type": [
                         "string",
                         "number"
                     ]
                 },
                 "protocol": {
+                    "description": "连接协议名称，可选的值见协议列表。",
                     "enum": [
                         "mtproto"
                     ],
@@ -710,6 +899,13 @@
                     },
                     "type": "array"
                 },
+                "sourcePort": {
+                    "description": "`a-b`：a 和 b 均为正整数，且小于 65536。这个范围是一个前后闭合区间，当目标端口落在此范围内时，此规则生效。\n\n`a`：a 为正整数，且小于 65536。当目标端口为 a 时，此规则生效。\n\n（V2Ray 4.18+）以上两种形式的混合，以逗号 \",\" 分隔。形如：\"53,443,1000-2000\"。",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
                 "type": {
                     "description": "目前只支持\"field\"这一个选项",
                     "enum": [
@@ -727,6 +923,33 @@
             },
             "type": "object"
         },
+        "IServerObject": {
+            "properties": {
+                "address": {
+                    "description": "DNS 服务器地址，如\"8.8.8.8\"。目前只支持 UDP 协议的 DNS 服务器",
+                    "type": "string"
+                },
+                "domains": {
+                    "description": "一个域名列表，此列表包含的域名，将优先使用此服务器进行查询。域名格式和路由配置中相同",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "expectIps": {
+                    "description": "（V2Ray 4.22.0+）一个 IP 范围列表，格式和 路由配置 中相同。\n\n当配置此项时，V2Ray DNS 会对返回的 IP 的进行校验，只返回包含 expectIPs 列表中的地址。\n\n如果未配置此项，会原样返回 IP 地址。",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "port": {
+                    "description": "DNS 服务器端口，如53",
+                    "type": "number"
+                }
+            },
+            "type": "object"
+        },
         "IShadowSocksInbound": {
             "properties": {
                 "allocate": {
@@ -734,17 +957,18 @@
                     "description": "端口分配设置"
                 },
                 "listen": {
-                    "description": "监听地址，只允许 IP 地址，默认值为\"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址",
+                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
                     "type": "string"
                 },
                 "port": {
-                    "description": "端口\n整型数值: 实际的端口号\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
+                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
                     "type": [
                         "string",
                         "number"
                     ]
                 },
                 "protocol": {
+                    "description": "连接协议名称，可选的值见协议列表。",
                     "enum": [
                         "shadowsocks"
                     ],
@@ -791,10 +1015,6 @@
                         "udp"
                     ],
                     "type": "string"
-                },
-                "ota": {
-                    "description": "是否强制 OTA，如果不指定此项，则自动判断。强制开启 OTA 后，V2Ray 会拒绝未启用 OTA 的连接。反之亦然",
-                    "type": "boolean"
                 },
                 "password": {
                     "description": "必填，任意字符串。Shadowsocks 协议不限制密码长度，但短密码会更可能被破解，建议使用 16 字符或更长的密码",
@@ -904,6 +1124,45 @@
             },
             "type": "object"
         },
+        "ISockoptObject": {
+            "properties": {
+                "mark": {
+                    "description": "一个整数。当其值非零时，在出站连接上标记 SO_MARK。\n\n仅适用于 Linux 系统。\n\n需要 CAP_NET_ADMIN 权限。",
+                    "type": "number"
+                },
+                "tcpFastOpen": {
+                    "description": "是否启用 TCP Fast Open (opens new window)。当其值为 true 时，强制开启 TFO；当其值为 false 时，强制关闭 TFO；当此项不存在时，使用系统默认设置。可用于入站出站连接。\n\n仅在以下版本（或更新版本）的操作系统中可用:\n- Windows 10 (1604)\n- Mac OS 10.11 / iOS 9\n- Linux 3.16：系统已默认开启，无需配置。",
+                    "type": "boolean"
+                },
+                "tproxy": {
+                    "description": "是否开启透明代理（仅适用于 Linux）。\n\n- \"redirect\"：使用 Redirect 模式的透明代理。仅支持 TCP/IPv4 和 UDP 连接。\n- \"tproxy\"：使用 TProxy 模式的透明代理。支持 TCP 和 UDP 连接。\n- \"off\"：关闭透明代理。\n\n透明代理需要 Root 或 CAP_NET_ADMIN 权限。",
+                    "enum": [
+                        "off",
+                        "redirect",
+                        "tproxy"
+                    ],
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "ISocksAccountObject": {
+            "properties": {
+                "level": {
+                    "description": "用户等级",
+                    "type": "number"
+                },
+                "pass": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "user": {
+                    "description": "用户名",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
         "ISocksInbound": {
             "properties": {
                 "allocate": {
@@ -911,17 +1170,18 @@
                     "description": "端口分配设置"
                 },
                 "listen": {
-                    "description": "监听地址，只允许 IP 地址，默认值为\"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址",
+                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
                     "type": "string"
                 },
                 "port": {
-                    "description": "端口\n整型数值: 实际的端口号\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
+                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
                     "type": [
                         "string",
                         "number"
                     ]
                 },
                 "protocol": {
+                    "description": "连接协议名称，可选的值见协议列表。",
                     "enum": [
                         "socks"
                     ],
@@ -951,7 +1211,7 @@
                 "accounts": {
                     "description": "一个数组，数组中每个元素为一个用户帐号。默认值为空。此选项仅当 auth 为 password 时有效",
                     "items": {
-                        "$ref": "#/definitions/IAccount"
+                        "$ref": "#/definitions/IVLESSAccountObject"
                     },
                     "type": "array"
                 },
@@ -1058,22 +1318,38 @@
                 "users": {
                     "description": "用户列表，其中每一项一个用户配置。当列表不为空时，Socks 客户端会使用此用户信息进行认证；如未指定，则不进行认证",
                     "items": {
-                        "allOf": [
-                            {
-                                "$ref": "#/definitions/IAccount"
-                            },
-                            {
-                                "properties": {
-                                    "level": {
-                                        "description": "用户等级",
-                                        "type": "number"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        ]
+                        "$ref": "#/definitions/ISocksAccountObject"
                     },
                     "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "IStrategy": {
+            "enum": [
+                "AsIs",
+                "IPIfNonMatch",
+                "IPOnDemand"
+            ],
+            "type": "string"
+        },
+        "ISystemObject": {
+            "properties": {
+                "statsInboundDownlink": {
+                    "description": "当值为 true 时，开启所有入站代理的下行流量统计。",
+                    "type": "boolean"
+                },
+                "statsInboundUplink": {
+                    "description": "当值为 true 时，开启所有入站代理的上行流量统计。",
+                    "type": "boolean"
+                },
+                "statsOutboundDownlink": {
+                    "description": "（ V2Ray 4.26.0+ ） 当值为 true 时，开启所有出站代理的下行流量统计。",
+                    "type": "boolean"
+                },
+                "statsOutboundUplink": {
+                    "description": "（ V2Ray 4.26.0+ ）当值为 true 时，开启所有出站代理的上行流量统计。",
+                    "type": "boolean"
                 }
             },
             "type": "object"
@@ -1117,6 +1393,204 @@
                             "type": "object"
                         }
                     ]
+                }
+            },
+            "type": "object"
+        },
+        "ITlsSetting": {
+            "properties": {
+                "allowInsecure": {
+                    "description": "是否允许不安全连接（仅用于客户端）。默认值为 false。当值为 true 时，V2Ray 不会检查远端主机所提供的 TLS 证书的有效性。",
+                    "type": "boolean"
+                },
+                "alpn": {
+                    "description": "一个字符串数组，指定了 TLS 握手时指定的 ALPN 数值。默认值为 [\"h2\", \"http/1.1\"]。",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "certificates": {
+                    "description": "证书列表，其中每一项表示一个证书（建议 fullchain）。",
+                    "items": {
+                        "$ref": "#/definitions/ICertificateObject"
+                    },
+                    "type": "array"
+                },
+                "disableSystemRoot": {
+                    "description": "（V2Ray 4.18+）是否禁用操作系统自带的 CA 证书。默认值为 false。当值为 true 时，V2Ray 只会使用 certificates 中指定的证书进行 TLS 握手。当值为 false 时，V2Ray 只会使用操作系统自带的 CA 证书进行 TLS 握手。",
+                    "type": "boolean"
+                },
+                "serverName": {
+                    "description": "指定服务器端证书的域名，在连接由 IP 建立时有用。当目标连接由域名指定时，比如在 Socks 入站时接收到了域名，或者由 Sniffing 功能探测出了域名，这个域名会自动用于 serverName，无须手动配置。",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "ITrojanAccountObject": {
+            "properties": {
+                "email": {
+                    "description": "邮件地址，可选，用于标识用户",
+                    "type": "string"
+                },
+                "level": {
+                    "description": "用户等级，默认值为 0。详见 本地策略。",
+                    "type": "number"
+                },
+                "password": {
+                    "description": "必填，任意字符串。",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "ITrojanInbound": {
+            "properties": {
+                "allocate": {
+                    "$ref": "#/definitions/IV2rayAllocate",
+                    "description": "端口分配设置"
+                },
+                "listen": {
+                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "protocol": {
+                    "description": "连接协议名称，可选的值见协议列表。",
+                    "enum": [
+                        "trojan"
+                    ],
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/ITrojanInboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "sniffing": {
+                    "$ref": "#/definitions/IV2raySniffing",
+                    "description": "尝试探测流量的类型"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "ITrojanInboundSettings": {
+            "properties": {
+                "clients": {
+                    "items": {
+                        "$ref": "#/definitions/ITrojanAccountObject"
+                    },
+                    "type": "array"
+                },
+                "fallbacks": {
+                    "items": {
+                        "$ref": "#/definitions/IFallbacksObject"
+                    },
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "ITrojanOutbound": {
+            "properties": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
+                    "enum": [
+                        "trojan"
+                    ],
+                    "type": "string"
+                },
+                "proxySettings": {
+                    "additionalProperties": {
+                    },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/ITrojanOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "ITrojanOutboundSettings": {
+            "properties": {
+                "servers": {
+                    "description": "一个数组，其中每一项是一个 ServerObject。",
+                    "items": {
+                        "$ref": "#/definitions/ITrojanServer"
+                    },
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "ITrojanServer": {
+            "properties": {
+                "address": {
+                    "description": "服务器地址，支持 IPv4、IPv6 和域名。必填。",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "邮件地址，可选，用于标识用户",
+                    "type": "string"
+                },
+                "level": {
+                    "description": "用户等级",
+                    "type": "number"
+                },
+                "password": {
+                    "description": "必填，任意字符串。",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "服务器端口，必填。",
+                    "type": "number"
                 }
             },
             "type": "object"
@@ -1171,6 +1645,7 @@
                 },
                 "hosts": {
                     "additionalProperties": {
+                        "type": "string"
                     },
                     "description": "静态 IP 列表，其值为一系列的\"域名\":\"地址\"。其中地址可以是 IP 或者域名。在解析域名时，如果域名匹配这个列表中的某一项，当该项的地址为 IP 时，则解析结果为该项的 IP，而不会使用下述的 servers 进行解析；当该项的地址为域名时，会使用此域名进行 IP 解析，而不使用原始域名",
                     "type": "object"
@@ -1180,7 +1655,7 @@
                     "items": {
                         "anyOf": [
                             {
-                                "$ref": "#/definitions/IDNSServer"
+                                "$ref": "#/definitions/IServerObject"
                             },
                             {
                                 "type": "string"
@@ -1207,15 +1682,8 @@
                     "type": "string"
                 },
                 "loglevel": {
-                    "description": "错误日志的级别。默认值为\"warning\"",
-                    "enum": [
-                        "debug",
-                        "error",
-                        "info",
-                        "none",
-                        "warning"
-                    ],
-                    "type": "string"
+                    "$ref": "#/definitions/LogLevel",
+                    "description": "错误日志的级别。默认值为\"warning\""
                 }
             },
             "type": "object"
@@ -1224,12 +1692,14 @@
             "properties": {
                 "levels": {
                     "additionalProperties": {
+                        "$ref": "#/definitions/ILevelPolicyObject"
                     },
                     "description": "一组键值对，每个键是一个字符串形式的数字（JSON 的要求），比如 \"0\"、\"1\" 等，双引号不能省略，这个数字对应用户等级",
                     "type": "object"
                 },
                 "system": {
                     "additionalProperties": {
+                        "$ref": "#/definitions/ISystemObject"
                     },
                     "description": "V2Ray 系统的策略",
                     "type": "object"
@@ -1242,31 +1712,13 @@
                 "balancers": {
                     "description": "(V2Ray 4.4+)一个数组，数组中每个元素是一个负载均衡器的配置。当一个规则指向一个负载均衡器时，V2Ray 会通过此负载均衡器选出一个出站协议，然后由它转发流量",
                     "items": {
-                        "properties": {
-                            "selector": {
-                                "description": "一个字符串数组，其中每一个字符串将用于和出站协议标识的前缀匹配",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "type": "array"
-                            },
-                            "tag": {
-                                "description": "此负载均衡器的标识，用于匹配RuleObject中的balancerTag",
-                                "type": "string"
-                            }
-                        },
-                        "type": "object"
+                        "$ref": "#/definitions/IBalancerObject"
                     },
                     "type": "array"
                 },
                 "domainStrategy": {
-                    "description": "域名解析策略，根据不同的设置使用不同的策略",
-                    "enum": [
-                        "AsIs",
-                        "IPIfNonMatch",
-                        "IPOnDemand"
-                    ],
-                    "type": "string"
+                    "$ref": "#/definitions/IStrategy",
+                    "description": "域名解析策略，根据不同的设置使用不同的策略"
                 },
                 "rules": {
                     "description": "对应一个数组，数组中每个元素是一个规则。对于每一个连接，路由将根据这些规则依次进行判断，当一个规则生效时，即将这个连接转发至它所指定的outboundTag(或balancerTag，V2Ray 4.4+)。当没有匹配到任何规则时，流量默认由主出站协议发出",
@@ -1337,31 +1789,16 @@
                     "type": "string"
                 },
                 "sockopt": {
-                    "description": "连接选项",
-                    "properties": {
-                        "mark": {
-                            "description": "一个整数。当其值非零时，在出站连接上标记 SO_MARK (仅适用于 Linux 系统)",
-                            "type": "number"
-                        },
-                        "tcpFastOpen": {
-                            "description": "是否启用 TCP Fast Open。当其值为true时，强制开启TFO；当其它为false时，强制关闭TFO；当此项不存在时，使用系统默认设置。可用于入站出站连接",
-                            "type": "boolean"
-                        },
-                        "tproxy": {
-                            "description": "是否开启透明代理 (仅适用于 Linux)",
-                            "enum": [
-                                "off",
-                                "redirect",
-                                "tproxy"
-                            ],
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
+                    "$ref": "#/definitions/ISockoptObject",
+                    "description": "连接选项"
                 },
                 "tcpSettings": {
                     "$ref": "#/definitions/ITcpSettings",
                     "description": "针对 TCP 连接的配置"
+                },
+                "tlsSettings": {
+                    "$ref": "#/definitions/ITlsSetting",
+                    "description": "TLS 配置。TLS 由 Golang 提供，支持 TLS 1.3，不支持 DTLS。"
                 },
                 "wsSettings": {
                     "$ref": "#/definitions/IWsSettings",
@@ -1400,6 +1837,158 @@
             },
             "type": "object"
         },
+        "IVLESSAccountObject": {
+            "properties": {
+                "email": {
+                    "description": "用户邮箱，用于区分不同用户的流量（日志、统计）。",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "VLESS 的用户 ID，必须是一个合法的 UUID，你也可以用 V2Ctl 生成它。",
+                    "type": "string"
+                },
+                "level": {
+                    "description": "用户等级，详见 本地策略。",
+                    "type": "number"
+                }
+            },
+            "type": "object"
+        },
+        "IVLESSInbound": {
+            "properties": {
+                "allocate": {
+                    "$ref": "#/definitions/IV2rayAllocate",
+                    "description": "端口分配设置"
+                },
+                "listen": {
+                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "protocol": {
+                    "description": "连接协议名称，可选的值见协议列表。",
+                    "enum": [
+                        "vless"
+                    ],
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IVLESSInboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "sniffing": {
+                    "$ref": "#/definitions/IV2raySniffing",
+                    "description": "尝试探测流量的类型"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IVLESSInboundSettings": {
+            "properties": {
+                "clients": {
+                    "description": "一组服务端认可的用户。",
+                    "items": {
+                        "$ref": "#/definitions/IVLESSAccountObject"
+                    },
+                    "type": "array"
+                },
+                "decryption": {
+                    "description": "注意这里是 decryption，和 clients 同级。现阶段同样需要填 \"none\"，不能留空。decryption 和 encryption 的位置不同，是因为若套一层约定加密，服务端需要先解密才能知道是哪个用户。\n\n若未正确设置 decryption 的值，使用 v2ray 或 -test 时会收到错误信息。",
+                    "enum": [
+                        "none"
+                    ],
+                    "type": "string"
+                },
+                "fallbacks": {
+                    "description": "一个数组，包含一系列强大的回落分流配置（可选）。",
+                    "items": {
+                        "$ref": "#/definitions/IFallbacksObject"
+                    },
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "IVLESSOutbound": {
+            "properties": {
+                "protocol": {
+                    "enum": [
+                        "vless"
+                    ],
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IVLESSOutboundSettings"
+                }
+            },
+            "type": "object"
+        },
+        "IVLESSOutboundSettings": {
+            "properties": {
+                "vnext": {
+                    "description": "一个数组，包含一系列指向服务端的配置。\n\n#",
+                    "items": {
+                        "$ref": "#/definitions/IVLESSServerObject"
+                    },
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "IVLESSServerAccountObject": {
+            "properties": {
+                "encryption": {
+                    "description": "现阶段需要填 \"none\"，不能留空。该要求是为了提醒使用者没有加密，也为了以后出加密方式时，防止使用者填错属性名或填错位置导致裸奔。\n\n若未正确设置 encryption 的值，使用 v2ray 或 -test 时会收到错误信息。",
+                    "enum": [
+                        "none"
+                    ],
+                    "type": "string"
+                },
+                "id": {
+                    "description": "VLESS 的用户 ID，必须是一个合法的 UUID，你可以用 在线工具 生成它。",
+                    "type": "string"
+                },
+                "level": {
+                    "description": "用户等级，详见 本地策略。",
+                    "type": "number"
+                }
+            },
+            "type": "object"
+        },
+        "IVLESSServerObject": {
+            "properties": {
+                "address": {
+                    "description": "地址，指向服务端，支持域名、IPv4、IPv6。",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "端口，通常与服务端监听的端口相同。",
+                    "type": "number"
+                },
+                "users": {
+                    "description": "一组服务端认可的用户。",
+                    "items": {
+                        "$ref": "#/definitions/IVLESSServerAccountObject"
+                    },
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
         "IVmessAccount": {
             "properties": {
                 "alterId": {
@@ -1428,17 +2017,18 @@
                     "description": "端口分配设置"
                 },
                 "listen": {
-                    "description": "监听地址，只允许 IP 地址，默认值为\"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址",
+                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
                     "type": "string"
                 },
                 "port": {
-                    "description": "端口\n整型数值: 实际的端口号\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
+                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
                     "type": [
                         "string",
                         "number"
                     ]
                 },
                 "protocol": {
+                    "description": "连接协议名称，可选的值见协议列表。",
                     "enum": [
                         "vmess"
                     ],
@@ -1473,31 +2063,15 @@
                     "type": "array"
                 },
                 "default": {
-                    "description": "指示对应的出站协议使用另一个服务器",
-                    "properties": {
-                        "alterId": {
-                            "description": "为了进一步防止被探测，一个用户可以在主 ID 的基础上，再额外生成多个 ID。这里只需要指定额外的 ID 的数量，推荐值为 4。不指定的话，默认值是 0。最大值 65535。这个值不能超过服务器端所指定的值",
-                            "type": "number"
-                        },
-                        "level": {
-                            "description": "用户等级，默认值为0",
-                            "type": "number"
-                        }
-                    },
-                    "type": "object"
+                    "$ref": "#/definitions/IDefaultObject",
+                    "description": "可选，clients 的默认配置。仅在配合detour时有效。"
                 },
                 "detour": {
-                    "description": "可选，clients 的默认配置。仅在配合detour时有效",
-                    "properties": {
-                        "to": {
-                            "description": "一个入站协议的tag，详见配置文件。指定的入站协议必须是一个 VMess",
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
+                    "$ref": "#/definitions/IDetourObject",
+                    "description": "指示对应的出站协议使用另一个服务器。"
                 },
                 "disableInsecureEncryption": {
-                    "description": "是否禁止客户端使用不安全的加密方式，当客户端指定下列加密方式时，服务器会主动断开连接。默认值为false",
+                    "description": "是否禁止客户端使用不安全的加密方式，当客户端指定下列加密方式时，服务器会主动断开连接。默认值为false\n- \"none\"\n- \"aes-128-cfb\"",
                     "type": "boolean"
                 }
             },
@@ -1561,50 +2135,59 @@
                 "vnext": {
                     "description": "一个数组，包含一系列的服务器配置",
                     "items": {
-                        "properties": {
-                            "address": {
-                                "description": "服务器地址，支持 IP 地址或者域名",
-                                "type": "string"
-                            },
-                            "port": {
-                                "description": "服务器端口号",
-                                "type": "number"
-                            },
-                            "users": {
-                                "description": "一组服务器认可的用户",
-                                "items": {
-                                    "properties": {
-                                        "alterId": {
-                                            "description": "为了进一步防止被探测，一个用户可以在主 ID 的基础上，再额外生成多个 ID。这里只需要指定额外的 ID 的数量，推荐值为 4。不指定的话，默认值是 0。最大值 65535。这个值不能超过服务器端所指定的值",
-                                            "type": "number"
-                                        },
-                                        "id": {
-                                            "description": "VMess 用户的主 ID。必须是一个合法的 UUID",
-                                            "type": "string"
-                                        },
-                                        "level": {
-                                            "description": "用户等级",
-                                            "type": "number"
-                                        },
-                                        "security": {
-                                            "description": "加密方式，客户端将使用配置的加密方式发送数据，服务器端自动识别，无需配置",
-                                            "enum": [
-                                                "aes-128-gcm",
-                                                "auto",
-                                                "chacha20-poly1305",
-                                                "none"
-                                            ],
-                                            "type": "string"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "type": "array"
-                            }
-                        },
-                        "type": "object"
+                        "$ref": "#/definitions/IVmessServer"
                     },
                     "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "IVmessSecurity": {
+            "enum": [
+                "aes-128-gcm",
+                "auto",
+                "chacha20-poly1305",
+                "none"
+            ],
+            "type": "string"
+        },
+        "IVmessServer": {
+            "properties": {
+                "address": {
+                    "description": "服务器地址，支持 IP 地址或者域名",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "服务器端口号",
+                    "type": "number"
+                },
+                "users": {
+                    "description": "一组服务器认可的用户",
+                    "items": {
+                        "$ref": "#/definitions/IVmessServerAccountObject"
+                    },
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "IVmessServerAccountObject": {
+            "properties": {
+                "alterId": {
+                    "description": "为了进一步防止被探测，一个用户可以在主 ID 的基础上，再额外生成多个 ID。这里只需要指定额外的 ID 的数量，推荐值为 4。不指定的话，默认值是 0。最大值 65535。这个值不能超过服务器端所指定的值",
+                    "type": "number"
+                },
+                "id": {
+                    "description": "VMess 用户的主 ID。必须是一个合法的 UUID",
+                    "type": "string"
+                },
+                "level": {
+                    "description": "用户等级",
+                    "type": "number"
+                },
+                "security": {
+                    "$ref": "#/definitions/IVmessSecurity",
+                    "description": "加密方式，客户端将使用配置的加密方式发送数据，服务器端自动识别，无需配置"
                 }
             },
             "type": "object"
@@ -1624,16 +2207,24 @@
             },
             "type": "object"
         },
+        "LogLevel": {
+            "enum": [
+                "debug",
+                "error",
+                "info",
+                "none",
+                "warning"
+            ],
+            "type": "string"
+        },
         "ShadowSocksMethod": {
             "enum": [
-                "aes-128-cfb",
                 "aes-128-gcm",
-                "aes-256-cfb",
                 "aes-256-gcm",
-                "chacha20",
-                "chacha20-ietf",
                 "chacha20-ietf-poly1305",
-                "chacha20-poly1305"
+                "chacha20-poly1305",
+                "none",
+                "plain"
             ],
             "type": "string"
         }
@@ -1669,6 +2260,12 @@
                     },
                     {
                         "$ref": "#/definitions/IVmessInbound"
+                    },
+                    {
+                        "$ref": "#/definitions/IVLESSInbound"
+                    },
+                    {
+                        "$ref": "#/definitions/ITrojanInbound"
                     }
                 ]
             },
@@ -1702,6 +2299,15 @@
                     },
                     {
                         "$ref": "#/definitions/IVmessOutbound"
+                    },
+                    {
+                        "$ref": "#/definitions/IHttpOutbound"
+                    },
+                    {
+                        "$ref": "#/definitions/IVLESSOutbound"
+                    },
+                    {
+                        "$ref": "#/definitions/ITrojanOutbound"
                     }
                 ]
             },
