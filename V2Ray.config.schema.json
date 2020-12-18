@@ -100,6 +100,19 @@
             },
             "type": "object"
         },
+        "IBridgeObject": {
+            "properties": {
+                "domain": {
+                    "description": "一个域名。bridge 向 portal 建立的连接，都会使用这个域名进行发送。这个域名只作为 bridge 和 portal 的通信用途，不必真实存在。",
+                    "type": "string"
+                },
+                "tag": {
+                    "description": "一个标识，所有由 bridge 发出的连接，都会带有这个标识。可以在 路由 中使用 inboundTag 进行识别。",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
         "ICertificateObject": {
             "properties": {
                 "certificate": {
@@ -311,6 +324,14 @@
         },
         "IDsSettings": {
             "properties": {
+                "abstract": {
+                    "description": "是否为 abstract domain socket，默认 false。",
+                    "type": "boolean"
+                },
+                "padding": {
+                    "description": "v4.28.1+，abstract domain socket 是否带 padding，默认 false。",
+                    "type": "boolean"
+                },
                 "path": {
                     "description": "一个合法的文件路径。在运行 V2Ray 之前，这个文件必须不存在",
                     "type": "string"
@@ -413,6 +434,22 @@
                 },
                 "userLevel": {
                     "description": "用户等级，所有连接都使用这一等级",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IHttp2Settings": {
+            "properties": {
+                "host": {
+                    "description": "一个字符串数组，每一个元素是一个域名。客户端会随机从列表中选出一个域名进行通信，服务器会验证域名是否在列表中",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "path": {
+                    "description": "HTTP 路径，由/开头。客户端和服务器必须一致。可选参数，默认值为\"/\"",
                     "type": "string"
                 }
             },
@@ -583,22 +620,6 @@
             },
             "type": "object"
         },
-        "IHttpSettings": {
-            "properties": {
-                "host": {
-                    "description": "一个字符串数组，每一个元素是一个域名。客户端会随机从列表中选出一个域名进行通信，服务器会验证域名是否在列表中",
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                },
-                "path": {
-                    "description": "HTTP 路径，由/开头。客户端和服务器必须一致。可选参数，默认值为\"/\"",
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
         "IKcpSettings": {
             "properties": {
                 "congestion": {
@@ -626,6 +647,10 @@
                 "readBufferSize": {
                     "description": "单个连接的读取缓冲区大小，单位是 MB。默认值为 2",
                     "type": "number"
+                },
+                "seed": {
+                    "description": "v4.24.2+，可选的混淆密码，使用 AES-128-GCM 算法混淆流量数据，客户端和服务端需要保持一致，启用后会输出\"NewAEADAESGCMBasedOnSeed Used\"到命令行。本混淆机制不能用于保证通信内容的安全，但可能可以对抗部分封锁，在开发者测试环境下开启此设置后没有出现原版未混淆版本的封端口现象。",
+                    "type": "string"
                 },
                 "tti": {
                     "description": "传输时间间隔（transmission time interval），单位毫秒（ms），mKCP 将以这个时间频率发送数据。请选译一个介于 10 - 100 之间的值。默认值为 50",
@@ -803,9 +828,23 @@
         "IMTProtoOutboundSettings": {
             "type": "object"
         },
+        "IPortalObject": {
+            "properties": {
+                "domain": {
+                    "description": "一个域名。当 portal 接收到流量时，如果流量的目标域名是此域名，则 portal 认为当前连接上 bridge 发来的通信连接。而其它流量则会被当成需要转发的流量。portal 所做的工作就是把这两类连接进行识别并拼接。",
+                    "type": "string"
+                },
+                "tag": {
+                    "description": "portal 的标识。在 路由 中使用 outboundTag 将流量转发到这个 portal。",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
         "IQuicSettings": {
             "properties": {
                 "header": {
+                    "description": "数据包头部伪装设置",
                     "properties": {
                         "type": {
                             "$ref": "#/definitions/HeaderObjectType"
@@ -825,6 +864,25 @@
                         "none"
                     ],
                     "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IReverseObject": {
+            "properties": {
+                "bridges": {
+                    "description": "一个数组，每一项表示一个 bridge。每个 bridge 的配置是一个 BridgeObject。",
+                    "items": {
+                        "$ref": "#/definitions/IBridgeObject"
+                    },
+                    "type": "array"
+                },
+                "portals": {
+                    "description": "一个数组，每一项表示一个 portal。每个 portal 的配置是一个 PortalObject。",
+                    "items": {
+                        "$ref": "#/definitions/IPortalObject"
+                    },
+                    "type": "array"
                 }
             },
             "type": "object"
@@ -1354,31 +1412,64 @@
             },
             "type": "object"
         },
+        "ITcpHttpRequestObject": {
+            "properties": {
+                "headers": {
+                    "$ref": "#/definitions/Record<string,string[]>",
+                    "description": "HTTP 头，一个键值对，每个键表示一个 HTTP 头的名称，对应的值是一个数组。每次请求会附上所有的键，并随机选择一个对应的值。默认值见上方示例。"
+                },
+                "method": {
+                    "description": "HTTP 方法，默认值为 \"GET\"。",
+                    "type": "string"
+                },
+                "path": {
+                    "description": "路径，一个字符串数组。默认值为 [\"/\"]。当有多个值时，每次请求随机选择一个值。",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "version": {
+                    "description": "HTTP 版本，默认值为 \"1.1\"。",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "ITcpHttpResponseObject": {
+            "properties": {
+                "headers": {
+                    "$ref": "#/definitions/Record<string,string[]>",
+                    "description": "HTTP 头，一个键值对，每个键表示一个 HTTP 头的名称，对应的值是一个数组。每次请求会附上所有的键，并随机选择一个对应的值。默认值见上方示例。"
+                },
+                "reason": {
+                    "description": "HTTP 状态说明，默认值为 \"OK\"。",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "HTTP 状态，默认值为 \"200\"。",
+                    "type": "string"
+                },
+                "version": {
+                    "description": "HTTP 版本，默认值为 \"1.1\"。",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
         "ITcpSettings": {
             "properties": {
+                "acceptProxyProtocol": {
+                    "description": "v4.27.1+，仅用于 inbound，是否接收 PROXY protocol，默认值为 false。填写 true 时，最底层 TCP 连接建立后，请求方必须先发送 PROXY protocol v1 或 v2，否则连接会被关闭。\n\nPROXY protocol (opens new window)专用于传递请求的真实来源 IP 和端口，若你不了解它，请先忽略该项。常见的反代软件（如 HAProxy、Nginx）都可以配置发送它，VLESS fallbacks xver 也可以发送它。",
+                    "type": "boolean"
+                },
                 "header": {
                     "anyOf": [
                         {
-                            "properties": {
-                                "request": {
-                                    "additionalProperties": {
-                                    },
-                                    "type": "object"
-                                },
-                                "response": {
-                                    "additionalProperties": {
-                                    },
-                                    "type": "object"
-                                },
-                                "type": {
-                                    "description": "指定进行 HTTP 伪装",
-                                    "enum": [
-                                        "http"
-                                    ],
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
+                            "$ref": "#/definitions/ITcpHttpRequestObject"
+                        },
+                        {
+                            "$ref": "#/definitions/ITcpHttpResponseObject"
                         },
                         {
                             "properties": {
@@ -1392,7 +1483,8 @@
                             },
                             "type": "object"
                         }
-                    ]
+                    ],
+                    "description": "数据包头部伪装设置，默认值为 NoneHeaderObject。HTTP 伪装无法被其它 HTTP 服务器（如 Nginx）分流，但可以被 VLESS fallbacks path 分流。"
                 }
             },
             "type": "object"
@@ -1757,7 +1849,7 @@
                     "description": "针于Domain Socket 连接的配置"
                 },
                 "httpSettings": {
-                    "$ref": "#/definitions/IHttpSettings",
+                    "$ref": "#/definitions/IHttp2Settings",
                     "description": "针对 HTTP/2 连接的配置"
                 },
                 "kcpSettings": {
@@ -1815,7 +1907,7 @@
                     "description": "针于Domain Socket 连接的配置"
                 },
                 "httpSettings": {
-                    "$ref": "#/definitions/IHttpSettings",
+                    "$ref": "#/definitions/IHttp2Settings",
                     "description": "针对 HTTP/2 连接的配置"
                 },
                 "kcpSettings": {
@@ -2194,11 +2286,13 @@
         },
         "IWsSettings": {
             "properties": {
+                "acceptProxyProtocol": {
+                    "description": "v4.27.1+，仅用于 inbound，是否接收 PROXY protocol，默认值为 false。填写 true 时，最底层 TCP 连接建立后，请求方必须先发送 PROXY protocol v1 或 v2，否则连接会被关闭。\n\nPROXY protocol (opens new window)专用于传递请求的真实来源 IP 和端口，若你不了解它，请先忽略该项。常见的反代软件（如 HAProxy、Nginx）都可以配置发送它，VLESS fallbacks xver 也可以发送它。",
+                    "type": "boolean"
+                },
                 "headers": {
-                    "additionalProperties": {
-                    },
-                    "description": "自定义 HTTP 头，一个键值对，每个键表示一个 HTTP 头的名称，对应的值是字符串。默认值为空",
-                    "type": "object"
+                    "$ref": "#/definitions/Record<string,string>",
+                    "description": "自定义 HTTP 头，一个键值对，每个键表示一个 HTTP 头的名称，对应的值是字符串。默认值为空"
                 },
                 "path": {
                     "description": "WebSocket 所使用的 HTTP 协议路径，默认值为 \"/\"",
@@ -2216,6 +2310,14 @@
                 "warning"
             ],
             "type": "string"
+        },
+        "Record<string,string>": {
+            "description": "Construct a type with a set of properties K of type T",
+            "type": "object"
+        },
+        "Record<string,string[]>": {
+            "description": "Construct a type with a set of properties K of type T",
+            "type": "object"
         },
         "ShadowSocksMethod": {
             "enum": [
@@ -2318,10 +2420,8 @@
             "description": "本地策略可进行一些权限相关的配置"
         },
         "reverse": {
-            "additionalProperties": {
-            },
-            "description": "反向代理配置",
-            "type": "object"
+            "$ref": "#/definitions/IReverseObject",
+            "description": "反向代理配置"
         },
         "routing": {
             "$ref": "#/definitions/IV2rayRouting",

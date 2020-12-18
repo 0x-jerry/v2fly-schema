@@ -1061,7 +1061,7 @@ export interface ITrojanServer {
   /**
    * 服务器地址，支持 IPv4、IPv6 和域名。必填。
    */
-  address: string;
+  address: string
   /**
    * 服务器端口，必填。
    */
@@ -1231,26 +1231,62 @@ export enum HeaderObjectType {
   WIREGUARD = 'wireguard',
 }
 
+export interface ITcpHttpRequestObject {
+  /**
+   * HTTP 版本，默认值为 "1.1"。
+   */
+  version?: string
+  /**
+   * HTTP 方法，默认值为 "GET"。
+   */
+  method?: string
+  /**
+   * 路径，一个字符串数组。默认值为 ["/"]。当有多个值时，每次请求随机选择一个值。
+   */
+  path?: string[]
+  /**
+   * HTTP 头，一个键值对，每个键表示一个 HTTP 头的名称，对应的值是一个数组。每次请求会附上所有的键，并随机选择一个对应的值。默认值见上方示例。
+   */
+  headers?: Record<string, string[]>
+}
+export interface ITcpHttpResponseObject {
+  /**
+   * HTTP 版本，默认值为 "1.1"。
+   */
+  version?: string
+  /**
+   * HTTP 状态，默认值为 "200"。
+   */
+  status?: string
+  /**
+   * HTTP 状态说明，默认值为 "OK"。
+   */
+  reason?: string
+  /**
+   * HTTP 头，一个键值对，每个键表示一个 HTTP 头的名称，对应的值是一个数组。每次请求会附上所有的键，并随机选择一个对应的值。默认值见上方示例。
+   */
+  headers?: Record<string, string[]>
+}
+
 export interface ITcpSettings {
+  /**
+   * v4.27.1+，仅用于 inbound，是否接收 PROXY protocol，默认值为 false。填写 true 时，最底层 TCP 连接建立后，请求方必须先发送 PROXY protocol v1 或 v2，否则连接会被关闭。
+   *
+   * PROXY protocol (opens new window)专用于传递请求的真实来源 IP 和端口，若你不了解它，请先忽略该项。常见的反代软件（如 HAProxy、Nginx）都可以配置发送它，VLESS fallbacks xver 也可以发送它。
+   */
+  acceptProxyProtocol: boolean
+  /**
+   * 数据包头部伪装设置，默认值为 NoneHeaderObject。HTTP 伪装无法被其它 HTTP 服务器（如 Nginx）分流，但可以被 VLESS fallbacks path 分流。
+   */
   header:
-    | {
-        /**
-         * 指定进行 HTTP 伪装
-         */
-        type: 'http'
-        request: {
-          [key: string]: any
-        }
-        response: {
-          [key: string]: any
-        }
-      }
     | {
         /**
          * 指定不进行伪装
          */
         type: 'none'
       }
+    | ITcpHttpRequestObject
+    | ITcpHttpResponseObject
 }
 
 export interface IKcpSettings {
@@ -1291,9 +1327,19 @@ export interface IKcpSettings {
      */
     type: HeaderObjectType
   }
+  /**
+   * v4.24.2+，可选的混淆密码，使用 AES-128-GCM 算法混淆流量数据，客户端和服务端需要保持一致，启用后会输出"NewAEADAESGCMBasedOnSeed Used"到命令行。本混淆机制不能用于保证通信内容的安全，但可能可以对抗部分封锁，在开发者测试环境下开启此设置后没有出现原版未混淆版本的封端口现象。
+   */
+  seed: string
 }
 
 export interface IWsSettings {
+  /**
+   * v4.27.1+，仅用于 inbound，是否接收 PROXY protocol，默认值为 false。填写 true 时，最底层 TCP 连接建立后，请求方必须先发送 PROXY protocol v1 或 v2，否则连接会被关闭。
+   *
+   * PROXY protocol (opens new window)专用于传递请求的真实来源 IP 和端口，若你不了解它，请先忽略该项。常见的反代软件（如 HAProxy、Nginx）都可以配置发送它，VLESS fallbacks xver 也可以发送它。
+   */
+  acceptProxyProtocol: boolean
   /**
    * WebSocket 所使用的 HTTP 协议路径，默认值为 "/"
    */
@@ -1301,12 +1347,10 @@ export interface IWsSettings {
   /**
    * 自定义 HTTP 头，一个键值对，每个键表示一个 HTTP 头的名称，对应的值是字符串。默认值为空
    */
-  headers: {
-    [k: string]: any
-  }
+  headers: Record<string, string>
 }
 
-export interface IHttpSettings {
+export interface IHttp2Settings {
   /**
    * 一个字符串数组，每一个元素是一个域名。客户端会随机从列表中选出一个域名进行通信，服务器会验证域名是否在列表中
    */
@@ -1322,6 +1366,14 @@ export interface IDsSettings {
    * 一个合法的文件路径。在运行 V2Ray 之前，这个文件必须不存在
    */
   path: string
+  /**
+   * 是否为 abstract domain socket，默认 false。
+   */
+  abstract: boolean
+  /**
+   * v4.28.1+，abstract domain socket 是否带 padding，默认 false。
+   */
+  padding: boolean
 }
 
 export interface IQuicSettings {
@@ -1333,6 +1385,9 @@ export interface IQuicSettings {
    * 加密时所用的密钥。可以是任意字符串。当security不为"none"时有效
    */
   key: string
+  /**
+   * 数据包头部伪装设置
+   */
   header: {
     type: HeaderObjectType
   }
@@ -1357,7 +1412,7 @@ export interface IV2rayTransport {
   /**
    * 针对 HTTP/2 连接的配置
    */
-  httpSettings?: IHttpSettings
+  httpSettings?: IHttp2Settings
   /**
    * (V2Ray 4.7+) 针于QUIC 连接的配置
    * QUIC 的配置对应传输配置中的 quicSettings 项。对接的两端的配置必须完全一致，否则连接失败。QUIC 强制要求开启 TLS，在传输配置中没有开启 TLS 时，V2Ray 会自行签发一个证书进行 TLS 通讯。在使用 QUIC 传输时，可以关闭 VMess 的加密
@@ -1367,6 +1422,39 @@ export interface IV2rayTransport {
    * 针于Domain Socket 连接的配置
    */
   dsSettings?: IDsSettings
+}
+
+export interface IBridgeObject {
+  /**
+   * 一个标识，所有由 bridge 发出的连接，都会带有这个标识。可以在 路由 中使用 inboundTag 进行识别。
+   */
+  tag: string
+  /**
+   * 一个域名。bridge 向 portal 建立的连接，都会使用这个域名进行发送。这个域名只作为 bridge 和 portal 的通信用途，不必真实存在。
+   */
+  domain: string
+}
+
+export interface IPortalObject {
+  /**
+   * portal 的标识。在 路由 中使用 outboundTag 将流量转发到这个 portal。
+   */
+  tag: string
+  /**
+   * 一个域名。当 portal 接收到流量时，如果流量的目标域名是此域名，则 portal 认为当前连接上 bridge 发来的通信连接。而其它流量则会被当成需要转发的流量。portal 所做的工作就是把这两类连接进行识别并拼接。
+   */
+  domain: string
+}
+
+export interface IReverseObject {
+  /**
+   * 一个数组，每一项表示一个 bridge。每个 bridge 的配置是一个 BridgeObject。
+   */
+  bridges: IBridgeObject[]
+  /**
+   * 一个数组，每一项表示一个 portal。每个 portal 的配置是一个 PortalObject。
+   */
+  portals: IPortalObject[]
 }
 
 /**
@@ -1401,7 +1489,6 @@ export interface IV2Ray {
    * 一个数组，每个元素是一个出站连接配置。列表中的第一个元素作为主出站协议。当路由匹配不存在或没有匹配成功时，流量由主出站协议发出
    */
   outbounds?: IV2RayOutbound[]
-  // todo, 以下 schema 待检测 https://www.v2fly.org/config/transport/tcp.html#tcpobject
   /**
    * 用于配置 V2Ray 如何与其它服务器建立和使用网络连接
    */
@@ -1413,7 +1500,5 @@ export interface IV2Ray {
   /**
    * 反向代理配置
    */
-  reverse?: {
-    [k: string]: any
-  }
+  reverse?: IReverseObject
 }
