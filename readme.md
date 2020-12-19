@@ -22,3 +22,17 @@ raw schema content: https://raw.githubusercontent.com/cwxyz007/v2ray-config-json
   ]
 }
 ```
+
+### Nodejs
+
+安装：`yarn add @exyz/v2ray-schema`
+
+`typescript`:
+
+```ts
+import { IV2Ray } from '@exyz/v2ray-schems`
+
+const v2raySchema: IV2Ray = {
+  ...
+}
+```
