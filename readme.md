@@ -12,6 +12,8 @@ raw schema content: https://raw.githubusercontent.com/cwxyz007/v2ray-config-json
 
 示例：
 
+在项目中添加 `.vscode/settings.json` 配置文件，并设置 `json.schemas` 字段如下：
+
 ```json
 {
   "json.schemas": [
