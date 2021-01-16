@@ -32,7 +32,7 @@ raw schema content: https://raw.githubusercontent.com/cwxyz007/v2ray-config-json
 `typescript`:
 
 ```ts
-import { IV2Ray } from '@exyz/v2ray-schems`
+import { IV2Ray } from '@exyz/v2ray-schems'
 
 const v2raySchema: IV2Ray = {
   ...
