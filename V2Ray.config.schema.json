@@ -1,6 +1,33 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "definitions": {
+        "DNSServerObject": {
+            "properties": {
+                "address": {
+                    "description": "DNS 服务器地址，如\"8.8.8.8\"。目前只支持 UDP 协议的 DNS 服务器",
+                    "type": "string"
+                },
+                "domains": {
+                    "description": "一个域名列表，此列表包含的域名，将优先使用此服务器进行查询。域名格式和路由配置中相同",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "expectIps": {
+                    "description": "（V2Ray 4.22.0+）一个 IP 范围列表，格式和 路由配置 中相同。\n\n当配置此项时，V2Ray DNS 会对返回的 IP 的进行校验，只返回包含 expectIPs 列表中的地址。\n\n如果未配置此项，会原样返回 IP 地址。",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "port": {
+                    "description": "DNS 服务器端口，如53",
+                    "type": "number"
+                }
+            },
+            "type": "object"
+        },
         "HeaderObjectType": {
             "enum": [
                 "dtls",
@@ -23,59 +50,6 @@
                 },
                 "tag": {
                     "description": "此负载均衡器的标识，用于匹配RuleObject中的balancerTag",
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
-        "IBlackholeOutbound": {
-            "properties": {
-                "mux": {
-                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
-                    "properties": {
-                        "concurrency": {
-                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
-                            "type": "number"
-                        },
-                        "enabled": {
-                            "description": "是否启用 Mux",
-                            "type": "boolean"
-                        }
-                    },
-                    "type": "object"
-                },
-                "protocol": {
-                    "enum": [
-                        "blackhole"
-                    ],
-                    "type": "string"
-                },
-                "proxySettings": {
-                    "additionalProperties": {
-                    },
-                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
-                    "properties": {
-                        "tag": {
-                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                },
-                "sendThrough": {
-                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
-                    "type": "string"
-                },
-                "settings": {
-                    "$ref": "#/definitions/IBlackholeOutboundSettings",
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "streamSettings": {
-                    "$ref": "#/definitions/IV2rayStreamSetting",
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
                     "type": "string"
                 }
             },
@@ -149,59 +123,6 @@
             },
             "type": "object"
         },
-        "IDNSOutbound": {
-            "properties": {
-                "mux": {
-                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
-                    "properties": {
-                        "concurrency": {
-                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
-                            "type": "number"
-                        },
-                        "enabled": {
-                            "description": "是否启用 Mux",
-                            "type": "boolean"
-                        }
-                    },
-                    "type": "object"
-                },
-                "protocol": {
-                    "enum": [
-                        "dns"
-                    ],
-                    "type": "string"
-                },
-                "proxySettings": {
-                    "additionalProperties": {
-                    },
-                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
-                    "properties": {
-                        "tag": {
-                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                },
-                "sendThrough": {
-                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
-                    "type": "string"
-                },
-                "settings": {
-                    "$ref": "#/definitions/IDNSOutboundSettings",
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "streamSettings": {
-                    "$ref": "#/definitions/IV2rayStreamSetting",
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
         "IDNSOutboundSettings": {
             "properties": {
                 "address": {
@@ -240,49 +161,6 @@
             "properties": {
                 "to": {
                     "description": "一个入站协议的tag，详见配置文件。指定的入站协议必须是一个 VMess",
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
-        "IDokodemoInbound": {
-            "properties": {
-                "allocate": {
-                    "$ref": "#/definitions/IV2rayAllocate",
-                    "description": "端口分配设置"
-                },
-                "listen": {
-                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
-                    "type": "string"
-                },
-                "port": {
-                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
-                },
-                "protocol": {
-                    "description": "连接协议名称，可选的值见协议列表。",
-                    "enum": [
-                        "dokodemo-door"
-                    ],
-                    "type": "string"
-                },
-                "settings": {
-                    "$ref": "#/definitions/IDokodemoInboundSettings",
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "sniffing": {
-                    "$ref": "#/definitions/IV2raySniffing",
-                    "description": "尝试探测流量的类型"
-                },
-                "streamSettings": {
-                    "$ref": "#/definitions/IV2rayStreamSetting",
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
                     "type": "string"
                 }
             },
@@ -363,59 +241,6 @@
             },
             "type": "object"
         },
-        "IFreedomOutbound": {
-            "properties": {
-                "mux": {
-                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
-                    "properties": {
-                        "concurrency": {
-                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
-                            "type": "number"
-                        },
-                        "enabled": {
-                            "description": "是否启用 Mux",
-                            "type": "boolean"
-                        }
-                    },
-                    "type": "object"
-                },
-                "protocol": {
-                    "enum": [
-                        "freedom"
-                    ],
-                    "type": "string"
-                },
-                "proxySettings": {
-                    "additionalProperties": {
-                    },
-                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
-                    "properties": {
-                        "tag": {
-                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                },
-                "sendThrough": {
-                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
-                    "type": "string"
-                },
-                "settings": {
-                    "$ref": "#/definitions/IFreedomOutboundSettings",
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "streamSettings": {
-                    "$ref": "#/definitions/IV2rayStreamSetting",
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
         "IFreedomOutboundSettings": {
             "properties": {
                 "domainStrategy": {
@@ -468,49 +293,6 @@
             },
             "type": "object"
         },
-        "IHttpInbound": {
-            "properties": {
-                "allocate": {
-                    "$ref": "#/definitions/IV2rayAllocate",
-                    "description": "端口分配设置"
-                },
-                "listen": {
-                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
-                    "type": "string"
-                },
-                "port": {
-                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
-                },
-                "protocol": {
-                    "description": "连接协议名称，可选的值见协议列表。",
-                    "enum": [
-                        "http"
-                    ],
-                    "type": "string"
-                },
-                "settings": {
-                    "$ref": "#/definitions/IHttpInboundSettings",
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "sniffing": {
-                    "$ref": "#/definitions/IV2raySniffing",
-                    "description": "尝试探测流量的类型"
-                },
-                "streamSettings": {
-                    "$ref": "#/definitions/IV2rayStreamSetting",
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
         "IHttpInboundSettings": {
             "properties": {
                 "accounts": {
@@ -531,59 +313,6 @@
                 "userLevel": {
                     "description": "用户等级，所有连接使用这一等级",
                     "type": "number"
-                }
-            },
-            "type": "object"
-        },
-        "IHttpOutbound": {
-            "properties": {
-                "mux": {
-                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
-                    "properties": {
-                        "concurrency": {
-                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
-                            "type": "number"
-                        },
-                        "enabled": {
-                            "description": "是否启用 Mux",
-                            "type": "boolean"
-                        }
-                    },
-                    "type": "object"
-                },
-                "protocol": {
-                    "enum": [
-                        "http"
-                    ],
-                    "type": "string"
-                },
-                "proxySettings": {
-                    "additionalProperties": {
-                    },
-                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
-                    "properties": {
-                        "tag": {
-                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                },
-                "sendThrough": {
-                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
-                    "type": "string"
-                },
-                "settings": {
-                    "$ref": "#/definitions/IHttpOutboundSettings",
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "streamSettings": {
-                    "$ref": "#/definitions/IV2rayStreamSetting",
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
-                    "type": "string"
                 }
             },
             "type": "object"
@@ -717,49 +446,6 @@
             },
             "type": "object"
         },
-        "IMTProtoInbound": {
-            "properties": {
-                "allocate": {
-                    "$ref": "#/definitions/IV2rayAllocate",
-                    "description": "端口分配设置"
-                },
-                "listen": {
-                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
-                    "type": "string"
-                },
-                "port": {
-                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
-                },
-                "protocol": {
-                    "description": "连接协议名称，可选的值见协议列表。",
-                    "enum": [
-                        "mtproto"
-                    ],
-                    "type": "string"
-                },
-                "settings": {
-                    "$ref": "#/definitions/IMTProtoInboundSettings",
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "sniffing": {
-                    "$ref": "#/definitions/IV2raySniffing",
-                    "description": "尝试探测流量的类型"
-                },
-                "streamSettings": {
-                    "$ref": "#/definitions/IV2rayStreamSetting",
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
         "IMTProtoInboundSettings": {
             "properties": {
                 "users": {
@@ -768,59 +454,6 @@
                         "$ref": "#/definitions/IMTProtoAccount"
                     },
                     "type": "array"
-                }
-            },
-            "type": "object"
-        },
-        "IMTProtoOutbound": {
-            "properties": {
-                "mux": {
-                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
-                    "properties": {
-                        "concurrency": {
-                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
-                            "type": "number"
-                        },
-                        "enabled": {
-                            "description": "是否启用 Mux",
-                            "type": "boolean"
-                        }
-                    },
-                    "type": "object"
-                },
-                "protocol": {
-                    "enum": [
-                        "mtproto"
-                    ],
-                    "type": "string"
-                },
-                "proxySettings": {
-                    "additionalProperties": {
-                    },
-                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
-                    "properties": {
-                        "tag": {
-                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                },
-                "sendThrough": {
-                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
-                    "type": "string"
-                },
-                "settings": {
-                    "$ref": "#/definitions/IMTProtoOutboundSettings",
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "streamSettings": {
-                    "$ref": "#/definitions/IV2rayStreamSetting",
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
-                    "type": "string"
                 }
             },
             "type": "object"
@@ -981,76 +614,6 @@
             },
             "type": "object"
         },
-        "IServerObject": {
-            "properties": {
-                "address": {
-                    "description": "DNS 服务器地址，如\"8.8.8.8\"。目前只支持 UDP 协议的 DNS 服务器",
-                    "type": "string"
-                },
-                "domains": {
-                    "description": "一个域名列表，此列表包含的域名，将优先使用此服务器进行查询。域名格式和路由配置中相同",
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                },
-                "expectIps": {
-                    "description": "（V2Ray 4.22.0+）一个 IP 范围列表，格式和 路由配置 中相同。\n\n当配置此项时，V2Ray DNS 会对返回的 IP 的进行校验，只返回包含 expectIPs 列表中的地址。\n\n如果未配置此项，会原样返回 IP 地址。",
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                },
-                "port": {
-                    "description": "DNS 服务器端口，如53",
-                    "type": "number"
-                }
-            },
-            "type": "object"
-        },
-        "IShadowSocksInbound": {
-            "properties": {
-                "allocate": {
-                    "$ref": "#/definitions/IV2rayAllocate",
-                    "description": "端口分配设置"
-                },
-                "listen": {
-                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
-                    "type": "string"
-                },
-                "port": {
-                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
-                },
-                "protocol": {
-                    "description": "连接协议名称，可选的值见协议列表。",
-                    "enum": [
-                        "shadowsocks"
-                    ],
-                    "type": "string"
-                },
-                "settings": {
-                    "$ref": "#/definitions/IShadowSocksInboundSettings",
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "sniffing": {
-                    "$ref": "#/definitions/IV2raySniffing",
-                    "description": "尝试探测流量的类型"
-                },
-                "streamSettings": {
-                    "$ref": "#/definitions/IV2rayStreamSetting",
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
         "IShadowSocksInboundSettings": {
             "properties": {
                 "email": {
@@ -1117,59 +680,6 @@
             },
             "type": "object"
         },
-        "IShadowsocksOutbound": {
-            "properties": {
-                "mux": {
-                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
-                    "properties": {
-                        "concurrency": {
-                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
-                            "type": "number"
-                        },
-                        "enabled": {
-                            "description": "是否启用 Mux",
-                            "type": "boolean"
-                        }
-                    },
-                    "type": "object"
-                },
-                "protocol": {
-                    "enum": [
-                        "shadowsocks"
-                    ],
-                    "type": "string"
-                },
-                "proxySettings": {
-                    "additionalProperties": {
-                    },
-                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
-                    "properties": {
-                        "tag": {
-                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                },
-                "sendThrough": {
-                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
-                    "type": "string"
-                },
-                "settings": {
-                    "$ref": "#/definitions/IShadowsocksOutboundSettings",
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "streamSettings": {
-                    "$ref": "#/definitions/IV2rayStreamSetting",
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
         "IShadowsocksOutboundSettings": {
             "properties": {
                 "servers": {
@@ -1221,49 +731,6 @@
             },
             "type": "object"
         },
-        "ISocksInbound": {
-            "properties": {
-                "allocate": {
-                    "$ref": "#/definitions/IV2rayAllocate",
-                    "description": "端口分配设置"
-                },
-                "listen": {
-                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
-                    "type": "string"
-                },
-                "port": {
-                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
-                },
-                "protocol": {
-                    "description": "连接协议名称，可选的值见协议列表。",
-                    "enum": [
-                        "socks"
-                    ],
-                    "type": "string"
-                },
-                "settings": {
-                    "$ref": "#/definitions/ISocksInboundSettings",
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "sniffing": {
-                    "$ref": "#/definitions/IV2raySniffing",
-                    "description": "尝试探测流量的类型"
-                },
-                "streamSettings": {
-                    "$ref": "#/definitions/IV2rayStreamSetting",
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
         "ISocksInboundSettings": {
             "properties": {
                 "accounts": {
@@ -1292,59 +759,6 @@
                 "userLevel": {
                     "description": "用户等级，所有连接使用这一等级",
                     "type": "number"
-                }
-            },
-            "type": "object"
-        },
-        "ISocksOutbound": {
-            "properties": {
-                "mux": {
-                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
-                    "properties": {
-                        "concurrency": {
-                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
-                            "type": "number"
-                        },
-                        "enabled": {
-                            "description": "是否启用 Mux",
-                            "type": "boolean"
-                        }
-                    },
-                    "type": "object"
-                },
-                "protocol": {
-                    "enum": [
-                        "socks"
-                    ],
-                    "type": "string"
-                },
-                "proxySettings": {
-                    "additionalProperties": {
-                    },
-                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
-                    "properties": {
-                        "tag": {
-                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                },
-                "sendThrough": {
-                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
-                    "type": "string"
-                },
-                "settings": {
-                    "$ref": "#/definitions/ISocksOutboundSettings",
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "streamSettings": {
-                    "$ref": "#/definitions/IV2rayStreamSetting",
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
-                    "type": "string"
                 }
             },
             "type": "object"
@@ -1537,49 +951,6 @@
             },
             "type": "object"
         },
-        "ITrojanInbound": {
-            "properties": {
-                "allocate": {
-                    "$ref": "#/definitions/IV2rayAllocate",
-                    "description": "端口分配设置"
-                },
-                "listen": {
-                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
-                    "type": "string"
-                },
-                "port": {
-                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
-                },
-                "protocol": {
-                    "description": "连接协议名称，可选的值见协议列表。",
-                    "enum": [
-                        "trojan"
-                    ],
-                    "type": "string"
-                },
-                "settings": {
-                    "$ref": "#/definitions/ITrojanInboundSettings",
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "sniffing": {
-                    "$ref": "#/definitions/IV2raySniffing",
-                    "description": "尝试探测流量的类型"
-                },
-                "streamSettings": {
-                    "$ref": "#/definitions/IV2rayStreamSetting",
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
         "ITrojanInboundSettings": {
             "properties": {
                 "clients": {
@@ -1593,59 +964,6 @@
                         "$ref": "#/definitions/IFallbacksObject"
                     },
                     "type": "array"
-                }
-            },
-            "type": "object"
-        },
-        "ITrojanOutbound": {
-            "properties": {
-                "mux": {
-                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
-                    "properties": {
-                        "concurrency": {
-                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
-                            "type": "number"
-                        },
-                        "enabled": {
-                            "description": "是否启用 Mux",
-                            "type": "boolean"
-                        }
-                    },
-                    "type": "object"
-                },
-                "protocol": {
-                    "enum": [
-                        "trojan"
-                    ],
-                    "type": "string"
-                },
-                "proxySettings": {
-                    "additionalProperties": {
-                    },
-                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
-                    "properties": {
-                        "tag": {
-                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                },
-                "sendThrough": {
-                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
-                    "type": "string"
-                },
-                "settings": {
-                    "$ref": "#/definitions/ITrojanOutboundSettings",
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "streamSettings": {
-                    "$ref": "#/definitions/IV2rayStreamSetting",
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
-                    "type": "string"
                 }
             },
             "type": "object"
@@ -1747,7 +1065,7 @@
                     "items": {
                         "anyOf": [
                             {
-                                "$ref": "#/definitions/IServerObject"
+                                "$ref": "#/definitions/DNSServerObject"
                             },
                             {
                                 "type": "string"
@@ -1758,6 +1076,350 @@
                 },
                 "tag": {
                     "description": "(V2Ray 4.13+) 由此 DNS 发出的查询流量，除localhost外，都会带有此标识，可在路由使用inboundTag进行匹配",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IV2rayInboundSetting<V2RayProtocol.DOKODEMO_DOOR,IDokodemoInboundSettings>": {
+            "properties": {
+                "allocate": {
+                    "$ref": "#/definitions/IV2rayAllocate",
+                    "description": "端口分配设置"
+                },
+                "listen": {
+                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "protocol": {
+                    "description": "连接协议名称，可选的值见协议列表。",
+                    "enum": [
+                        "dokodemo-door"
+                    ],
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IDokodemoInboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "sniffing": {
+                    "$ref": "#/definitions/IV2raySniffing",
+                    "description": "尝试探测流量的类型"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IV2rayInboundSetting<V2RayProtocol.HTTP,IHttpInboundSettings>": {
+            "properties": {
+                "allocate": {
+                    "$ref": "#/definitions/IV2rayAllocate",
+                    "description": "端口分配设置"
+                },
+                "listen": {
+                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "protocol": {
+                    "description": "连接协议名称，可选的值见协议列表。",
+                    "enum": [
+                        "http"
+                    ],
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IHttpInboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "sniffing": {
+                    "$ref": "#/definitions/IV2raySniffing",
+                    "description": "尝试探测流量的类型"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IV2rayInboundSetting<V2RayProtocol.MTPROTO,IMTProtoInboundSettings>": {
+            "properties": {
+                "allocate": {
+                    "$ref": "#/definitions/IV2rayAllocate",
+                    "description": "端口分配设置"
+                },
+                "listen": {
+                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "protocol": {
+                    "description": "连接协议名称，可选的值见协议列表。",
+                    "enum": [
+                        "mtproto"
+                    ],
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IMTProtoInboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "sniffing": {
+                    "$ref": "#/definitions/IV2raySniffing",
+                    "description": "尝试探测流量的类型"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IV2rayInboundSetting<V2RayProtocol.SHADOWSOCKS,IShadowSocksInboundSettings>": {
+            "properties": {
+                "allocate": {
+                    "$ref": "#/definitions/IV2rayAllocate",
+                    "description": "端口分配设置"
+                },
+                "listen": {
+                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "protocol": {
+                    "description": "连接协议名称，可选的值见协议列表。",
+                    "enum": [
+                        "shadowsocks"
+                    ],
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IShadowSocksInboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "sniffing": {
+                    "$ref": "#/definitions/IV2raySniffing",
+                    "description": "尝试探测流量的类型"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IV2rayInboundSetting<V2RayProtocol.SOCKS,ISocksInboundSettings>": {
+            "properties": {
+                "allocate": {
+                    "$ref": "#/definitions/IV2rayAllocate",
+                    "description": "端口分配设置"
+                },
+                "listen": {
+                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "protocol": {
+                    "description": "连接协议名称，可选的值见协议列表。",
+                    "enum": [
+                        "socks"
+                    ],
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/ISocksInboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "sniffing": {
+                    "$ref": "#/definitions/IV2raySniffing",
+                    "description": "尝试探测流量的类型"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IV2rayInboundSetting<V2RayProtocol.TROJAN,ITrojanInboundSettings>": {
+            "properties": {
+                "allocate": {
+                    "$ref": "#/definitions/IV2rayAllocate",
+                    "description": "端口分配设置"
+                },
+                "listen": {
+                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "protocol": {
+                    "description": "连接协议名称，可选的值见协议列表。",
+                    "enum": [
+                        "trojan"
+                    ],
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/ITrojanInboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "sniffing": {
+                    "$ref": "#/definitions/IV2raySniffing",
+                    "description": "尝试探测流量的类型"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IV2rayInboundSetting<V2RayProtocol.VLESS,IVLESSInboundSettings>": {
+            "properties": {
+                "allocate": {
+                    "$ref": "#/definitions/IV2rayAllocate",
+                    "description": "端口分配设置"
+                },
+                "listen": {
+                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "protocol": {
+                    "description": "连接协议名称，可选的值见协议列表。",
+                    "enum": [
+                        "vless"
+                    ],
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IVLESSInboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "sniffing": {
+                    "$ref": "#/definitions/IV2raySniffing",
+                    "description": "尝试探测流量的类型"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IV2rayInboundSetting<V2RayProtocol.VMESS,IVmessInboundSettings>": {
+            "properties": {
+                "allocate": {
+                    "$ref": "#/definitions/IV2rayAllocate",
+                    "description": "端口分配设置"
+                },
+                "listen": {
+                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "protocol": {
+                    "description": "连接协议名称，可选的值见协议列表。",
+                    "enum": [
+                        "vmess"
+                    ],
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IVmessInboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "sniffing": {
+                    "$ref": "#/definitions/IV2raySniffing",
+                    "description": "尝试探测流量的类型"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
                     "type": "string"
                 }
             },
@@ -1780,6 +1442,536 @@
             },
             "type": "object"
         },
+        "IV2rayOutboundSetting<V2RayProtocol.BLACKHOLE,IBlackholeOutboundSettings>": {
+            "properties": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
+                    "enum": [
+                        "blackhole"
+                    ],
+                    "type": "string"
+                },
+                "proxySettings": {
+                    "additionalProperties": {
+                    },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IBlackholeOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IV2rayOutboundSetting<V2RayProtocol.DNS,IDNSOutboundSettings>": {
+            "properties": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
+                    "enum": [
+                        "dns"
+                    ],
+                    "type": "string"
+                },
+                "proxySettings": {
+                    "additionalProperties": {
+                    },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IDNSOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IV2rayOutboundSetting<V2RayProtocol.FREEDOM,IFreedomOutboundSettings>": {
+            "properties": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
+                    "enum": [
+                        "freedom"
+                    ],
+                    "type": "string"
+                },
+                "proxySettings": {
+                    "additionalProperties": {
+                    },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IFreedomOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IV2rayOutboundSetting<V2RayProtocol.HTTP,IHttpOutboundSettings>": {
+            "properties": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
+                    "enum": [
+                        "http"
+                    ],
+                    "type": "string"
+                },
+                "proxySettings": {
+                    "additionalProperties": {
+                    },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IHttpOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IV2rayOutboundSetting<V2RayProtocol.MTPROTO,IMTProtoOutboundSettings>": {
+            "properties": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
+                    "enum": [
+                        "mtproto"
+                    ],
+                    "type": "string"
+                },
+                "proxySettings": {
+                    "additionalProperties": {
+                    },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IMTProtoOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IV2rayOutboundSetting<V2RayProtocol.SHADOWSOCKS,IShadowsocksOutboundSettings>": {
+            "properties": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
+                    "enum": [
+                        "shadowsocks"
+                    ],
+                    "type": "string"
+                },
+                "proxySettings": {
+                    "additionalProperties": {
+                    },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IShadowsocksOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IV2rayOutboundSetting<V2RayProtocol.SOCKS,ISocksOutboundSettings>": {
+            "properties": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
+                    "enum": [
+                        "socks"
+                    ],
+                    "type": "string"
+                },
+                "proxySettings": {
+                    "additionalProperties": {
+                    },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/ISocksOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IV2rayOutboundSetting<V2RayProtocol.TROJAN,ITrojanOutboundSettings>": {
+            "properties": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
+                    "enum": [
+                        "trojan"
+                    ],
+                    "type": "string"
+                },
+                "proxySettings": {
+                    "additionalProperties": {
+                    },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/ITrojanOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IV2rayOutboundSetting<V2RayProtocol.VLESS,IVLESSOutboundSettings>": {
+            "properties": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
+                    "enum": [
+                        "vless"
+                    ],
+                    "type": "string"
+                },
+                "proxySettings": {
+                    "additionalProperties": {
+                    },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IVLESSOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IV2rayOutboundSetting<V2RayProtocol.VMESS,IVmessOutboundSettings>": {
+            "properties": {
+                "mux": {
+                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
+                    "properties": {
+                        "concurrency": {
+                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
+                            "type": "number"
+                        },
+                        "enabled": {
+                            "description": "是否启用 Mux",
+                            "type": "boolean"
+                        }
+                    },
+                    "type": "object"
+                },
+                "protocol": {
+                    "enum": [
+                        "vmess"
+                    ],
+                    "type": "string"
+                },
+                "proxySettings": {
+                    "additionalProperties": {
+                    },
+                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
+                    "properties": {
+                        "tag": {
+                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "sendThrough": {
+                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
+                    "type": "string"
+                },
+                "settings": {
+                    "$ref": "#/definitions/IVmessOutboundSettings",
+                    "description": "具体的配置内容，视协议不同而不同"
+                },
+                "streamSettings": {
+                    "$ref": "#/definitions/IV2rayStreamSetting",
+                    "description": "底层传输配置"
+                },
+                "tag": {
+                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
         "IV2rayPolicy": {
             "properties": {
                 "levels": {
@@ -1790,11 +1982,8 @@
                     "type": "object"
                 },
                 "system": {
-                    "additionalProperties": {
-                        "$ref": "#/definitions/ISystemObject"
-                    },
-                    "description": "V2Ray 系统的策略",
-                    "type": "object"
+                    "$ref": "#/definitions/ISystemObject",
+                    "description": "V2Ray 系统的策略"
                 }
             },
             "type": "object"
@@ -1946,49 +2135,6 @@
             },
             "type": "object"
         },
-        "IVLESSInbound": {
-            "properties": {
-                "allocate": {
-                    "$ref": "#/definitions/IV2rayAllocate",
-                    "description": "端口分配设置"
-                },
-                "listen": {
-                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
-                    "type": "string"
-                },
-                "port": {
-                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
-                },
-                "protocol": {
-                    "description": "连接协议名称，可选的值见协议列表。",
-                    "enum": [
-                        "vless"
-                    ],
-                    "type": "string"
-                },
-                "settings": {
-                    "$ref": "#/definitions/IVLESSInboundSettings",
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "sniffing": {
-                    "$ref": "#/definitions/IV2raySniffing",
-                    "description": "尝试探测流量的类型"
-                },
-                "streamSettings": {
-                    "$ref": "#/definitions/IV2rayStreamSetting",
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
         "IVLESSInboundSettings": {
             "properties": {
                 "clients": {
@@ -2015,24 +2161,10 @@
             },
             "type": "object"
         },
-        "IVLESSOutbound": {
-            "properties": {
-                "protocol": {
-                    "enum": [
-                        "vless"
-                    ],
-                    "type": "string"
-                },
-                "settings": {
-                    "$ref": "#/definitions/IVLESSOutboundSettings"
-                }
-            },
-            "type": "object"
-        },
         "IVLESSOutboundSettings": {
             "properties": {
                 "vnext": {
-                    "description": "一个数组，包含一系列指向服务端的配置。\n\n#",
+                    "description": "一个数组，包含一系列指向服务端的配置。",
                     "items": {
                         "$ref": "#/definitions/IVLESSServerObject"
                     },
@@ -2082,6 +2214,8 @@
             "type": "object"
         },
         "IVmessAccount": {
+            "additionalProperties": {
+            },
             "properties": {
                 "alterId": {
                     "description": "为了进一步防止被探测，一个用户可以在主 ID 的基础上，再额外生成多个 ID。这里只需要指定额外的 ID 的数量，推荐值为 4。不指定的话，默认值是 0。最大值 65535。这个值不能超过服务器端所指定的值",
@@ -2098,49 +2232,6 @@
                 "level": {
                     "description": "用户等级",
                     "type": "number"
-                }
-            },
-            "type": "object"
-        },
-        "IVmessInbound": {
-            "properties": {
-                "allocate": {
-                    "$ref": "#/definitions/IV2rayAllocate",
-                    "description": "端口分配设置"
-                },
-                "listen": {
-                    "description": "监听地址，只允许 IP 地址，默认值为 \"0.0.0.0\"，表示接收所有网卡上的连接。除此之外，必须指定一个现有网卡的地址。\n\nv4.32.0+，支持填写 Unix domain socket，格式为绝对路径，形如 \"/dev/shm/domain.socket\"，可在开头加 \"@\" 代表 abstract (opens new window)，\"@@\" 则代表带 padding 的 abstract。\n\n填写 Unix domain socket 时，port 和 allocate 将被忽略，协议暂时可选 VLESS、VMess、Trojan，传输方式可选 TCP、WebSocket、HTTP/2。",
-                    "type": "string"
-                },
-                "port": {
-                    "description": "端口\n\n整型数值: 实际的端口号\n\n环境变量: 以\"env:\"开头，后面是一个环境变量的名称，如\"env:PORT\"。V2Ray 会以字符串形式解析这个环境变量。\n\n字符串: 可以是一个数值类型的字符串，如\"1234\"；或者一个数值范围，如\"5-10\"表示端口 5 到端口 10 这 6 个端口。",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
-                },
-                "protocol": {
-                    "description": "连接协议名称，可选的值见协议列表。",
-                    "enum": [
-                        "vmess"
-                    ],
-                    "type": "string"
-                },
-                "settings": {
-                    "$ref": "#/definitions/IVmessInboundSettings",
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "sniffing": {
-                    "$ref": "#/definitions/IV2raySniffing",
-                    "description": "尝试探测流量的类型"
-                },
-                "streamSettings": {
-                    "$ref": "#/definitions/IV2rayStreamSetting",
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此入站连接的标识，用于在其它的配置中定位此连接。当其不为空时，其值必须在所有tag中唯一",
-                    "type": "string"
                 }
             },
             "type": "object"
@@ -2165,59 +2256,6 @@
                 "disableInsecureEncryption": {
                     "description": "是否禁止客户端使用不安全的加密方式，当客户端指定下列加密方式时，服务器会主动断开连接。默认值为false\n- \"none\"\n- \"aes-128-cfb\"",
                     "type": "boolean"
-                }
-            },
-            "type": "object"
-        },
-        "IVmessOutbound": {
-            "properties": {
-                "mux": {
-                    "description": "Mux 配置，Mux 功能是在一条 TCP 连接上分发多个 TCP 连接的数据",
-                    "properties": {
-                        "concurrency": {
-                            "description": "最大并发连接数。最小值1，最大值1024，默认值8。这个数值表示了一个 TCP 连接上最多承载的 Mux 连接数量。当客户端发出了 8 个 TCP 请求，而concurrency=8时，V2Ray 只会发出一条实际的 TCP 连接，客户端的 8 个请求全部由这个 TCP 连接传输",
-                            "type": "number"
-                        },
-                        "enabled": {
-                            "description": "是否启用 Mux",
-                            "type": "boolean"
-                        }
-                    },
-                    "type": "object"
-                },
-                "protocol": {
-                    "enum": [
-                        "vmess"
-                    ],
-                    "type": "string"
-                },
-                "proxySettings": {
-                    "additionalProperties": {
-                    },
-                    "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
-                    "properties": {
-                        "tag": {
-                            "description": "当指定另一个出站协议的标识时，此出站协议发出的数据，将被转发至所指定的出站协议发出",
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                },
-                "sendThrough": {
-                    "description": "用于发送数据的 IP 地址，当主机有多个 IP 地址时有效，默认值为\"0.0.0.0\"",
-                    "type": "string"
-                },
-                "settings": {
-                    "$ref": "#/definitions/IVmessOutboundSettings",
-                    "description": "具体的配置内容，视协议不同而不同"
-                },
-                "streamSettings": {
-                    "$ref": "#/definitions/IV2rayStreamSetting",
-                    "description": "底层传输配置"
-                },
-                "tag": {
-                    "description": "此出站连接的标识，用于在其它的配置中定位此连接。当其值不为空时，必须在所有 tag 中唯一",
-                    "type": "string"
                 }
             },
             "type": "object"
@@ -2312,11 +2350,9 @@
             "type": "string"
         },
         "Record<string,string>": {
-            "description": "Construct a type with a set of properties K of type T",
             "type": "object"
         },
         "Record<string,string[]>": {
-            "description": "Construct a type with a set of properties K of type T",
             "type": "object"
         },
         "ShadowSocksMethod": {
@@ -2346,28 +2382,28 @@
             "items": {
                 "anyOf": [
                     {
-                        "$ref": "#/definitions/IDokodemoInbound"
+                        "$ref": "#/definitions/IV2rayInboundSetting<V2RayProtocol.DOKODEMO_DOOR,IDokodemoInboundSettings>"
                     },
                     {
-                        "$ref": "#/definitions/IHttpInbound"
+                        "$ref": "#/definitions/IV2rayInboundSetting<V2RayProtocol.HTTP,IHttpInboundSettings>"
                     },
                     {
-                        "$ref": "#/definitions/IMTProtoInbound"
+                        "$ref": "#/definitions/IV2rayInboundSetting<V2RayProtocol.MTPROTO,IMTProtoInboundSettings>"
                     },
                     {
-                        "$ref": "#/definitions/IShadowSocksInbound"
+                        "$ref": "#/definitions/IV2rayInboundSetting<V2RayProtocol.SHADOWSOCKS,IShadowSocksInboundSettings>"
                     },
                     {
-                        "$ref": "#/definitions/ISocksInbound"
+                        "$ref": "#/definitions/IV2rayInboundSetting<V2RayProtocol.SOCKS,ISocksInboundSettings>"
                     },
                     {
-                        "$ref": "#/definitions/IVmessInbound"
+                        "$ref": "#/definitions/IV2rayInboundSetting<V2RayProtocol.VLESS,IVLESSInboundSettings>"
                     },
                     {
-                        "$ref": "#/definitions/IVLESSInbound"
+                        "$ref": "#/definitions/IV2rayInboundSetting<V2RayProtocol.VMESS,IVmessInboundSettings>"
                     },
                     {
-                        "$ref": "#/definitions/ITrojanInbound"
+                        "$ref": "#/definitions/IV2rayInboundSetting<V2RayProtocol.TROJAN,ITrojanInboundSettings>"
                     }
                 ]
             },
@@ -2382,34 +2418,34 @@
             "items": {
                 "anyOf": [
                     {
-                        "$ref": "#/definitions/IBlackholeOutbound"
+                        "$ref": "#/definitions/IV2rayOutboundSetting<V2RayProtocol.BLACKHOLE,IBlackholeOutboundSettings>"
                     },
                     {
-                        "$ref": "#/definitions/IDNSOutbound"
+                        "$ref": "#/definitions/IV2rayOutboundSetting<V2RayProtocol.DNS,IDNSOutboundSettings>"
                     },
                     {
-                        "$ref": "#/definitions/IFreedomOutbound"
+                        "$ref": "#/definitions/IV2rayOutboundSetting<V2RayProtocol.FREEDOM,IFreedomOutboundSettings>"
                     },
                     {
-                        "$ref": "#/definitions/IMTProtoOutbound"
+                        "$ref": "#/definitions/IV2rayOutboundSetting<V2RayProtocol.HTTP,IHttpOutboundSettings>"
                     },
                     {
-                        "$ref": "#/definitions/IShadowsocksOutbound"
+                        "$ref": "#/definitions/IV2rayOutboundSetting<V2RayProtocol.MTPROTO,IMTProtoOutboundSettings>"
                     },
                     {
-                        "$ref": "#/definitions/ISocksOutbound"
+                        "$ref": "#/definitions/IV2rayOutboundSetting<V2RayProtocol.SHADOWSOCKS,IShadowsocksOutboundSettings>"
                     },
                     {
-                        "$ref": "#/definitions/IVmessOutbound"
+                        "$ref": "#/definitions/IV2rayOutboundSetting<V2RayProtocol.SOCKS,ISocksOutboundSettings>"
                     },
                     {
-                        "$ref": "#/definitions/IHttpOutbound"
+                        "$ref": "#/definitions/IV2rayOutboundSetting<V2RayProtocol.VMESS,IVmessOutboundSettings>"
                     },
                     {
-                        "$ref": "#/definitions/IVLESSOutbound"
+                        "$ref": "#/definitions/IV2rayOutboundSetting<V2RayProtocol.VLESS,IVLESSOutboundSettings>"
                     },
                     {
-                        "$ref": "#/definitions/ITrojanOutbound"
+                        "$ref": "#/definitions/IV2rayOutboundSetting<V2RayProtocol.TROJAN,ITrojanOutboundSettings>"
                     }
                 ]
             },

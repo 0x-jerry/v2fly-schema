@@ -6,14 +6,14 @@
   "types": "./V2Ray.config.d.ts",
   "license": "MIT",
   "scripts": {
-    "build": "typescript-json-schema V2Ray.Config.d.ts IV2Ray -o V2Ray.config.schema.json",
+    "build": "typescript-json-schema src/index.d.ts IV2Ray -o V2Ray.config.schema.json",
     "release": "glib release"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
-    "@exyz/glib": "^0.3.4",
-    "typescript-json-schema": "^0.48.0"
+    "@exyz/glib": "^0.4.4",
+    "typescript-json-schema": "^0.50.0"
   }
 }
