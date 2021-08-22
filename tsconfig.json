@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
+    "target": "es6",
+    "module": "CommonJS",
+    "strict": true,
     "moduleResolution": "node",
-    "strict": true
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "outDir": "dist"
   },
-  "include": ["src", "test"]
+  "include": ["src", "scripts", "test"]
 }

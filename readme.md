@@ -38,3 +38,13 @@ const v2raySchema: IV2Ray = {
   ...
 }
 ```
+
+### Deno
+
+```ts
+import { IV2Ray } from 'https://raw.githubusercontent.com/0x-jerry/v2ray-config-json-schema/master/v2ray-schema.ts'
+
+const v2raySchema: IV2Ray = {
+  ...
+}
+```

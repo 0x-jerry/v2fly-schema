@@ -6,14 +6,24 @@
   "types": "./V2Ray.config.d.ts",
   "license": "MIT",
   "scripts": {
-    "build": "typescript-json-schema src/index.d.ts IV2Ray -o V2Ray.config.schema.json",
+    "build": "yarn build:deno && yarn build:node",
+    "build:deno": "rm -rf deno && ts-node scripts/build-deno.ts",
+    "build:node": "typescript-json-schema src/index.d.ts IV2Ray -o V2Ray.config.schema.json",
     "release": "glib release"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
+    "@babel/core": "^7.15.0",
+    "@babel/plugin-syntax-typescript": "^7.14.5",
     "@exyz/glib": "^0.4.4",
+    "@types/babel__core": "^7.1.15",
+    "@types/fs-extra": "^9.0.12",
+    "@types/node": "^16.7.1",
+    "fast-glob": "^3.2.7",
+    "fs-extra": "^10.0.0",
+    "ts-node": "^10.2.1",
     "typescript-json-schema": "^0.50.0"
   }
 }
