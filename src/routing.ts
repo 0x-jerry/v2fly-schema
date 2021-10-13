@@ -27,6 +27,12 @@ interface IRoutingRule {
    */
   domain?: string[]
   /**
+   * 选择要使用的域名匹配算法。
+   * - linear：使用线性匹配算法，默认值；
+   * - mph：使用最小完美散列（minimal perfect hash）算法（v4.36.1+）。测试数据约 17 万条，匹配速度提升约 30%，内存占用减少约 15%
+   */
+  domainMatcher?: 'linear' | 'mph'
+  /**
    * 一个数组，数组内每一个元素代表一个 IP 范围。当某一元素匹配目标 IP 时，此规则生效
    */
   ip?: string[]
@@ -85,6 +91,21 @@ interface IBalancerObject {
    * 一个字符串数组，其中每一个字符串将用于和出站协议标识的前缀匹配
    */
   selector?: string[]
+  /**
+   * 进行负载均衡的策略对象。
+   */
+  strategy?: {
+    /**
+     * 进行负载均衡的策略类型。
+     *
+     * 可以填入的类型包括 random 以及 leastPing (v4.38.0+).
+     *
+     * random 会从出站中随机选出一个作为最终的出站连接。
+     *
+     * leastPing 会根据观测记录选择 HTTPS GET 请求完成时间最快的一个出站连接。
+     */
+    type?: 'random' | 'leastPing'
+  }
 }
 
 export interface IV2rayRouting {
@@ -92,6 +113,12 @@ export interface IV2rayRouting {
    * 域名解析策略，根据不同的设置使用不同的策略
    */
   domainStrategy?: IStrategy
+  /**
+   * 选择要使用的域名匹配算法。
+   * - linear：使用线性匹配算法，默认值；
+   * - mph：使用最小完美散列（minimal perfect hash）算法（v4.36.1+）。测试数据约 17 万条，匹配速度提升约 30%，内存占用减少约 15%
+   */
+  domainMatcher?: 'linear' | 'mph'
   /**
    * 对应一个数组，数组中每个元素是一个规则。对于每一个连接，路由将根据这些规则依次进行判断，当一个规则生效时，即将这个连接转发至它所指定的outboundTag(或balancerTag，V2Ray 4.4+)。当没有匹配到任何规则时，流量默认由主出站协议发出
    */
