@@ -48,6 +48,20 @@
                     },
                     "type": "array"
                 },
+                "strategy": {
+                    "description": "进行负载均衡的策略对象。",
+                    "properties": {
+                        "type": {
+                            "description": "进行负载均衡的策略类型。\n\n可以填入的类型包括 random 以及 leastPing (v4.38.0+).\n\nrandom 会从出站中随机选出一个作为最终的出站连接。\n\nleastPing 会根据观测记录选择 HTTPS GET 请求完成时间最快的一个出站连接。",
+                            "enum": [
+                                "leastPing",
+                                "random"
+                            ],
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
                 "tag": {
                     "description": "此负载均衡器的标识，用于匹配RuleObject中的balancerTag",
                     "type": "string"
@@ -536,6 +550,14 @@
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "domainMatcher": {
+                    "description": "选择要使用的域名匹配算法。\n- linear：使用线性匹配算法，默认值；\n- mph：使用最小完美散列（minimal perfect hash）算法（v4.36.1+）。测试数据约 17 万条，匹配速度提升约 30%，内存占用减少约 15%",
+                    "enum": [
+                        "linear",
+                        "mph"
+                    ],
+                    "type": "string"
                 },
                 "inboundTag": {
                     "description": "一个数组，数组内每一个元素是一个标识。当某一元素匹配入站协议的标识时，此规则生效",
@@ -1996,6 +2018,14 @@
                         "$ref": "#/definitions/IBalancerObject"
                     },
                     "type": "array"
+                },
+                "domainMatcher": {
+                    "description": "选择要使用的域名匹配算法。\n- linear：使用线性匹配算法，默认值；\n- mph：使用最小完美散列（minimal perfect hash）算法（v4.36.1+）。测试数据约 17 万条，匹配速度提升约 30%，内存占用减少约 15%",
+                    "enum": [
+                        "linear",
+                        "mph"
+                    ],
+                    "type": "string"
                 },
                 "domainStrategy": {
                     "$ref": "#/definitions/IStrategy",
