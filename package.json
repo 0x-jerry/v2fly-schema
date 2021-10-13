@@ -8,7 +8,7 @@
   "scripts": {
     "build": "yarn build:deno && yarn build:node",
     "build:deno": "rm -rf deno && ts-node scripts/build-deno.ts",
-    "build:node": "typescript-json-schema src/index.d.ts IV2Ray -o V2Ray.config.schema.json",
+    "build:node": "typescript-json-schema src/index.ts IV2Ray -o V2Ray.config.schema.json",
     "release": "glib release"
   },
   "publishConfig": {
