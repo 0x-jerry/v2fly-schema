@@ -786,8 +786,7 @@
             "type": "object"
         },
         "ISocksOutboundSettings": {
-            "additionalProperties": {
-            },
+            "additionalProperties": {},
             "properties": {
                 "servers": {
                     "description": "Socks 服务器列表，其中每一项是一个服务器配置",
@@ -1487,8 +1486,7 @@
                     "type": "string"
                 },
                 "proxySettings": {
-                    "additionalProperties": {
-                    },
+                    "additionalProperties": {},
                     "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
                     "properties": {
                         "tag": {
@@ -1540,8 +1538,7 @@
                     "type": "string"
                 },
                 "proxySettings": {
-                    "additionalProperties": {
-                    },
+                    "additionalProperties": {},
                     "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
                     "properties": {
                         "tag": {
@@ -1593,8 +1590,7 @@
                     "type": "string"
                 },
                 "proxySettings": {
-                    "additionalProperties": {
-                    },
+                    "additionalProperties": {},
                     "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
                     "properties": {
                         "tag": {
@@ -1646,8 +1642,7 @@
                     "type": "string"
                 },
                 "proxySettings": {
-                    "additionalProperties": {
-                    },
+                    "additionalProperties": {},
                     "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
                     "properties": {
                         "tag": {
@@ -1699,8 +1694,7 @@
                     "type": "string"
                 },
                 "proxySettings": {
-                    "additionalProperties": {
-                    },
+                    "additionalProperties": {},
                     "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
                     "properties": {
                         "tag": {
@@ -1752,8 +1746,7 @@
                     "type": "string"
                 },
                 "proxySettings": {
-                    "additionalProperties": {
-                    },
+                    "additionalProperties": {},
                     "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
                     "properties": {
                         "tag": {
@@ -1805,8 +1798,7 @@
                     "type": "string"
                 },
                 "proxySettings": {
-                    "additionalProperties": {
-                    },
+                    "additionalProperties": {},
                     "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
                     "properties": {
                         "tag": {
@@ -1858,8 +1850,7 @@
                     "type": "string"
                 },
                 "proxySettings": {
-                    "additionalProperties": {
-                    },
+                    "additionalProperties": {},
                     "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
                     "properties": {
                         "tag": {
@@ -1911,8 +1902,7 @@
                     "type": "string"
                 },
                 "proxySettings": {
-                    "additionalProperties": {
-                    },
+                    "additionalProperties": {},
                     "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
                     "properties": {
                         "tag": {
@@ -1964,8 +1954,7 @@
                     "type": "string"
                 },
                 "proxySettings": {
-                    "additionalProperties": {
-                    },
+                    "additionalProperties": {},
                     "description": "出站代理配置。当出站代理生效时，此出站协议的streamSettings将不起作用",
                     "properties": {
                         "tag": {
@@ -2244,8 +2233,7 @@
             "type": "object"
         },
         "IVmessAccount": {
-            "additionalProperties": {
-            },
+            "additionalProperties": {},
             "properties": {
                 "alterId": {
                     "description": "为了进一步防止被探测，一个用户可以在主 ID 的基础上，再额外生成多个 ID。这里只需要指定额外的 ID 的数量，推荐值为 4。不指定的话，默认值是 0。最大值 65535。这个值不能超过服务器端所指定的值",
@@ -2495,8 +2483,7 @@
         },
         "stats": {
             "description": "当此项存在时，开启统计信息，目前无配置",
-            "properties": {
-            },
+            "properties": {},
             "type": "object"
         },
         "transport": {

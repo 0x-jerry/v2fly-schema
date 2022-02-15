@@ -6,13 +6,14 @@
   "types": "./V2Ray.config.d.ts",
   "license": "MIT",
   "scripts": {
-    "build": "yarn build:deno && yarn build:node",
+    "build": "npm run build:deno && npm run build:node",
     "build:deno": "rm -rf deno && ts-node scripts/build-deno.ts",
     "build:node": "typescript-json-schema src/index.ts IV2Ray -o V2Ray.config.schema.json",
     "release": "x-release"
   },
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   },
   "devDependencies": {
     "@0x-jerry/x-release": "^0.3.2",
