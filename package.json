@@ -15,6 +15,9 @@
     "registry": "https://registry.npmjs.org/",
     "access": "public"
   },
+  "files": [
+    "./V2ray.config.d.ts"
+  ],
   "devDependencies": {
     "@0x-jerry/x-release": "^0.3.2",
     "@babel/core": "^7.17.2",
