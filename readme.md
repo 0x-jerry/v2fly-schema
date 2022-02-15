@@ -2,7 +2,7 @@
 
 根据 `V2Ray.config.d.ts` 自动生成 `V2Ray.config.schema.json`
 
-raw schema content: https://raw.githubusercontent.com/cwxyz007/v2ray-config-json-schema/master/V2Ray.config.schema.json
+Raw schema content: https://raw.githubusercontent.com/0x-jerry/v2ray-config-json-schema/master/V2Ray.config.schema.json
 
 ## 使用方式
 
@@ -19,7 +19,7 @@ raw schema content: https://raw.githubusercontent.com/cwxyz007/v2ray-config-json
   "json.schemas": [
     {
       "fileMatch": ["/*.json", "/*.jsonc"],
-      "url": "https://raw.githubusercontent.com/cwxyz007/v2ray-config-json-schema/master/V2Ray.config.schema.json"
+      "url": "https://raw.githubusercontent.com/0x-jerry/v2ray-config-json-schema/master/V2Ray.config.schema.json"
     }
   ]
 }
@@ -27,12 +27,12 @@ raw schema content: https://raw.githubusercontent.com/cwxyz007/v2ray-config-json
 
 ### Nodejs
 
-安装：`yarn add @exyz/v2ray-schema`
+安装：`yarn add @0x-jerry/v2ray-schema`
 
 `typescript`:
 
 ```ts
-import { IV2Ray } from '@exyz/v2ray-schems'
+import { IV2Ray } from '@0x-jerry/v2ray-schems'
 
 const v2raySchema: IV2Ray = {
   ...
