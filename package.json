@@ -3,7 +3,7 @@
   "version": "0.2.5",
   "author": "Jerry Wang<x.jerry.wang@gmail.com>",
   "repository": "https://github.com/0x-jerry/v2ray-config-json-schema.git",
-  "types": "./V2Ray.config.d.ts",
+  "types": "src/index.ts",
   "license": "MIT",
   "scripts": {
     "build": "npm run build:deno && npm run build:node",
@@ -16,7 +16,7 @@
     "access": "public"
   },
   "files": [
-    "./V2ray.config.d.ts"
+    "src"
   ],
   "devDependencies": {
     "@0x-jerry/x-release": "^0.3.2",
