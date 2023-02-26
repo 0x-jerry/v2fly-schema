@@ -23,8 +23,8 @@
     "dist"
   ],
   "dependencies": {
-    "crawlee": "^3.2.2",
-    "puppeteer": "^19.7.2"
+    "@0x-jerry/utils": "^1.13.0",
+    "remark": "^14.0.2"
   },
   "devDependencies": {
     "@0x-jerry/x-release": "0.3.6",
