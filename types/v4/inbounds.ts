@@ -1,3 +1,4 @@
+import { InboundConfigurationObject } from '../extra/v4'
 import { StreamSettingsObject } from "./transport"
 /**
   入站连接用于接收从客户端（浏览器或上一级代理服务器）发来的数据，可用的协议请见协议列表。

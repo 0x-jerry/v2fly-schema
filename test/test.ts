@@ -1,6 +1,6 @@
-import { V4 } from "../src";
+import { V4Config } from '../dist'
 
-export const v2ray: V4 = {
+export const v2ray: V4Config = {
   log: {
     loglevel: 'warning',
     access: '/var/log/v2ray/access.log',
@@ -30,15 +30,16 @@ export const v2ray: V4 = {
       tag: 'api',
       listen: '0.0.0.0',
       port: 1111,
-      protocol: DOKODEMO_DOOR,
+      protocol: 'dokodemo-door',
       settings: {
+        _t: 'dokodemo-door',
         address: '0.0.0.0',
       },
     },
     {
       port: 2222,
       tag: 'vmess-ws',
-      protocol: V2RayProtocol.VMESS,
+      protocol: 'vmess',
       sniffing: {
         enabled: true,
         destOverride: ['http', 'tls'],
@@ -50,6 +51,7 @@ export const v2ray: V4 = {
         },
       },
       settings: {
+        _t: 'vmess',
         clients: [
           {
             name: 'xx',
@@ -64,11 +66,11 @@ export const v2ray: V4 = {
   ],
   outbounds: [
     {
-      protocol: V2RayProtocol.FREEDOM,
+      protocol: 'freedom',
       settings: {},
     },
     {
-      protocol: V2RayProtocol.BLACKHOLE,
+      protocol: 'blackhole',
       settings: {},
       tag: 'blocked',
     },

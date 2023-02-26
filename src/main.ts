@@ -3,6 +3,7 @@ import { writeFile } from 'fs/promises'
 import { parseType, generateTS, GenerateConfig } from './convert'
 import glob from 'fast-glob'
 import { join } from 'path'
+import { Arrayable, toArray } from '@0x-jerry/utils'
 
 const v4config: GenerateConfig = {
   interfaceMap: {
@@ -22,6 +23,10 @@ const v4config: GenerateConfig = {
 }
 
 await generateConfigDts('v2fly-docs/docs/config', 'types/v4', v4config)
+
+// fix inbounds.ts & outbounds.ts
+await unshiftText('types/v4/inbounds.ts', `import { InboundConfigurationObject } from '../extra/v4'`)
+await unshiftText('types/v4/outbounds.ts', `import { OutboundConfigurationObject } from '../extra/v4'`)
 
 const v5config: GenerateConfig = {
   interfaceMap: {
@@ -94,4 +99,12 @@ async function generateIndexDts(folder: string) {
 
   const p = files.filter((n) => !n.endsWith('.ts')).map((n) => generateIndexDts(join(folder, n)))
   await Promise.all(p)
+}
+
+async function unshiftText(file: string, content: Arrayable<string>) {
+  const lines = toArray(content)
+  const txt = await fs.readFile(file, { encoding: 'utf-8' })
+  lines.push(txt)
+
+  await fs.writeFile(file, lines.join('\n'))
 }

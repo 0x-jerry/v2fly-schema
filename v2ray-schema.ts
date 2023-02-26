@@ -1,2 +1,2 @@
 // @ts-nocheck
-export * from './deno/index.ts'
+export * from './dist/index.d.ts'
