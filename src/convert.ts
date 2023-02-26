@@ -1,28 +1,12 @@
 import { remark } from 'remark'
 import { ElementOf } from '@0x-jerry/utils'
 
-const config = {
-  interfaceMap: {
-    概述: 'V2FlyConfig',
-    'VMess 入站': 'VMessInbound',
-    'VMess 出站': 'VMessOutbound',
-    'Router 路由': 'RoutingObject',
-    TLS: 'TLSConfig',
-  } as Record<string, string>,
-  typeMap: {
-    bool: 'boolean',
-    address: 'string',
-    'string: CIDR': 'string',
-    address_port: 'string',
-    int: 'number',
-    数组: 'any',
-    // fix type,
-    HttpHeaderobject: 'HttpHeaderObject',
-    QUICObject: 'QuicObject',
-  } as Record<string, string>,
+export interface GenerateConfig {
+  interfaceMap?: Record<string, string>
+  typeMap?: Record<string, string>
 }
 
-export function generateType(str: string) {
+export function generateType(str: string, conf?: GenerateConfig) {
   const defs: InterfaceDef[] = []
   const r = remark().parse(str)
   const items = r.children
@@ -42,7 +26,7 @@ export function generateType(str: string) {
     if (item.type === 'heading') {
       const head = itemContent.slice(item.depth).trim()
 
-      const name = config.interfaceMap[head]
+      const name = conf?.interfaceMap?.[head]
 
       if (name) {
         currentDef = {
@@ -93,6 +77,61 @@ export function generateType(str: string) {
   }
 
   return defs
+
+  function convertPropType(content: string, def: InterfaceDef): string {
+    if (!content) {
+      console.log(def)
+    }
+
+    content = content.trim()
+
+    // array
+    if (/^\\?\[/.test(content) && /\\?\]$/.test(content)) {
+      const count = content.startsWith('\\[') ? 2 : 1
+
+      const t = content.slice(count, -count)
+      return `${convertPropType(t, def)}[]`
+    }
+    // or operator
+    else if (content.includes('|')) {
+      return content
+        .split('|')
+        .map((n) => convertPropType(n, def))
+        .join(' | ')
+    }
+    // map
+    else if (content.startsWith('map')) {
+      const reg = /map\s*\\?\{\s*([\w\d]+)\s*[:,]\s*([^}]+)}/
+      let [_, keyType, type] = content.match(reg) || []
+
+      // map \{string: string\}, remove the last `\`
+      type = type.endsWith('\\') ? type.slice(0, -1) : type
+
+      return `Record<${keyType}, ${convertPropType(type, def)}>`
+    }
+    // link node
+    else if (content.startsWith('[')) {
+      const reg = /^\[([^\]]+)\]\(([^)]+)\)/
+      const [_, type, link] = content.match(reg) || []
+
+      const realType = convertPropType(type, def)
+
+      if (link.includes('.md')) {
+        def.head.push({
+          name: realType,
+          from: link.replace(/#.+$/, '').replace('.md', ''),
+        })
+      }
+
+      return realType
+    } else {
+      if (content.includes(' ')) {
+        return 'any'
+      }
+
+      return conf?.typeMap?.[content] || content
+    }
+  }
 }
 
 export function generateTS(defs: InterfaceDef[]): string {
@@ -146,59 +185,4 @@ export interface InterfaceDefProp {
   key: string
   type: string
   comment: string[]
-}
-
-function convertPropType(content: string, def: InterfaceDef): string {
-  if (!content) {
-    console.log(def)
-  }
-
-  content = content.trim()
-
-  // array
-  if (/^\\?\[/.test(content) && /\\?\]$/.test(content)) {
-    const count = content.startsWith('\\[') ? 2 : 1
-
-    const t = content.slice(count, -count)
-    return `${convertPropType(t, def)}[]`
-  }
-  // or operator
-  else if (content.includes('|')) {
-    return content
-      .split('|')
-      .map((n) => convertPropType(n, def))
-      .join(' | ')
-  }
-  // map
-  else if (content.startsWith('map')) {
-    const reg = /map\s*\\?\{\s*([\w\d]+)\s*[:,]\s*([^}]+)}/
-    let [_, keyType, type] = content.match(reg) || []
-
-    // map \{string: string\}, remove the last `\`
-    type = type.endsWith('\\') ? type.slice(0, -1) : type
-
-    return `Record<${keyType}, ${convertPropType(type, def)}>`
-  }
-  // link node
-  else if (content.startsWith('[')) {
-    const reg = /^\[([^\]]+)\]\(([^)]+)\)/
-    const [_, type, link] = content.match(reg) || []
-
-    const realType = convertPropType(type, def)
-
-    if (link.includes('.md')) {
-      def.head.push({
-        name: realType,
-        from: link.replace(/#.+$/, '').replace('.md', ''),
-      })
-    }
-
-    return realType
-  } else {
-    if (content.includes(' ')) {
-      return 'any'
-    }
-
-    return config.typeMap[content] || content
-  }
 }
