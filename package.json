@@ -1,6 +1,6 @@
 {
   "name": "@0x-jerry/v2ray-schema",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Jerry Wang<x.jerry.wang@gmail.com>",
   "repository": "https://github.com/0x-jerry/v2ray-config-json-schema.git",
   "types": "dist/index.d.ts",
