@@ -1,23 +1,26 @@
-import fs, { emptyDir, ensureFile } from 'fs-extra'
+import fs, { emptyDir, ensureDir, ensureFile } from 'fs-extra'
 import { writeFile } from 'fs/promises'
 import { generateType, generateTS } from './convert'
 import glob from 'fast-glob'
 import { join } from 'path'
 
-// await generate('docs/dns.md', 'types/dns.d.ts')
+await generateConfigDts('v2fly-docs/docs/config', 'types/v4')
+await generateConfigDts('v2fly-docs/docs/v5/config', 'types/v5')
 
-const configDir = 'v2fly-docs/docs/config'
+async function generateConfigDts(inputDir: string, outputDir: string) {
+  const files = await glob('**/*.md', {
+    cwd: inputDir,
+  })
 
-const files = await glob('**/*.md', {
-  cwd: configDir,
-})
+  await ensureDir(outputDir)
+  await emptyDir(outputDir)
 
-await emptyDir('types')
+  for (const file of files) {
+    const outFile = join(outputDir, file.replace('.md', '.ts'))
 
-for (const file of files) {
-  const outFile = join('types', file.replace('.md', '.ts'))
-  await ensureFile(outFile)
-  await generate(join(configDir, file), outFile)
+    await ensureFile(outFile)
+    await generate(join(inputDir, file), outFile)
+  }
 }
 
 async function generate(inputFs: string, outputFs: string) {
