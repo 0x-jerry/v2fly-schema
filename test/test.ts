@@ -1,4 +1,4 @@
-import type { V4, V4Config } from '../dist/index'
+import type { V4, V4Config } from '..'
 
 const log: V4.overview.LogObject = {
   loglevel: 'warning',
