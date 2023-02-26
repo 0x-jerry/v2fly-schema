@@ -17,5 +17,6 @@
 （V2Ray 4.26.0+）特定出站代理的下行流量，单位字节。
  **/
 export interface StatsObject {
+  [key: string]: any
 
 }

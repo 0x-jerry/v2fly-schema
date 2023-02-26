@@ -25,38 +25,39 @@
 * 标识符: `outbound.vliteu`
  **/
 export interface VLite {
+  [key: string]: any
 /**
 服务器地址，支持 IP 地址或者域名。
 **/
-address: string
+address?: string
 /**
 服务器端口号。
 **/
-port: number
+port?: number
 /**
 服务器认可的密码。 此项必须与服务器端一致。
 **/
-password: string
+password?: string
 /**
 是否启用数据包混淆。 此项必须与服务器端一致。
 启用后将隐藏数据包的 DTLS 特征，使握手后的数据包内容类似随机数据。
 **/
-scramblePacket: true | false
+scramblePacket?: true | false
 /**
 是否启用前向错误修复 此项必须与服务器端一致。
 启用后将耗费更多流量以对抗丢包。
 **/
-enableFec: true | false
+enableFec?: true | false
 /**
 是否启用通用连接稳定机制。 此项必须与服务器端一致。
 启用后将通过连接转世机制在连接中断后自动重连并恢复连接状态以主动稳定连接。
 **/
-enableStabilization: true | false
+enableStabilization?: true | false
 /**
 是否启用通用连接稳定重协议协商机制。 此项必须与服务器端一致。
 启用后将尝试重新协商协议以提高稳定性。
 **/
-enableRenegotiation: true | false
+enableRenegotiation?: true | false
 /**
 是否混淆通用连接稳定握手消息。 此项建议与服务器端一致。
 此处填入握手数据包填充至的长度。
@@ -64,34 +65,34 @@ enableRenegotiation: true | false
 * 类型: 入站协议
 * 标识符: `inbound.vliteu`
 **/
-handshakeMaskingPaddingSize: number
+handshakeMaskingPaddingSize?: number
 /**
 服务器所认可的密码。 此项必须与客户端一致。
 **/
-password: string
+password?: string
 /**
 是否启用数据包混淆。 此项必须与客户端一致。
 启用后将隐藏数据包的 DTLS 特征，使握手后的数据包内容类似随机数据。
 **/
-scramblePacket: true | false
+scramblePacket?: true | false
 /**
 是否启用前向错误修复 此项必须与客户端一致。
 启用后将耗费更多流量以对抗丢包。
 **/
-enableFec: true | false
+enableFec?: true | false
 /**
 是否启用通用连接稳定机制。 此项必须与客户端一致。
 启用后将通过连接转世机制在连接中断后自动重连并恢复连接状态以主动稳定连接。
 **/
-enableStabilization: true | false
+enableStabilization?: true | false
 /**
 是否启用通用连接稳定重协议协商机制。 此项必须与客户端一致。
 启用后将尝试重新协商协议以提高稳定性。
 **/
-enableRenegotiation: true | false
+enableRenegotiation?: true | false
 /**
 是否混淆通用连接稳定握手消息。 此项必须与客户端一致。
 此处填入握手数据包填充至的长度。
 **/
-handshakeMaskingPaddingSize: number
+handshakeMaskingPaddingSize?: number
 }

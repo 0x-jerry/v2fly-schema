@@ -6,7 +6,7 @@ export interface GenerateConfig {
   typeMap?: Record<string, string>
 }
 
-export function generateType(str: string, conf?: GenerateConfig) {
+export function parseType(str: string, conf?: GenerateConfig) {
   const defs: InterfaceDef[] = []
   const r = remark().parse(str)
   const items = r.children
@@ -159,12 +159,13 @@ export function generateTS(defs: InterfaceDef[]): string {
   ${item.comment.join('\n')}
  **/
 export interface ${item.name} {
+  [key: string]: any
 ${item.properties
   .map(
     (n) => `/**
 ${n.comment.join('\n')}
 **/
-${n.key}: ${n.type}`
+${n.key}?: ${n.type}`
   )
   .join('\n')}
 }`

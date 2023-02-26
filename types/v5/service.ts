@@ -7,5 +7,6 @@
 * [并发连接观测](service/burstObservatory.md)
  **/
 export interface Service {
+  [key: string]: any
 
 }

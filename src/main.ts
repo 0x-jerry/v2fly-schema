@@ -1,6 +1,6 @@
 import fs, { emptyDir, ensureDir, ensureFile } from 'fs-extra'
 import { writeFile } from 'fs/promises'
-import { generateType, generateTS, GenerateConfig } from './convert'
+import { parseType, generateTS, GenerateConfig } from './convert'
 import glob from 'fast-glob'
 import { join } from 'path'
 
@@ -66,7 +66,7 @@ async function generateConfigDts(inputDir: string, outputDir: string, conf?: Gen
   async function generate(inputFs: string, outputFs: string) {
     const data = await fs.readFile(inputFs, { encoding: 'utf-8' })
 
-    const defs = generateType(data, conf)
+    const defs = parseType(data, conf)
 
     const file = generateTS(defs)
     await writeFile(outputFs, file)

@@ -6,5 +6,6 @@
 stream.quic
  **/
 export interface QUIC {
+  [key: string]: any
 
 }

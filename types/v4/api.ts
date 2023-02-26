@@ -12,14 +12,15 @@
 ```
  **/
 export interface ApiObject {
+  [key: string]: any
 /**
 出站代理标识。
 **/
-tag: string
+tag?: string
 /**
 开启的 API 列表，可选的值见 [API 列表](#支持的-api-列表)。
 **/
-services: string[]
+services?: string[]
 }
 /**
   一些对于入站出站代理进行修改的 API，可用的功能如下：
@@ -31,23 +32,27 @@ services: string[]
 * 在一个入站代理中删除一个用户（仅支持 VMess、VLESS、Trojan）；
  **/
 export interface HandlerService {
+  [key: string]: any
 
 }
 /**
   支持对内置 Logger 的重启，可配合 logrotate 进行一些对日志文件的操作。
  **/
 export interface LoggerService {
+  [key: string]: any
 
 }
 /**
   内置的数据统计服务，详见 [统计信息](stats.md)。
  **/
 export interface StatsService {
+  [key: string]: any
 
 }
 /**
   [连接观测](observatory.md) 组件 API (v4.38.0+) 。
  **/
 export interface ObservatoryService {
+  [key: string]: any
 
 }

@@ -4,6 +4,7 @@
 HTTP 的配置分为两部分，`InboundConfigurationObject` 和 `OutboundConfigurationObject`，分别对应入站和出站协议配置中的 `settings` 项。
  **/
 export interface HTTP {
+  [key: string]: any
 
 }
 /**
@@ -25,23 +26,24 @@ export interface HTTP {
 :::
  **/
 export interface InboundConfigurationObject {
+  [key: string]: any
 /**
 从客户端读取数据的超时设置（秒），0 表示不限时。默认值为 300。 V2Ray 3.1 后等价于对应用户等级的 `connIdle` 策略。
 **/
-timeout: number
+timeout?: number
 /**
 一个数组，数组中每个元素为一个用户帐号。默认值为空。
 当 `accounts` 非空时，HTTP 代理将对入站连接进行 Basic Authentication 验证。
 **/
-accounts: AccountObject[]
+accounts?: AccountObject[]
 /**
 当为 `true` 时，会转发所有 HTTP 请求，而非只是代理请求。若配置不当，开启此选项会导致死循环。
 **/
-allowTransparent: true | false
+allowTransparent?: true | false
 /**
 用户等级，所有连接使用这一等级。
 **/
-userLevel: number
+userLevel?: number
 }
 /**
   ```json
@@ -52,10 +54,11 @@ userLevel: number
 ```
  **/
 export interface AccountObject {
+  [key: string]: any
 /**
 用户名，字符串类型。必填。
 **/
-user: string
+user?: string
 /**
 密码，字符串类型。必填。
 :::tip
@@ -64,7 +67,7 @@ user: string
 * `export https_proxy=$http_proxy`
 :::
 **/
-pass: string
+pass?: string
 }
 /**
   ```json
@@ -93,20 +96,21 @@ pass: string
 :::
  **/
 export interface OutboundConfigurationObject {
+  [key: string]: any
 /**
 HTTP 代理服务器配置，若配置多个，循环使用 (RoundRobin)。
 **/
-servers: any
+servers?: any
 /**
 HTTP 代理服务器地址，必填。
 **/
-address: string
+address?: string
 /**
 HTTP 代理服务器端口，必填。
 **/
-port: number
+port?: number
 /**
 一个数组，数组中每个元素为一个用户帐号。默认值为空。
 **/
-user: AccountObject[]
+user?: AccountObject[]
 }

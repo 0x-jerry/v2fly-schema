@@ -10,21 +10,22 @@ VLESS 已被弃用并且可能被移除。
 inbound.vless
  **/
 export interface VLESS {
+  [key: string]: any
 /**
 一组服务器认可用户的 ID，必须为合法的 UUID。
 outbound.vless
 **/
-users: string[]
+users?: string[]
 /**
 服务器地址，支持 IP 地址或者域名。
 **/
-address: string
+address?: string
 /**
 服务器端口号。
 **/
-port: number
+port?: number
 /**
 服务器认可的 VLESS 用户 ID，必须为合法的 UUID。
 **/
-uuid: string
+uuid?: string
 }

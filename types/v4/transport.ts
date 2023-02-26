@@ -10,6 +10,7 @@ import { grpcObject } from "./transport/grpc"
 底层传输（transport）配置分为两部分，一是全局设置（[TransportObject](#transportobject)），二是分协议配置（[StreamSettingsObject](#streamsettingsobject)）。分协议配置可以指定每个单独的入站出站协议用怎样的方式传输。通常来说客户端和服务器对应的出站入站协议需要使用同样的传输方式。当分协议传输配置指定了一种传输方式，但没有填写其设置时，此传输方式会使用全局配置中的设置。
  **/
 export interface Transport {
+  [key: string]: any
 
 }
 /**
@@ -27,34 +28,35 @@ export interface Transport {
 ```
  **/
 export interface TransportObject {
+  [key: string]: any
 /**
 针对 TCP 连接的配置。
 **/
-tcpSettings: TcpObject
+tcpSettings?: TcpObject
 /**
 针对 mKCP 连接的配置。
 **/
-kcpSettings: KcpObject
+kcpSettings?: KcpObject
 /**
 针对 WebSocket 连接的配置。
 **/
-wsSettings: WebSocketObject
+wsSettings?: WebSocketObject
 /**
 针对 HTTP/2 连接的配置。
 **/
-httpSettings: HttpObject
+httpSettings?: HttpObject
 /**
 针对 QUIC 连接的配置。
 **/
-quicSettings: QuicObject
+quicSettings?: QuicObject
 /**
 针对 Domain Socket 连接的配置。
 **/
-dsSettings: DomainSocketObject
+dsSettings?: DomainSocketObject
 /**
 针对 gRPC 连接的配置。 (v4.36.0+)
 **/
-grpcSettings: grpcObject
+grpcSettings?: grpcObject
 }
 /**
   `StreamSettingsObject` 对应出站入站协议中的 `streamSettings` 项。每一个入站、出站连接都可以分别配置不同的传输配置，都可以设置 `streamSettings` 来进行一些传输的配置。
@@ -81,50 +83,51 @@ grpcSettings: grpcObject
 ```
  **/
 export interface StreamSettingsObject {
+  [key: string]: any
 /**
 数据流所使用的网络类型，默认值为 `"tcp"`
 **/
-network: "tcp" | "kcp" | "ws" | "http" | "domainsocket" | "quic" | "grpc"
+network?: "tcp" | "kcp" | "ws" | "http" | "domainsocket" | "quic" | "grpc"
 /**
 是否启用传输层加密，支持的选项有 `"none"` 表示不加密（默认值），`"tls"` 表示使用 [TLS](https://en.wikipedia.org/wiki/Transport_Layer_Security)。
 **/
-security: "none" | "tls"
+security?: "none" | "tls"
 /**
 TLS 配置。TLS 由 Golang 提供，支持 TLS 1.3，不支持 DTLS。
 **/
-tlsSettings: TLSObject
+tlsSettings?: TLSObject
 /**
 当前连接的 TCP 配置，仅当此连接使用 TCP 时有效。配置内容与上面的全局配置相同。
 **/
-tcpSettings: TcpObject
+tcpSettings?: TcpObject
 /**
 当前连接的 mKCP 配置，仅当此连接使用 mKCP 时有效。配置内容与上面的全局配置相同。
 **/
-kcpSettings: KcpObject
+kcpSettings?: KcpObject
 /**
 当前连接的 WebSocket 配置，仅当此连接使用 WebSocket 时有效。配置内容与上面的全局配置相同。
 **/
-wsSettings: WebSocketObject
+wsSettings?: WebSocketObject
 /**
 当前连接的 HTTP/2 配置，仅当此连接使用 HTTP/2 时有效。配置内容与上面的全局配置相同。
 **/
-httpSettings: HttpObject
+httpSettings?: HttpObject
 /**
 当前连接的 QUIC 配置，仅当此连接使用 QUIC 时有效。配置内容与上面的全局配置相同。
 **/
-quicSettings: QuicObject
+quicSettings?: QuicObject
 /**
 当前连接的 Domain socket 配置，仅当此连接使用 Domain socket 时有效。配置内容与上面的全局配置相同。
 **/
-dsSettings: DomainSocketObject
+dsSettings?: DomainSocketObject
 /**
 当前连接的 gRPC 配置，仅当此连接使用 gRPC 时有效。配置内容与上面的全局配置相同。
 **/
-grpcSettings: grpcObject
+grpcSettings?: grpcObject
 /**
 用作透明代理的配置。
 **/
-sockopt: SockoptObject
+sockopt?: SockoptObject
 }
 /**
   ```json
@@ -143,38 +146,39 @@ sockopt: SockoptObject
 ```
  **/
 export interface TLSObject {
+  [key: string]: any
 /**
 指定服务器端证书的域名，在连接由 IP 建立时有用。当目标连接由域名指定时，比如在 Socks 入站时接收到了域名，或者由 Sniffing 功能探测出了域名，这个域名会自动用于 `serverName`，无须手动配置。
 **/
-serverName: string
+serverName?: string
 /**
 一个字符串数组，指定了 TLS 握手时指定的 ALPN 数值。默认值为 `["h2", "http/1.1"]`。
 **/
-alpn: string[]
+alpn?: string[]
 /**
 是否允许不安全连接（仅用于客户端）。默认值为 `false`。当值为 `true` 时，V2Ray 不会检查远端主机所提供的 TLS 证书的有效性。
 **/
-allowInsecure: true | false
+allowInsecure?: true | false
 /**
 （V2Ray 4.18+）是否禁用操作系统自带的 CA 证书。默认值为 `false`。当值为 `true` 时，V2Ray 只会使用 `certificates` 中指定的证书进行 TLS 握手。当值为 `false` 时，V2Ray 只会使用操作系统自带的 CA 证书进行 TLS 握手。
 **/
-disableSystemRoot: true | false
+disableSystemRoot?: true | false
 /**
 证书列表，其中每一项表示一个证书（建议 fullchain）。
 **/
-certificates: CertificateObject[]
+certificates?: CertificateObject[]
 /**
 使用标准编码格式表示的远程服务器的证书链的SHA256散列值。在设置后，远程服务器的证书链的散列值必须为列表中的数值之一。(v4.38.0+)
 <!--
 此数值可以使用V2Ray自带的 v2ctl 工具的 certChainHash 工具根据服务器的证书链文件进行计算(按照管理，这个文件的名字一般叫 fullchain.pem )。如果没有中间证书（如自签发证书），证书链的散列值和证书本身的散列值相同。-->
 在连接因为此策略失败时，会展示此证书链散列。不建议使用这种方式获得证书链散列值，因为在这种情况下您没有机会验证此时服务器提供的证书是否为真实证书。
 **/
-pinnedPeerCertificateChainSha256: string[]
+pinnedPeerCertificateChainSha256?: string[]
 /**
 在连接时进行客户端证书认证。在打开此选项后，客户端将需要配置客户端证书才能连接到服务器端。(4.42.0+)
 客户端证书必须由程序内配置的客户端证书颁发机构签发。系统内置证书颁发机构以及用于认证服务器端的证书颁发机构不会自动被信任。
 **/
-verifyClientCertificate: true | false
+verifyClientCertificate?: true | false
 }
 /**
   ```json
@@ -234,6 +238,7 @@ verifyClientCertificate: true | false
 ```
  **/
 export interface CertificateObject {
+  [key: string]: any
 /**
 证书用途，默认值为 `"encipherment"`。
 * `"encipherment"`：证书用于 TLS 认证和加密。
@@ -247,22 +252,22 @@ export interface CertificateObject {
 当有新的客户端请求时，假设所指定的 `serverName` 为 `"v2ray.com"`，V2Ray 会先从证书列表中寻找可用于 `"v2ray.com"` 的证书，如果没有找到，则使用任一 `usage` 为 `"issue"` 的证书签发一个适用于 `"v2ray.com"` 的证书，有效期为一小时。并将新的证书加入证书列表，以供后续使用。
 :::
 **/
-usage: "encipherment" | "verify" | "issue" | "verifyclient"
+usage?: "encipherment" | "verify" | "issue" | "verifyclient"
 /**
 证书文件路径，如使用 OpenSSL 生成，后缀名为 .crt。
 :::tip
 使用 `v2ctl cert -ca` 可以生成自签名的 CA 证书。
 :::
 **/
-certificateFile: string
+certificateFile?: string
 /**
 一个字符串数组，表示证书内容，格式如样例所示。`certificate` 和 `certificateFile` 二者选一。
 **/
-certificate: string[]
+certificate?: string[]
 /**
 密钥文件路径，如使用 OpenSSL 生成，后缀名为 .key。目前暂不支持需要密码的 key 文件。
 **/
-keyFile: string
+keyFile?: string
 /**
 一个字符串数组，表示密钥内容，格式如样例如示。`key` 和 `keyFile` 二者选一。
 当 `certificateFile` 和 `certificate` 同时指定时，V2Ray 优先使用 `certificateFile`。`keyFile` 和 `key` 也一样。
@@ -270,7 +275,7 @@ keyFile: string
 当 `usage` 为 `"verify"` 时，`keyFile` 和 `key` 可均为空。
 :::
 **/
-key: string[]
+key?: string[]
 }
 /**
   ```json
@@ -284,12 +289,13 @@ key: string[]
 ```
  **/
 export interface SockoptObject {
+  [key: string]: any
 /**
 一个整数。当其值非零时，在出站连接上标记 SO_MARK。
 * 仅适用于 Linux 系统。
 * 需要 CAP_NET_ADMIN 权限。
 **/
-mark: number
+mark?: number
 /**
 是否启用 [TCP Fast Open](https://zh.wikipedia.org/wiki/TCP%E5%BF%AB%E9%80%9F%E6%89%93%E5%BC%80)。当其值为 `true` 时，强制开启 TFO；当其值为 `false` 时，强制关闭 TFO；当此项不存在时，使用系统默认设置。可用于入站出站连接。
 * 仅在以下版本（或更新版本）的操作系统中可用:
@@ -298,11 +304,11 @@ mark: number
   * Linux 3.16：系统已默认开启，无需配置。
   * FreeBSD 10.3
 **/
-tcpFastOpen: true | false
+tcpFastOpen?: true | false
 /**
 入站连接的 [TCP Fast Open](https://zh.wikipedia.org/wiki/TCP%E5%BF%AB%E9%80%9F%E6%89%93%E5%BC%80) 队列长度，默认值为 `4096`，仅在 Linux 中可用 (v4.43.0+)。
 **/
-tcpFastOpenQueueLength: number
+tcpFastOpenQueueLength?: number
 /**
 是否开启透明代理（仅适用于 Linux）。
 * `"redirect"`：使用 Redirect 模式的透明代理。支持 TCP 和 UDP 连接。
@@ -313,10 +319,10 @@ tcpFastOpenQueueLength: number
 当 [Dokodemo-door](protocols/dokodemo.md) 中指定了 `followRedirect`，且 `sockopt.tproxy` 为空时，`sockopt.tproxy` 的值会被设为 `"redirect"`。
 :::
 **/
-tproxy: "redirect" | "tproxy" | "off"
+tproxy?: "redirect" | "tproxy" | "off"
 /**
 TCP 保持活跃的数据包的发送间隔，以秒为单位（仅适用于 Linux）。 (v4.39.0+)
 0 代表保持默认值。
 **/
-tcpKeepAliveInterval: number
+tcpKeepAliveInterval?: number
 }

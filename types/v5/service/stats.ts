@@ -16,5 +16,6 @@
 特定出站代理的下行流量，单位为字节。
  **/
 export interface StatsObject {
+  [key: string]: any
 
 }

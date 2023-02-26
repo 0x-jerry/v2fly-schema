@@ -9,6 +9,7 @@ Rfc: [SOCKS 5 的认证在使用 UDP 时可被绕过](https://github.com/v2fly/v
 :::
  **/
 export interface Socks {
+  [key: string]: any
 
 }
 /**
@@ -33,14 +34,15 @@ export interface Socks {
 Socks Outbound 更有意义的用法是在特殊情况下，只能使用 Socks Proxy 对外访问内部网络中，作为为其他协议连接代理服务器的前置代理使用（见 `OutboundObject` 的 `ProxySettingsObject`）。
  **/
 export interface OutboundConfigurationObject {
+  [key: string]: any
 /**
 Socks 服务器列表，其中每一项是一个服务器配置。
 **/
-servers: ServerObject[]
+servers?: ServerObject[]
 /**
 Socks 协议版本。 (v4.42.2+)
 **/
-version: "5" | "4a" | "4"
+version?: "5" | "4a" | "4"
 }
 /**
   ```json
@@ -58,18 +60,19 @@ version: "5" | "4a" | "4"
 ```
  **/
 export interface ServerObject {
+  [key: string]: any
 /**
 服务器地址。
 **/
-address: string
+address?: string
 /**
 服务器端口
 **/
-port: number
+port?: number
 /**
 用户列表，其中每一项一个用户配置。当列表不为空时，Socks 客户端会使用此用户信息进行认证；如未指定，则不进行认证。
 **/
-users: UserObject[]
+users?: UserObject[]
 }
 /**
   ```json
@@ -81,18 +84,19 @@ users: UserObject[]
 ```
  **/
 export interface UserObject {
+  [key: string]: any
 /**
 用户名
 **/
-user: string
+user?: string
 /**
 密码
 **/
-pass: string
+pass?: string
 /**
 用户等级
 **/
-level: number
+level?: number
 }
 /**
   应该注意，虽然 socks inbound 可以公共服务端口，但 socks 协议没有对传输加密，不适宜经公网中传输。socks inbound 更有意义的用法是在局域网或本机环境下，为其他程序提供本地服务。
@@ -112,29 +116,30 @@ level: number
 ```
  **/
 export interface InboundConfigurationObject {
+  [key: string]: any
 /**
 Socks 协议的认证方式，支持 `"noauth"` 匿名方式和 `"password"` 用户密码方式。默认值为 `"noauth"`。
 **/
-auth: "noauth" | "password"
+auth?: "noauth" | "password"
 /**
 一个数组，数组中每个元素为一个用户帐号。默认值为空。此选项仅当 `auth` 为 `password` 时有效。
 **/
-accounts: AccountObject[]
+accounts?: AccountObject[]
 /**
 是否开启 UDP 协议的支持。默认值为 `false`。
 **/
-udp: true | false
+udp?: true | false
 /**
 SOCKS5 通过 `UDP ASSOCIATE` 命令建立 UDP 会话。服务端在对客户端发来的该命令的回复中，指定客户端发包的目标地址。
 * v4.34.0+: 默认值为空，此时对于通过本地回环 IPv4/IPv6 连接的客户端，回复对应的回环 IPv4/IPv6 地址；对于非本机的客户端，回复当前入站的监听地址。
 * v4.33.0 及更早版本: 默认值 `127.0.0.1`。
 你可以通过配置此项使 V2Ray 固定回复你配置的地址。如果你不知道此项的作用，留空即可。
 **/
-ip: string
+ip?: string
 /**
 用户等级，所有连接使用这一等级。
 **/
-userLevel: number
+userLevel?: number
 }
 /**
   ```javascript
@@ -145,12 +150,13 @@ userLevel: number
 ```
  **/
 export interface AccountObject {
+  [key: string]: any
 /**
 用户名
 **/
-user: string
+user?: string
 /**
 密码
 **/
-pass: string
+pass?: string
 }

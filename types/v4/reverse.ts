@@ -18,14 +18,15 @@
 ```
  **/
 export interface ReverseObject {
+  [key: string]: any
 /**
 一个数组，每一项表示一个 `bridge`。每个 `bridge` 的配置是一个 [BridgeObject](#bridgeobject)。
 **/
-bridges: BridgeObject[]
+bridges?: BridgeObject[]
 /**
 一个数组，每一项表示一个 `portal`。每个 `portal` 的配置是一个 [PortalObject](#bridgeobject)。
 **/
-portals: PortalObject[]
+portals?: PortalObject[]
 }
 /**
   ```json
@@ -36,14 +37,15 @@ portals: PortalObject[]
 ```
  **/
 export interface BridgeObject {
+  [key: string]: any
 /**
 一个标识，所有由 `bridge` 发出的连接，都会带有这个标识。可以在 [路由](routing.md) 中使用 `inboundTag` 进行识别。
 **/
-tag: string
+tag?: string
 /**
 一个域名。`bridge` 向 `portal` 建立的连接，都会使用这个域名进行发送。这个域名只作为 `bridge` 和 `portal` 的通信用途，不必真实存在。
 **/
-domain: string
+domain?: string
 }
 /**
   ```json
@@ -54,10 +56,11 @@ domain: string
 ```
  **/
 export interface PortalObject {
+  [key: string]: any
 /**
 `portal` 的标识。在 [路由](routing.md) 中使用 `outboundTag` 将流量转发到这个 `portal`。
 **/
-tag: string
+tag?: string
 /**
 一个域名。当 `portal` 接收到流量时，如果流量的目标域名是此域名，则 `portal` 认为当前连接上 `bridge` 发来的通信连接。而其它流量则会被当成需要转发的流量。`portal` 所做的工作就是把这两类连接进行识别并拼接。
 :::tip
@@ -188,5 +191,5 @@ tag: string
 在运行过程中，建议先启用 `bridge`，再启用 `portal`。
 :::
 **/
-domain: string
+domain?: string
 }

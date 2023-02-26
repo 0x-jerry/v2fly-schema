@@ -3,8 +3,9 @@
 outbound.loopback
  **/
 export interface Loopback {
+  [key: string]: any
 /**
 匹配入站来源的标识。
 **/
-inboundTag: string
+inboundTag?: string
 }

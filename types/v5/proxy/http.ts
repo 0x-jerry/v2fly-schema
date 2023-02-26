@@ -6,12 +6,13 @@
 outbound.http
  **/
 export interface HTTP {
+  [key: string]: any
 /**
 服务器地址。
 **/
-address: string
+address?: string
 /**
 服务器端口。
 **/
-port: number
+port?: number
 }

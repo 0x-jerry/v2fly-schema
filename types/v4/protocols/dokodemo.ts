@@ -11,28 +11,29 @@
 ```
  **/
 export interface InboundConfigurationObject {
+  [key: string]: any
 /**
 将流量转发到此地址。可以是一个 IP 地址，形如 `"1.2.3.4"`，或者一个域名，形如 `"v2ray.com"`。字符串类型。
 当 `followRedirect`（见下文）为 `true` 时，`address` 可为空。
 **/
-address: string
+address?: string
 /**
 将流量转发到目标地址的指定端口，范围 \[1, 65535\]，数值类型。必填参数。
 **/
-port: number
+port?: number
 /**
 可接收的网络协议类型。比如当指定为 `"tcp"` 时，任意门仅会接收 TCP 流量。默认值为 `"tcp"`。
 **/
-network: "tcp" | "udp" | "tcp,udp"
+network?: "tcp" | "udp" | "tcp,udp"
 /**
 入站数据的时间限制（秒），默认值为 300。
 V2Ray 3.1 后等价于对应用户等级的 `connIdle` 策略
 **/
-timeout: number
+timeout?: number
 /**
 当值为 `true` 时，dokodemo-door 会识别出由 iptables 转发而来的数据，并转发到相应的目标地址。详见 [传输配置](../transport.md) 中的 `tproxy` 设置。
 **/
-followRedirect: true | false
+followRedirect?: true | false
 /**
 用户等级，所有连接都会使用这个用户等级。
 V2Ray 中增加一个 dokodemo-door 的入站协议：
@@ -80,5 +81,5 @@ iptables -t mangle -A PREROUTING -j V2RAY
 iptables -t mangle -A OUTPUT -j V2RAY_MARK
 ```
 **/
-userLevel: number
+userLevel?: number
 }

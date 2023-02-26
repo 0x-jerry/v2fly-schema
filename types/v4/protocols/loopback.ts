@@ -5,6 +5,7 @@
 Loopback 是一个出站协议，可使出站连接被重新路由。
  **/
 export interface Loopback {
+  [key: string]: any
 
 }
 /**
@@ -15,8 +16,9 @@ export interface Loopback {
 ```
  **/
 export interface OutboundConfigurationObject {
+  [key: string]: any
 /**
 匹配入站来源的标识。
 **/
-inboundTag: string
+inboundTag?: string
 }

@@ -6,6 +6,7 @@ DNS 是一个出站协议，主要用于拦截和转发 DNS 查询。此出站�
 DNS 出站协议在 V2Ray 4.15 中引入。
  **/
 export interface DNS {
+  [key: string]: any
 
 }
 /**
@@ -18,16 +19,17 @@ export interface DNS {
 ```
  **/
 export interface OutboundConfigurationObject {
+  [key: string]: any
 /**
 (V2Ray 4.16+) 修改 DNS 流量的传输层协议，可选的值有 `"tcp"` 和 `"udp"`。当不指定时，保持来源的传输方式不变。
 **/
-network: "tcp" | "udp"
+network?: "tcp" | "udp"
 /**
 (V2Ray 4.16+) 修改 DNS 服务器地址。当不指定时，保持来源中指定的地址不变。
 **/
-address: string
+address?: string
 /**
 (V2Ray 4.16+) 修改 DNS 服务器端口。当不指定时，保持来源中指定的端口不变。
 **/
-port: number
+port?: number
 }

@@ -10,6 +10,7 @@ V2Ray 4.7:
   * 30 秒没有数据通过时自动断开连接 (可能会影响一些长连接的使用)
  **/
 export interface QUIC {
+  [key: string]: any
 
 }
 /**
@@ -25,19 +26,20 @@ export interface QUIC {
 ```
  **/
 export interface QuicObject {
+  [key: string]: any
 /**
 加密方式。默认值为不加密。
 此加密是对 QUIC 数据包的加密，加密后数据包无法被探测。
 **/
-security: "none" | "aes-128-gcm" | "chacha20-poly1305"
+security?: "none" | "aes-128-gcm" | "chacha20-poly1305"
 /**
 加密时所用的密钥。可以是任意字符串。当 `security` 不为 `"none"` 时有效。
 **/
-key: string
+key?: string
 /**
 数据包头部伪装设置
 **/
-header: HeaderObject
+header?: HeaderObject
 }
 /**
   ```json
@@ -47,6 +49,7 @@ header: HeaderObject
 ```
  **/
 export interface HeaderObject {
+  [key: string]: any
 /**
 伪装类型，可选的值有：
 * `"none"`：默认值，不进行伪装。
@@ -59,5 +62,5 @@ export interface HeaderObject {
 当加密和伪装都不启用时，数据包即为原始的 QUIC 数据包，可以与其它的 QUIC 工具对接。为了避免被探测，建议加密或伪装至少开启一项。
 :::
 **/
-type: string
+type?: string
 }

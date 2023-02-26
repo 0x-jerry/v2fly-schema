@@ -10,6 +10,7 @@ VMess 依赖于系统时间，请确保使用 V2Ray 的系统 UTC 时间误差�
 VMess 的配置分为两部分，`InboundConfigurationObject`和`OutboundConfigurationObject`，分别对应入站和出站协议配置中的`settings`项。
  **/
 export interface VMess {
+  [key: string]: any
 
 }
 /**
@@ -33,10 +34,11 @@ export interface VMess {
 ```
  **/
 export interface OutboundConfigurationObject {
+  [key: string]: any
 /**
 一个数组，包含一系列的服务器配置
 **/
-vnext: ServerObject[]
+vnext?: ServerObject[]
 }
 /**
   ```json
@@ -48,18 +50,19 @@ vnext: ServerObject[]
 ```
  **/
 export interface ServerObject {
+  [key: string]: any
 /**
 服务器地址，支持 IP 地址或者域名。
 **/
-address: string
+address?: string
 /**
 服务器端口号。
 **/
-port: number
+port?: number
 /**
 一组服务器认可的用户
 **/
-users: UserObject[]
+users?: UserObject[]
 }
 /**
   ```json
@@ -72,21 +75,22 @@ users: UserObject[]
 ```
  **/
 export interface UserObject {
+  [key: string]: any
 /**
 VMess 用户的主 ID。必须是一个合法的 UUID。
 **/
-id: string
+id?: string
 /**
 为了进一步防止被探测，一个用户可以在主 ID 的基础上，再额外生成多个 ID。这里只需要指定额外的 ID 的数量，推荐值为 0 代表启用 VMessAEAD。不指定的话，默认值是 `0`。最大值 `65535`。这个值不能超过服务器端所指定的值。
 :::tip
 客户端可通过设置环境变量 `V2RAY_VMESS_AEAD_DISABLED=true` 强行禁用 VMessAEAD （不推荐，仅用于兼容服务端版本在 v4.28.1 前**且**设置了 `alterId=0` ）
 :::
 **/
-alterId: number
+alterId?: number
 /**
 用户等级
 **/
-level: number
+level?: number
 /**
 加密方式，客户端将使用配置的加密方式发送数据，服务器端自动识别，无需配置。
 * `"aes-128-gcm"`：推荐在 PC 上使用
@@ -103,13 +107,13 @@ level: number
 无论使用哪种加密方式， VMess 的包头都会受到加密和认证的保护。
 :::
 **/
-security: "aes-128-gcm" | "chacha20-poly1305" | "auto" | "none" | "zero"
+security?: "aes-128-gcm" | "chacha20-poly1305" | "auto" | "none" | "zero"
 /**
 启用的 VMess 协议实验性功能。（此处的功能为不稳定功能， 可能随时被移除）多个启用的实验之间可以用 | 字符分割，如 `"AuthenticatedLength|NoTerminationSignal"` 。
 `"AuthenticatedLength"` 启用认证的数据包长度实验。此实验需要同时在客户端与服务器端同时开启，并运行相同版本的程序。 (v4.41.0+)
 `"NoTerminationSignal"` 启用不发送断开连接标致实验。此实验可能会影响被代理的连接的稳定性。 (v4.41.0+)
 **/
-experiments: string
+experiments?: string
 }
 /**
   ```json
@@ -134,24 +138,25 @@ experiments: string
 ```
  **/
 export interface InboundConfigurationObject {
+  [key: string]: any
 /**
 一组服务器认可的用户。clients 可以为空。当此配置用作动态端口时，V2Ray 会自动创建用户。
 **/
-clients: ClientObject[]
+clients?: ClientObject[]
 /**
 指示对应的出站协议使用另一个服务器。
 **/
-detour: DetourObject
+detour?: DetourObject
 /**
 可选，clients 的默认配置。仅在配合`detour`时有效。
 **/
-default: DefaultObject
+default?: DefaultObject
 /**
 是否禁止客户端使用不安全的加密方式，当客户端指定下列加密方式时，服务器会主动断开连接。默认值为`false`。
 * `"none"`
 * `"aes-128-cfb"`
 **/
-disableInsecureEncryption: true | false
+disableInsecureEncryption?: true | false
 }
 /**
   ```json
@@ -164,22 +169,23 @@ disableInsecureEncryption: true | false
 ```
  **/
 export interface ClientObject {
+  [key: string]: any
 /**
 VMess 的用户 ID。必须是一个合法的 UUID。
 **/
-id: string
+id?: string
 /**
 用户等级，详见[本地策略](../policy.md)
 **/
-level: number
+level?: number
 /**
 与上文出站协议中的含义相同。
 **/
-alterId: number
+alterId?: number
 /**
 用户邮箱地址，用于区分不同用户的流量。
 **/
-email: string
+email?: string
 }
 /**
   ```json
@@ -189,10 +195,11 @@ email: string
 ```
  **/
 export interface DetourObject {
+  [key: string]: any
 /**
 一个入站协议的`tag`，详见 [InboundObject](../inbounds.md#inboundobject) 。指定的入站协议必须是一个 VMess
 **/
-to: string
+to?: string
 }
 /**
   ```json
@@ -203,10 +210,11 @@ to: string
 ```
  **/
 export interface DefaultObject {
+  [key: string]: any
 /**
 用户等级，意义同上。默认值为`0`。
 **/
-level: number
+level?: number
 /**
 动态端口的默认`alterId`，默认值为`0`。
 为了进一步对抗可能的探测和封锁，自 v4.24 版本起，每个 VMess 认证数据的服务器端结构都会包含一个一次写入的玷污状态标记，初始状态为无瑕状态，当服务器检测到重放探测时或者因为其他原因入站连接出错以致校验数据不正确时，该连接所对应的请求认证数据会被玷污。
@@ -218,5 +226,5 @@ VMessAEAD 协议已经经过同行评议并已经整合了相应的修改。 VMe
 在服务器端可以通过设置环境变量 `v2ray.vmess.aead.forced` = `true` 以关闭对于 MD5 认证信息的兼容。
 或者 `v2ray.vmess.aead.forced` = `false` 以强制开启对于 MD5 认证信息 认证机制的兼容 （不受到 2022 年自动禁用机制的影响） 。 (v4.35.0+)
 **/
-alterId: number
+alterId?: number
 }

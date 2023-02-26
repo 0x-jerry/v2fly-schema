@@ -32,58 +32,59 @@ import { ObservatoryObject } from "./observatory"
 ```
  **/
 export interface V2FlyConfig {
+  [key: string]: any
 /**
 日志配置，表示 V2Ray 如何输出日志。
 **/
-log: LogObject
+log?: LogObject
 /**
 远程控制。
 **/
-api: ApiObject
+api?: ApiObject
 /**
 内置的 DNS 服务器，若此项不存在，则默认使用本机的 DNS 设置。
 **/
-dns: DnsObject
+dns?: DnsObject
 /**
 路由功能。
 **/
-routing: RoutingObject
+routing?: RoutingObject
 /**
 本地策略，可进行一些权限相关的配置。
 **/
-policy: PolicyObject
+policy?: PolicyObject
 /**
 一个数组，每个元素是一个入站连接配置。
 **/
-inbounds: InboundObject[]
+inbounds?: InboundObject[]
 /**
 一个数组，每个元素是一个出站连接配置。列表中的第一个元素作为主出站协议。当路由匹配不存在或没有匹配成功时，流量由主出站协议发出。
 **/
-outbounds: OutboundObject[]
+outbounds?: OutboundObject[]
 /**
 用于配置 V2Ray 如何与其它服务器建立和使用网络连接。
 **/
-transport: TransportObject
+transport?: TransportObject
 /**
 统计信息。
 **/
-stats: StatsObject
+stats?: StatsObject
 /**
 反向代理。
 **/
-reverse: ReverseObject
+reverse?: ReverseObject
 /**
 虚拟 DNS 服务器。
 **/
-fakedns: FakeDnsObject[]
+fakedns?: FakeDnsObject[]
 /**
 浏览器转发模块。
 **/
-browserForwarder: BrowserForwarderObject
+browserForwarder?: BrowserForwarderObject
 /**
 连接观测模块。
 **/
-observatory: ObservatoryObject
+observatory?: ObservatoryObject
 }
 /**
   `LogObject` 对应配置文件的 `log` 项。
@@ -96,14 +97,15 @@ observatory: ObservatoryObject
 ```
  **/
 export interface LogObject {
+  [key: string]: any
 /**
 访问日志的文件地址，其值是一个合法的文件地址，如`"/var/log/v2ray/access.log"`（Linux）或者`"C:\\Temp\\v2ray\\_access.log"`（Windows）。当此项不指定或为空值时，表示将日志输出至 stdout。V2Ray 4.20 加入了特殊值`none`，即关闭 access log。
 **/
-access: string
+access?: string
 /**
 错误日志的文件地址，其值是一个合法的文件地址，如`"/var/log/v2ray/error.log"`（Linux）或者`"C:\\Temp\\v2ray\\_error.log"`（Windows）。当此项不指定或为空值时，表示将日志输出至 stdout。V2Ray 4.20 加入了特殊值`none`，即关闭 error log（跟`loglevel: "none"`等价）。
 **/
-error: string
+error?: string
 /**
 日志的级别。默认值为 `"warning"`。
 * `"debug"`：详细的调试性信息。同时包含所有 `"info"` 内容。
@@ -112,5 +114,5 @@ error: string
 * `"error"`：V2Ray 遇到了无法正常运行的问题，需要立即解决。
 * `"none"`：不记录任何内容。
 **/
-loglevel: "debug" | "info" | "warning" | "error" | "none"
+loglevel?: "debug" | "info" | "warning" | "error" | "none"
 }

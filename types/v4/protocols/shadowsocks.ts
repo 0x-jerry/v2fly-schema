@@ -15,6 +15,7 @@
 Shadowsocks 的配置分为两部分，`InboundConfigurationObject` 和 `OutboundConfigurationObject`，分别对应入站和出站协议配置中的 `settings` 项。
  **/
 export interface Shadowsocks {
+  [key: string]: any
 
 }
 /**
@@ -30,31 +31,32 @@ export interface Shadowsocks {
 ```
  **/
 export interface InboundConfigurationObject {
+  [key: string]: any
 /**
 邮件地址，可选，用于标识用户
 **/
-email: string
+email?: string
 /**
 必填。可选的值见 [加密方式列表](#加密方式列表)
 **/
-method: string
+method?: string
 /**
 必填，任意字符串。Shadowsocks 协议不限制密码长度，但短密码会更可能被破解，建议使用 16 字符或更长的密码。
 **/
-password: string
+password?: string
 /**
 用户等级，默认值为 `0`。详见 [本地策略](../policy.md)。
 **/
-level: number
+level?: number
 /**
 可接收的网络连接类型，默认值为 `"tcp"`。
 **/
-network: "tcp" | "udp" | "tcp,udp"
+network?: "tcp" | "udp" | "tcp,udp"
 /**
 是否启用 IV 检查功能。可以使某些 IV 重放攻击更加困难。 (4.37.0+)
 目前此功能默认不启用，但是在未来版本中会默认处于启用状态。
 **/
-ivCheck: true | false
+ivCheck?: true | false
 }
 /**
   ```json
@@ -73,10 +75,11 @@ ivCheck: true | false
 ```
  **/
 export interface OutboundConfigurationObject {
+  [key: string]: any
 /**
 一个数组，其中每一项是一个 [ServerObject](#serverobject)。
 **/
-servers: ServerObject[]
+servers?: ServerObject[]
 }
 /**
   ```json
@@ -92,30 +95,31 @@ servers: ServerObject[]
 ```
  **/
 export interface ServerObject {
+  [key: string]: any
 /**
 邮件地址，可选，用于标识用户
 **/
-email: string
+email?: string
 /**
 Shadowsocks 服务器地址，支持 IPv4、IPv6 和域名。必填。
 **/
-address: string
+address?: string
 /**
 Shadowsocks 服务器端口。必填。
 **/
-port: number
+port?: number
 /**
 必填。可选的值见[加密方式列表](#加密方式列表)
 **/
-method: string
+method?: string
 /**
 必填。任意字符串。Shadowsocks 协议不限制密码长度，但短密码会更可能被破解，建议使用 16 字符或更长的密码。
 **/
-password: string
+password?: string
 /**
 用户等级
 **/
-level: number
+level?: number
 /**
 是否启用 IV 检查功能。可以使某些 IV 重放攻击更加困难。 (4.37.0+)
 目前此功能默认不启用，但是在未来版本中会默认处于启用状态。
@@ -124,5 +128,5 @@ level: number
 * `"chacha20-poly1305"` 或 `"chacha20-ietf-poly1305"`
 * `"none"` 或 `"plain"`
 **/
-ivCheck: true | false
+ivCheck?: true | false
 }
