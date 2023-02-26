@@ -1,11 +1,13 @@
-import { V4Config } from '../dist'
+import type { V4, V4Config } from '../dist/index'
+
+const log: V4.overview.LogObject = {
+  loglevel: 'warning',
+  access: '/var/log/v2ray/access.log',
+  error: '/var/log/v2ray/error.log',
+}
 
 export const v2ray: V4Config = {
-  log: {
-    loglevel: 'warning',
-    access: '/var/log/v2ray/access.log',
-    error: '/var/log/v2ray/error.log',
-  },
+  log: log,
   stats: {},
   api: {
     tag: 'api',

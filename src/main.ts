@@ -22,11 +22,21 @@ const v4config: GenerateConfig = {
   },
 }
 
+const genConf = {
+  extension: '.d.ts',
+}
+
 await generateConfigDts('v2fly-docs/docs/config', 'types/v4', v4config)
 
 // fix inbounds.ts & outbounds.ts
-await unshiftText('types/v4/inbounds.ts', `import { InboundConfigurationObject } from '../extra/v4'`)
-await unshiftText('types/v4/outbounds.ts', `import { OutboundConfigurationObject } from '../extra/v4'`)
+await unshiftText(
+  `types/v4/inbounds${genConf.extension}`,
+  `import { InboundConfigurationObject } from '../extra/v4'`
+)
+await unshiftText(
+  `types/v4/outbounds${genConf.extension}`,
+  `import { OutboundConfigurationObject } from '../extra/v4'`
+)
 
 const v5config: GenerateConfig = {
   interfaceMap: {
@@ -60,7 +70,7 @@ async function generateConfigDts(inputDir: string, outputDir: string, conf?: Gen
   await emptyDir(outputDir)
 
   for (const file of files) {
-    const outFile = join(outputDir, file.replace('.md', '.ts'))
+    const outFile = join(outputDir, file.replace('.md', genConf.extension))
 
     await generate(join(inputDir, file), outFile)
   }
@@ -86,18 +96,18 @@ async function generateConfigDts(inputDir: string, outputDir: string, conf?: Gen
 
 async function generateIndexDts(folder: string) {
   const files = await fs.readdir(folder)
-  const indexFile = join(folder, 'index.ts')
+  const indexFile = join(folder, `index${genConf.extension}`)
 
   const lines = files
-    .filter((n) => n.endsWith('.ts'))
+    .filter((n) => n.endsWith(genConf.extension))
     .map((n) => {
-      const name = n.replace('.ts', '')
+      const name = n.replace(genConf.extension, '')
       return `export * as ${name} from ${JSON.stringify('./' + name)}`
     })
 
   await writeFile(indexFile, lines.join('\n'))
 
-  const p = files.filter((n) => !n.endsWith('.ts')).map((n) => generateIndexDts(join(folder, n)))
+  const p = files.filter((n) => !n.endsWith(genConf.extension)).map((n) => generateIndexDts(join(folder, n)))
   await Promise.all(p)
 }
 
