@@ -1,4 +1,4 @@
-import fs, { emptyDir, ensureDir, ensureFile } from 'fs-extra'
+import fs, { emptyDir, ensureDir, ensureFile, readdir } from 'fs-extra'
 import { writeFile } from 'fs/promises'
 import { parseType, generateTS, GenerateConfig } from './convert'
 import glob from 'fast-glob'
@@ -57,9 +57,11 @@ async function generateConfigDts(inputDir: string, outputDir: string, conf?: Gen
   for (const file of files) {
     const outFile = join(outputDir, file.replace('.md', '.ts'))
 
-    await ensureFile(outFile)
     await generate(join(inputDir, file), outFile)
   }
+
+  // generate extra types
+  await generateIndexDts(outputDir)
 
   return
 
@@ -69,6 +71,27 @@ async function generateConfigDts(inputDir: string, outputDir: string, conf?: Gen
     const defs = parseType(data, conf)
 
     const file = generateTS(defs)
+
+    if (!file.trim()) return
+
+    await ensureFile(outputFs)
     await writeFile(outputFs, file)
   }
+}
+
+async function generateIndexDts(folder: string) {
+  const files = await fs.readdir(folder)
+  const indexFile = join(folder, 'index.ts')
+
+  const lines = files
+    .filter((n) => n.endsWith('.ts'))
+    .map((n) => {
+      const name = n.replace('.ts', '')
+      return `export * as ${name} from ${JSON.stringify('./' + name)}`
+    })
+
+  await writeFile(indexFile, lines.join('\n'))
+
+  const p = files.filter((n) => !n.endsWith('.ts')).map((n) => generateIndexDts(join(folder, n)))
+  await Promise.all(p)
 }
