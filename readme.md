@@ -1,8 +1,6 @@
 # V2ray config json schema
 
-根据 `V2Ray.config.d.ts` 自动生成 `V2Ray.config.schema.json`
-
-Raw schema content: https://raw.githubusercontent.com/0x-jerry/v2ray-config-json-schema/master/V2Ray.config.schema.json
+根据 v2fly 文档，自动生成 json schema 和 typescript types
 
 ## 使用方式
 
@@ -19,7 +17,7 @@ Raw schema content: https://raw.githubusercontent.com/0x-jerry/v2ray-config-json
   "json.schemas": [
     {
       "fileMatch": ["/*.json", "/*.jsonc"],
-      "url": "https://raw.githubusercontent.com/0x-jerry/v2ray-config-json-schema/master/V2Ray.config.schema.json"
+      "url": "https://raw.githubusercontent.com/0x-jerry/v2ray-config-json-schema/master/v4.schema.json"
     }
   ]
 }
@@ -32,9 +30,9 @@ Raw schema content: https://raw.githubusercontent.com/0x-jerry/v2ray-config-json
 `typescript`:
 
 ```ts
-import { IV2Ray } from '@0x-jerry/v2ray-schema'
+import type { V4Config } from '@0x-jerry/v2ray-schema'
 
-const v2raySchema: IV2Ray = {
+const v2raySchema: V4Config = {
   ...
 }
 ```
@@ -42,9 +40,9 @@ const v2raySchema: IV2Ray = {
 ### Deno
 
 ```ts
-import { IV2Ray } from 'https://raw.githubusercontent.com/0x-jerry/v2ray-config-json-schema/master/v2ray-schema.ts'
+import { V4Config } from 'npm:@0x-jerry/v2ray-schema'
 
-const v2raySchema: IV2Ray = {
+const v2raySchema: V4Config = {
   ...
 }
 ```

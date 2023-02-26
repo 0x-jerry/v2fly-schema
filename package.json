@@ -10,7 +10,7 @@
     "dev": "tsx src/main.ts",
     "build": "run-p build:*",
     "build:dts": "tsup src/index.ts --dts",
-    "build:v4-schema": "typescript-json-schema src/index.ts V4Config -o V2Ray.config.schema.json",
+    "build:v4-schema": "typescript-json-schema src/index.ts V4Config -o v4.schema.json",
     "release": "x-release"
   },
   "publishConfig": {
