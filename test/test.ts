@@ -1,15 +1,15 @@
-import { IV2Ray, LogLevel, APIService, V2RayProtocol, IStrategy } from '../src'
+import { V4 } from "../src";
 
-export const v2ray: IV2Ray = {
+export const v2ray: V4 = {
   log: {
-    loglevel: LogLevel.warning,
+    loglevel: 'warning',
     access: '/var/log/v2ray/access.log',
     error: '/var/log/v2ray/error.log',
   },
   stats: {},
   api: {
     tag: 'api',
-    services: [APIService.StatsService],
+    services: ['StatsService'],
   },
   policy: {
     levels: {
@@ -30,7 +30,7 @@ export const v2ray: IV2Ray = {
       tag: 'api',
       listen: '0.0.0.0',
       port: 1111,
-      protocol: V2RayProtocol.DOKODEMO_DOOR,
+      protocol: DOKODEMO_DOOR,
       settings: {
         address: '0.0.0.0',
       },
@@ -74,7 +74,7 @@ export const v2ray: IV2Ray = {
     },
   ],
   routing: {
-    domainStrategy: IStrategy.AsIs,
+    domainStrategy: 'AsIs',
     rules: [
       {
         inboundTag: ['api'],

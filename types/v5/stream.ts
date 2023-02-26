@@ -47,7 +47,7 @@ serverName?: string
 /**
 一个字符串数组，指定了 TLS 握手时指定的 ALPN 数值。默认值为 `["h2", "http/1.1"]`。
 **/
-nextProtocol?: string[]
+nextProtocol?: Array<string>
 /**
 是否禁用操作系统自带的 CA 证书。默认值为 `false`。当值为 `true` 时，V2Ray 只会使用 `certificates` 中指定的证书进行 TLS 握手。当值为 `false` 时，V2Ray 只会使用操作系统自带的 CA 证书进行 TLS 握手。
 **/
@@ -56,7 +56,7 @@ disableSystemRoot?: true | false
 使用 Base64 标准编码格式表示的远程服务器的证书链的SHA256散列值。在设置后，远程服务器的证书链的散列值必须为列表中的数值之一。
 在连接因为此策略失败时，会展示此证书链散列。不建议使用这种方式获得证书链散列值，因为在这种情况下您没有机会验证此时服务器提供的证书是否为真实证书。
 **/
-pinnedPeerCertificateChainSha256?: string[]
+pinnedPeerCertificateChainSha256?: Array<string>
 /**
 
 **/

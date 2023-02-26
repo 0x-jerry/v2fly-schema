@@ -38,7 +38,7 @@ export interface OutboundConfigurationObject {
 /**
 Socks 服务器列表，其中每一项是一个服务器配置。
 **/
-servers?: ServerObject[]
+servers?: Array<ServerObject>
 /**
 Socks 协议版本。 (v4.42.2+)
 **/
@@ -72,7 +72,7 @@ port?: number
 /**
 用户列表，其中每一项一个用户配置。当列表不为空时，Socks 客户端会使用此用户信息进行认证；如未指定，则不进行认证。
 **/
-users?: UserObject[]
+users?: Array<UserObject>
 }
 /**
   ```json
@@ -124,7 +124,7 @@ auth?: "noauth" | "password"
 /**
 一个数组，数组中每个元素为一个用户帐号。默认值为空。此选项仅当 `auth` 为 `password` 时有效。
 **/
-accounts?: AccountObject[]
+accounts?: Array<AccountObject>
 /**
 是否开启 UDP 协议的支持。默认值为 `false`。
 **/

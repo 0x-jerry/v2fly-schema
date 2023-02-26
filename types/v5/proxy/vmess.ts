@@ -14,7 +14,7 @@ export interface VMessInbound {
 /**
 一组服务器认可用户的 ID，必须为合法的 UUID。
 **/
-users?: string[]
+users?: Array<string>
 }
 /**
   outbound.vmess

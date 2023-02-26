@@ -154,7 +154,7 @@ serverName?: string
 /**
 一个字符串数组，指定了 TLS 握手时指定的 ALPN 数值。默认值为 `["h2", "http/1.1"]`。
 **/
-alpn?: string[]
+alpn?: Array<string>
 /**
 是否允许不安全连接（仅用于客户端）。默认值为 `false`。当值为 `true` 时，V2Ray 不会检查远端主机所提供的 TLS 证书的有效性。
 **/
@@ -166,14 +166,14 @@ disableSystemRoot?: true | false
 /**
 证书列表，其中每一项表示一个证书（建议 fullchain）。
 **/
-certificates?: CertificateObject[]
+certificates?: Array<CertificateObject>
 /**
 使用标准编码格式表示的远程服务器的证书链的SHA256散列值。在设置后，远程服务器的证书链的散列值必须为列表中的数值之一。(v4.38.0+)
 <!--
 此数值可以使用V2Ray自带的 v2ctl 工具的 certChainHash 工具根据服务器的证书链文件进行计算(按照管理，这个文件的名字一般叫 fullchain.pem )。如果没有中间证书（如自签发证书），证书链的散列值和证书本身的散列值相同。-->
 在连接因为此策略失败时，会展示此证书链散列。不建议使用这种方式获得证书链散列值，因为在这种情况下您没有机会验证此时服务器提供的证书是否为真实证书。
 **/
-pinnedPeerCertificateChainSha256?: string[]
+pinnedPeerCertificateChainSha256?: Array<string>
 /**
 在连接时进行客户端证书认证。在打开此选项后，客户端将需要配置客户端证书才能连接到服务器端。(4.42.0+)
 客户端证书必须由程序内配置的客户端证书颁发机构签发。系统内置证书颁发机构以及用于认证服务器端的证书颁发机构不会自动被信任。
@@ -263,7 +263,7 @@ certificateFile?: string
 /**
 一个字符串数组，表示证书内容，格式如样例所示。`certificate` 和 `certificateFile` 二者选一。
 **/
-certificate?: string[]
+certificate?: Array<string>
 /**
 密钥文件路径，如使用 OpenSSL 生成，后缀名为 .key。目前暂不支持需要密码的 key 文件。
 **/
@@ -275,7 +275,7 @@ keyFile?: string
 当 `usage` 为 `"verify"` 时，`keyFile` 和 `key` 可均为空。
 :::
 **/
-key?: string[]
+key?: Array<string>
 }
 /**
   ```json

@@ -9,14 +9,14 @@ export interface Trojan {
 /**
 一组服务器认可用户的密码。
 **/
-users?: string[]
+users?: Array<string>
 /**
 UDP 包编码方式，默认值为 `None`。(v5.4.0+)
 当该值为 `None` 时，UDP 将根据目标地址被映射 (Address and Port-Dependent Mapping)。
 当该值为 `Packet` 时，UDP 将被端点独立映射 (Endpoint Independent Mapping)，此 UDP 行为也被称为 FullCone 或 NAT1。
 outbound.trojan
 **/
-packetEncoding?: "None" | "Packet"[]
+packetEncoding?: Array<"None" | "Packet">
 /**
 服务器地址，支持 IP 地址或者域名。
 **/

@@ -69,7 +69,7 @@ enabled?: true | false
 当流量为指定类型时，按其中包括的目标地址重置当前连接的目标。
 `fakedns+others` 选项会优先进行 FakeDNS 虚拟 DNS 服务器匹配。如果 IP 地址处于虚拟 DNS 服务器的 IP 地址区间内，但是没有找到相应的域名记录时，使用 `http`、`tls` 的匹配结果。此选项仅在 `metadataOnly` 为 `false` 时有效。
 **/
-destOverride?: "http" | "tls" | "quic" | "fakedns" | "fakedns+others"[]
+destOverride?: Array<"http" | "tls" | "quic" | "fakedns" | "fakedns+others">
 /**
 是否仅使用元数据推断目标地址而不截取流量内容。只有元数据流量目标侦测模块会被激活。
 如果关闭仅使用元数据推断目标地址，客户端必须先发送数据，代理服务器才会实际建立连接。此行为与需要服务器首先发起第一个消息的协议如 SMTP 协议不兼容。

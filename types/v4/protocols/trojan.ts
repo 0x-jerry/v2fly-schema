@@ -34,11 +34,11 @@ export interface InboundConfigurationObject {
 /**
 一个数组，其中每一项是一个 [ClientObject](#clientobject)。
 **/
-clients?: ClientObject[]
+clients?: Array<ClientObject>
 /**
 一个数组，包含一系列强大的回落分流配置（可选）。
 **/
-fallbacks?: FallbackObject[]
+fallbacks?: Array<FallbackObject>
 }
 /**
   ```json
@@ -100,7 +100,7 @@ export interface OutboundConfigurationObject {
 /**
 一个数组，其中每一项是一个 [ServerObject](#serverobject)。
 **/
-servers?: ServerObject[]
+servers?: Array<ServerObject>
 }
 /**
   ```json

@@ -84,12 +84,12 @@ export interface DnsObject {
 - **子串**：由 `keyword:` 开始，余下部分是一个字符串。当此字符串匹配目标域名中任意部分，该规则生效。比如 `keyword:sina.com` 可以匹配 `sina.com`、`sina.com.cn`、`www.sina.com` 和 `www.sina.company`，但不匹配 `sina.cn`。
 - **预定义域名列表**：由 `geosite:` 开头，余下部分是一个名称，如 `geosite:google` 或者 `geosite:cn`。名称及域名列表参考 [预定义域名列表](routing.md#预定义域名列表)。
 **/
-hosts?: Record<string, string> | Record<string, string[]>
+hosts?: Record<string, string> | Record<string, Array<string>>
 /**
 DNS 服务器列表，有效的写法有两种：DNS 地址（字符串形式）和 [ServerObject](#serverobject) 。
 详情查看[支持的 DNS 协议及其路由策略](#支持的-dns-协议及其路由策略)
 **/
-servers?: string | ServerObject[]
+servers?: Array<string | ServerObject>
 /**
 当前网络的 IP 地址。用于 DNS 查询时通知 DNS 服务器，客户端所在的地理位置（不能是私有 IP 地址）。
 :::tip
@@ -176,10 +176,10 @@ skipFallback?: boolean
 /**
 一个域名列表，此列表包含的域名，将优先使用此服务器进行查询。域名格式和[路由配置](routing.md#ruleobject)中相同。
 **/
-domains?: string[]
+domains?: Array<string>
 /**
 （V2Ray 4.22.0+）一个 IP 范围列表，格式和[路由配置](routing.md#ruleobject)中相同。
 当配置此项时，V2Ray DNS 会对返回的 IP 进行校验，只返回满足 expectIPs 列表的地址。如果未配置此项，会原样返回 IP 地址。
 **/
-expectIPs?: string[]
+expectIPs?: Array<string>
 }

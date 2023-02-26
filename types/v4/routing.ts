@@ -30,11 +30,11 @@ domainMatcher?: "linear" | "mph"
 /**
 对应一个数组，数组中每一项是一个规则。对于每一个连接，路由将根据这些规则依次进行判断，当一个规则生效时，即将这个连接转发至它所指定的 `outboundTag`（或 `balancerTag`，V2Ray 4.4+）。当没有匹配到任何规则时，流量默认被转发至第一个 `outbound`。
 **/
-rules?: RuleObject[]
+rules?: Array<RuleObject>
 /**
 （V2Ray 4.4+）一个数组，数组中每一项是一个负载均衡器的配置。当一个规则指向一个负载均衡器时，V2Ray 会通过此负载均衡器选出一个 `outbound`，然后由它转发流量。
 **/
-balancers?: BalancerObject[]
+balancers?: Array<BalancerObject>
 }
 /**
   ```json
@@ -107,7 +107,7 @@ type?: "field"
 * **预定义域名列表**：由 `geosite:` 开头，余下部分是一个类别名称（域名列表），如 `geosite:google` 或者 `geosite:cn`。名称及域名列表参考[预定义域名列表](#预定义域名列表)。
 * **从文件中加载域名**：形如 `ext:file:tag`，必须以 `ext:` 开头，后面跟文件名和标签，文件存放在[资源目录](env.md#资源文件路径)中，文件格式与 `geosite.dat` 相同，标签必须在文件中存在。
 **/
-domains?: string[]
+domains?: Array<string>
 /**
 一个数组，数组内每一项代表一个 IP 范围。当某一项匹配目标 IP 时，此规则生效。有以下几种形式：
 * IP：形如 `127.0.0.1`。
@@ -125,7 +125,7 @@ domains?: string[]
 `ext:geoip.dat:!cn` 和 `ext-ip:geoip.dat:!cn` 等价于 `geoip:!cn`。
 :::
 **/
-ip?: string[]
+ip?: Array<string>
 /**
 目标端口范围，有三种形式：
 * `a-b`：a 和 b 均为正整数，且小于 65536。这个范围是一个前后闭合区间，当端口落在此范围内时，此规则生效。
@@ -144,19 +144,19 @@ network?: "tcp" | "udp" | "tcp,udp"
 /**
 一个数组，数组内每一项代表一个 IP 范围，形式有 IP、CIDR、GeoIP 和从文件中加载 IP。当某一项匹配来源 IP 时，此规则生效。
 **/
-source?: string[]
+source?: Array<string>
 /**
 一个数组，数组内每一项是一个邮箱地址。当某一项匹配来源用户时，此规则生效。当前 Shadowsocks 和 VMess 支持此规则。
 **/
-user?: string[]
+user?: Array<string>
 /**
 一个数组，数组内每一项是一个标识。当某一项匹配入站协议的标识时，此规则生效。
 **/
-inboundTag?: string[]
+inboundTag?: Array<string>
 /**
 一个数组，数组内每一项表示一种协议。当某一个协议匹配当前连接的流量时，此规则生效。必须开启入站代理中的 `sniffing` 选项。
 **/
-protocol?: "http" | "tls" | "bittorrent"[]
+protocol?: Array<"http" | "tls" | "bittorrent">
 /**
 （V2Ray 4.18+）一段脚本，用于检测流量的属性值。当此脚本返回真值时，此规则生效。
 脚本语言为 [Starlark](https://github.com/bazelbuild/starlark)，它的语法是 Python 的子集。脚本接受一个全局变量 `attrs`，其中包含了流量相关的属性。
@@ -197,7 +197,7 @@ tag?: string
 /**
 一个字符串数组，其中每一个字符串将用于和出站协议标识的前缀匹配。在以下几个出站协议标识中：`[ "a", "ab", "c", "ba" ]`，`"selector": ["a"]` 将匹配到 `[ "a", "ab" ]`。
 **/
-selector?: string[]
+selector?: Array<string>
 /**
 进行负载均衡的策略对象。
 **/

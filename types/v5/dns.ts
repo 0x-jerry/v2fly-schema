@@ -67,7 +67,7 @@ export interface DnsObject {
 /**
 DNS 服务器列表。
 **/
-nameServer?: NameServerObject[]
+nameServer?: Array<NameServerObject>
 /**
 当前网络的 IP 地址。用于 DNS 查询时通知 DNS 服务器，客户端所在的地理位置（不能是私有 IP 地址）。
 :::tip
@@ -81,7 +81,7 @@ clientIp?: string
 当地址中同时设置了多个 IP 和域名，则只会返回第一个域名，其余 IP 和域名均被忽略。【TODO】
 :::
 **/
-staticHosts?: HostMappingObject[]
+staticHosts?: Array<HostMappingObject>
 /**
 FakeDNS 公共配置，当 `nameServer` 中 `address` 为 `fakedns` 且无 `fakeDNS` 配置时，使用此配置。(v5.2.0+)
 **/
@@ -199,12 +199,12 @@ skipFallback?: boolean
 /**
 一个域名列表，此列表包含的域名，将优先使用此服务器进行查询。
 **/
-prioritizedDomain?: PriorityDomainObject[]
+prioritizedDomain?: Array<PriorityDomainObject>
 /**
 一个 IP 范围列表。
 当配置此项时，V2Ray DNS 会对返回的 IP 进行校验，只返回满足 expectIPs 列表的地址。如果未配置此项，会原样返回 IP 地址。
 **/
-expectIPs?: GeoIPObject[]
+expectIPs?: Array<GeoIPObject>
 /**
 FakeDNS 配置，当该项配置时，FakeDNS 启用。当该项未被配置但 `address` 配置为 `fakedns` 时则使用上级公共配置。(v5.2.0+)
 **/
@@ -300,7 +300,7 @@ filePath?: string
 当 `code` 和 `cidr` 同时指定时，从文件中加载的 IP 会覆盖 `cidr` 的值。
 :::
 **/
-cidr?: CIDRObject[]
+cidr?: Array<CIDRObject>
 /**
 是否反向匹配。当该值为 `true` 时，匹配不在指定 IP 范围内的地址。
 **/
@@ -348,7 +348,7 @@ domain?: string
 /**
 匹配的域名所映射的 IP 地址列表。
 **/
-ip?: string[]
+ip?: Array<string>
 /**
 如指定 `proxiedDomain`，匹配的域名将直接使用该域名的查询结果，类似于 CNAME。
 :::tip
@@ -378,7 +378,7 @@ export interface FakeDNSObject {
 /**
 IP 地址池配置。
 **/
-pools?: PoolObject[]
+pools?: Array<PoolObject>
 }
 /**
   

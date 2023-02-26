@@ -35,7 +35,7 @@ timeout?: number
 一个数组，数组中每个元素为一个用户帐号。默认值为空。
 当 `accounts` 非空时，HTTP 代理将对入站连接进行 Basic Authentication 验证。
 **/
-accounts?: AccountObject[]
+accounts?: Array<AccountObject>
 /**
 当为 `true` 时，会转发所有 HTTP 请求，而非只是代理请求。若配置不当，开启此选项会导致死循环。
 **/
@@ -112,5 +112,5 @@ port?: number
 /**
 一个数组，数组中每个元素为一个用户帐号。默认值为空。
 **/
-user?: AccountObject[]
+user?: Array<AccountObject>
 }

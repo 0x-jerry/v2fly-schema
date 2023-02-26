@@ -20,7 +20,7 @@ tag?: string
 /**
 开启的 API 列表，可选的值见 [API 列表](#支持的-api-列表)。
 **/
-services?: string[]
+services?: Array<string>
 }
 /**
   一些对于入站出站代理进行修改的 API，可用的功能如下：

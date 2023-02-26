@@ -36,7 +36,7 @@ export interface OutboundConfigurationObject {
 /**
 一个数组，包含一系列指向服务端的配置。
 **/
-vnext?: ServerObject[]
+vnext?: Array<ServerObject>
 }
 /**
   ```json
@@ -60,7 +60,7 @@ port?: number
 /**
 一组服务端认可的用户。
 **/
-users?: UserObject[]
+users?: Array<UserObject>
 }
 /**
   ```json
@@ -111,7 +111,7 @@ export interface InboundConfigurationObject {
 /**
 一组服务端认可的用户。
 **/
-clients?: ClientObject[]
+clients?: Array<ClientObject>
 /**
 注意这里是 decryption，和 clients 同级。现阶段同样需要填 `"none"`，不能留空。decryption 和 encryption 的位置不同，是因为若套一层约定加密，服务端需要先解密才能知道是哪个用户。
 若未正确设置 decryption 的值，使用 v2ray 或 -test 时会收到错误信息。
@@ -120,7 +120,7 @@ decryption?: "none"
 /**
 一个数组，包含一系列强大的回落分流配置（可选）。
 **/
-fallbacks?: FallbackObject[]
+fallbacks?: Array<FallbackObject>
 }
 /**
   ```json

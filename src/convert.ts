@@ -90,7 +90,7 @@ export function parseType(str: string, conf?: GenerateConfig) {
       const count = content.startsWith('\\[') ? 2 : 1
 
       const t = content.slice(count, -count)
-      return `${convertPropType(t, def)}[]`
+      return `Array<${convertPropType(t, def)}>`
     }
     // or operator
     else if (content.includes('|')) {

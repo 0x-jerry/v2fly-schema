@@ -22,11 +22,11 @@ export interface ReverseObject {
 /**
 一个数组，每一项表示一个 `bridge`。每个 `bridge` 的配置是一个 [BridgeObject](#bridgeobject)。
 **/
-bridges?: BridgeObject[]
+bridges?: Array<BridgeObject>
 /**
 一个数组，每一项表示一个 `portal`。每个 `portal` 的配置是一个 [PortalObject](#bridgeobject)。
 **/
-portals?: PortalObject[]
+portals?: Array<PortalObject>
 }
 /**
   ```json

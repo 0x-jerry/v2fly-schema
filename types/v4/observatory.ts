@@ -13,7 +13,7 @@ export interface ObservatoryObject {
 一个字符串数组，其中每一个字符串将用于和出站协议标识的前缀匹配。在以下几个出站协议标识中：`[ "a", "ab", "c", "ba" ]`，`"selector": ["a"]` 将匹配到 `[ "a", "ab" ]`。
 被匹配到的出站连接将被定时连接以确定是否可用。
 **/
-subjectSelector?: string[]
+subjectSelector?: Array<string>
 /**
 用于检测连接状态的网址。默认会使用内构的连接状态检测地址。(4.41.1+)
 :::tip

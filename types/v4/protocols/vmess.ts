@@ -38,7 +38,7 @@ export interface OutboundConfigurationObject {
 /**
 一个数组，包含一系列的服务器配置
 **/
-vnext?: ServerObject[]
+vnext?: Array<ServerObject>
 }
 /**
   ```json
@@ -62,7 +62,7 @@ port?: number
 /**
 一组服务器认可的用户
 **/
-users?: UserObject[]
+users?: Array<UserObject>
 }
 /**
   ```json
@@ -142,7 +142,7 @@ export interface InboundConfigurationObject {
 /**
 一组服务器认可的用户。clients 可以为空。当此配置用作动态端口时，V2Ray 会自动创建用户。
 **/
-clients?: ClientObject[]
+clients?: Array<ClientObject>
 /**
 指示对应的出站协议使用另一个服务器。
 **/

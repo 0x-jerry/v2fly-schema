@@ -79,7 +79,7 @@ export interface OutboundConfigurationObject {
 /**
 一个数组，其中每一项是一个 [ServerObject](#serverobject)。
 **/
-servers?: ServerObject[]
+servers?: Array<ServerObject>
 }
 /**
   ```json

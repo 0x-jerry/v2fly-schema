@@ -109,11 +109,11 @@ method?: string
 /**
 路径，一个字符串数组。默认值为 `["/"]`。当有多个值时，每次请求随机选择一个值。
 **/
-path?: string[]
+path?: Array<string>
 /**
 HTTP 头，一个键值对，每个键表示一个 HTTP 头的名称，对应的值是一个数组。每次请求会附上所有的键，并随机选择一个对应的值。默认值见上方示例。
 **/
-headers?: Record<string, string[]>
+headers?: Record<string, Array<string>>
 }
 /**
   ```json
@@ -154,5 +154,5 @@ reason?: string
 /**
 HTTP 头，一个键值对，每个键表示一个 HTTP 头的名称，对应的值是一个数组。每次请求会附上所有的键，并随机选择一个对应的值。默认值见上方示例。
 **/
-headers?: Record<string, string[]>
+headers?: Record<string, Array<string>>
 }

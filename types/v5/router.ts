@@ -25,11 +25,11 @@ domainStrategy?: `AsIs` | `UseIp` | `IpIfNonMatch` | `IpOnDemand`
 /**
 对应一个数组，数组中每一项是一个规则。对于每一个连接，路由将根据这些规则依次进行判断，当一个规则生效时，即将这个连接转发至它所指定的 `outboundTag` 或 `balancingTag`。当没有匹配到任何规则时，流量默认被转发至第一个 `outbound`。
 **/
-rule?: RuleObject[]
+rule?: Array<RuleObject>
 /**
 一个数组，数组中每一项是一个负载均衡器的配置。当一个规则指向一个负载均衡器时，V2Ray 会通过此负载均衡器选出一个 `outbound`，然后由它转发流量。
 **/
-balancingRule?: BalancingRuleObject[]
+balancingRule?: Array<BalancingRuleObject>
 }
 /**
   
@@ -47,15 +47,15 @@ balancingTag?: string
 /**
 当匹配目标域名时，此规则生效。
 **/
-domain?: DomainObject[]
+domain?: Array<DomainObject>
 /**
 当匹配目标域名时，此规则生效。
 **/
-geoDomain?: GeoDomain[]
+geoDomain?: Array<GeoDomain>
 /**
 当匹配目标 IP 时，此规则生效。
 **/
-geoip?: GeoIP[]
+geoip?: Array<GeoIP>
 /**
 目标端口范围，有三种形式：
 * `a-b`：a 和 b 均为正整数，且小于 65536。这个范围是一个前后闭合区间，当端口落在此范围内时，此规则生效。
@@ -70,7 +70,7 @@ networks?: "tcp" | "udp" | "tcp,udp"
 /**
 当匹配来源 IP 时，此规则生效。
 **/
-sourceGeoip?: GeoIP[]
+sourceGeoip?: Array<GeoIP>
 /**
 来源端口范围，格式与 `portList` 相同。
 **/
@@ -78,15 +78,15 @@ sourcePortList?: string
 /**
 一个数组，数组内每一项是一个邮箱地址。当某一项匹配来源用户时，此规则生效。
 **/
-userEmail?: string[]
+userEmail?: Array<string>
 /**
 一个数组，数组内每一项是一个标识。当某一项匹配入站协议的标识时，此规则生效。
 **/
-inboundTag?: string[]
+inboundTag?: Array<string>
 /**
 一个数组，数组内每一项表示一种协议。当某一个协议匹配当前连接的流量时，此规则生效。必须开启入站代理中的 `sniffing` 选项。
 **/
-protocol?: "http" | "tls" | "bittorrent"[]
+protocol?: Array<"http" | "tls" | "bittorrent">
 /**
 选择要使用的域名匹配算法。
 * `linear`：使用线性匹配算法，默认值；
@@ -116,7 +116,7 @@ tag?: string
 /**
 一个字符串数组，其中每一个字符串将用于和出站协议标识的前缀匹配。在以下几个出站协议标识中：`[ "a", "ab", "c", "ba" ]`，`"outboundSelector": ["a"]` 将匹配到 `[ "a", "ab" ]`。
 **/
-outboundSelector?: string[]
+outboundSelector?: Array<string>
 /**
 进行负载均衡的策略类型。
 可以填入的类型包括 `random` 、`leastping` 以及 `leastload`。

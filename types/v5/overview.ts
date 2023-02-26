@@ -39,16 +39,16 @@ router?: RoutingObject
 /**
 入站设置。
 **/
-inbounds?: InboundObject[]
+inbounds?: Array<InboundObject>
 /**
 出站设置。
 **/
-outbounds?: OutboundObject[]
+outbounds?: Array<OutboundObject>
 /**
 辅助服务，配置附加组件的功能。
 使用软件的基本功能不需要配置此项，但是可以通过配置此项以使用高级功能。
 **/
-services?: ServiceObject[]
+services?: Array<ServiceObject>
 }
 /**
   `LogObject` 是配置文件中 `log` 字段所使用的 JSON 字段。

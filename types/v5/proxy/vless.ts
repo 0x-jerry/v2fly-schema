@@ -15,7 +15,7 @@ export interface VLESS {
 一组服务器认可用户的 ID，必须为合法的 UUID。
 outbound.vless
 **/
-users?: string[]
+users?: Array<string>
 /**
 服务器地址，支持 IP 地址或者域名。
 **/
