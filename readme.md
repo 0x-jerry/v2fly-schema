@@ -1,6 +1,6 @@
 # V2ray config json schema
 
-根据 v2fly 文档，自动生成 json schema 和 typescript types
+根据 [v2fly](https://v2fly.org/) 文档，自动生成 JSON Schema 和 TypeScript typedef
 
 ## 使用方式
 
