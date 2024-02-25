@@ -155,24 +155,35 @@ export function generateTS(defs: InterfaceDef[]): string {
   }
 
   defs.forEach((item) => {
+    const properties = item.properties.map(generateProperty).join('\n')
+
     const type = `/**
-  ${item.comment.join('\n')}
+  ${generateComments(item.comment)}
  **/
 export interface ${item.name} {
   [key: string]: any
-${item.properties
-  .map(
-    (n) => `/**
-${n.comment.join('\n')}
-**/
-${n.key}?: ${n.type}`
-  )
-  .join('\n')}
+  ${properties}
 }`
+
     output.push(type)
   })
 
   return output.join('\n')
+}
+
+function generateProperty(prop: InterfaceDefProp) {
+  return `/**
+${generateComments(prop.comment)}
+**/
+${prop.key}?: ${prop.type}`
+}
+
+function generateComments(comments: string[]) {
+  return comments
+    .join('\n')
+    .split('\n')
+    .map((n) => `* ${n}`)
+    .join('\n')
 }
 
 export interface InterfaceDef {

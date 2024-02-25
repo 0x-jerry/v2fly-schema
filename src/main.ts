@@ -1,9 +1,11 @@
-import fs, { emptyDir, ensureDir, ensureFile, readdir } from 'fs-extra'
+import fs, { emptyDir, ensureDir, ensureFile } from 'fs-extra'
 import { writeFile } from 'fs/promises'
 import { parseType, generateTS, GenerateConfig } from './convert'
 import glob from 'fast-glob'
-import { join } from 'path'
+import path, { join } from 'path'
 import { Arrayable, toArray } from '@0x-jerry/utils'
+import { fileURLToPath } from 'url'
+import { spawnSync } from 'child_process'
 
 const v4config: GenerateConfig = {
   interfaceMap: {
@@ -56,10 +58,13 @@ const v5config: GenerateConfig = {
     // fix type,
     HttpHeaderobject: 'HttpHeaderObject',
     QUICObject: 'QuicObject',
+    FakeDnsObject: 'FakeDNSObject',
   },
 }
 
 await generateConfigDts('v2fly-docs/docs/v5/config', 'types/v5', v5config)
+
+formatCodes()
 
 async function generateConfigDts(inputDir: string, outputDir: string, conf?: GenerateConfig) {
   const files = await glob('**/*.md', {
@@ -107,7 +112,9 @@ async function generateIndexDts(folder: string) {
 
   await writeFile(indexFile, lines.join('\n'))
 
-  const p = files.filter((n) => !n.endsWith(genConf.extension)).map((n) => generateIndexDts(join(folder, n)))
+  const p = files
+    .filter((n) => !n.endsWith(genConf.extension))
+    .map((n) => generateIndexDts(join(folder, n)))
   await Promise.all(p)
 }
 
@@ -117,4 +124,15 @@ async function unshiftText(file: string, content: Arrayable<string>) {
   lines.push(txt)
 
   await fs.writeFile(file, lines.join('\n'))
+}
+
+function formatCodes() {
+  const biomeBin = path.resolve('node_modules/.bin/biome')
+
+  const resp = spawnSync(biomeBin, ['format', '--write', 'types'], { shell: true })
+  if (resp.error) {
+    console.log(resp.error?.toString())
+  } else {
+    console.log(resp.output?.toString())
+  }
 }
