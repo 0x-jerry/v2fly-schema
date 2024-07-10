@@ -1,10 +1,9 @@
 import fs, { emptyDir, ensureDir, ensureFile } from 'fs-extra'
 import { writeFile } from 'fs/promises'
-import { parseType, generateTS, GenerateConfig } from './convert'
+import { parseType, generateTS, type GenerateConfig } from './convert'
 import glob from 'fast-glob'
 import path, { join } from 'path'
-import { Arrayable, toArray } from '@0x-jerry/utils'
-import { fileURLToPath } from 'url'
+import { type Arrayable, ensureArray } from '@0x-jerry/utils'
 import { spawnSync } from 'child_process'
 
 const v4config: GenerateConfig = {
@@ -119,7 +118,7 @@ async function generateIndexDts(folder: string) {
 }
 
 async function unshiftText(file: string, content: Arrayable<string>) {
-  const lines = toArray(content)
+  const lines = ensureArray(content)
   const txt = await fs.readFile(file, { encoding: 'utf-8' })
   lines.push(txt)
 

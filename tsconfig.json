@@ -3,8 +3,9 @@
     "target": "esnext",
     "module": "ESNext",
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "esModuleInterop": true,
+    "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "outDir": "dist"
   },

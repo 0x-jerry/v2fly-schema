@@ -1,5 +1,5 @@
 import { remark } from 'remark'
-import { ElementOf } from '@0x-jerry/utils'
+import type { ElementOf } from '@0x-jerry/utils'
 
 export interface GenerateConfig {
   interfaceMap?: Record<string, string>
