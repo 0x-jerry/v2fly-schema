@@ -23,20 +23,20 @@
     "types"
   ],
   "dependencies": {
-    "@0x-jerry/utils": "^2.4.2",
-    "@biomejs/biome": "^1.8.3",
+    "@0x-jerry/utils": "^3.0.2",
+    "@biomejs/biome": "^1.9.4",
     "remark": "^15.0.1"
   },
   "devDependencies": {
     "@0x-jerry/x-release": "2.2.2",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^20.14.10",
+    "@types/node": "^22.9.0",
     "fast-glob": "^3.3.2",
     "fs-extra": "^11.2.0",
     "npm-run-all": "^4.1.5",
-    "tsup": "^8.1.0",
-    "tsx": "^4.16.2",
-    "typescript": "^5.5.3",
-    "typescript-json-schema": "^0.64.0"
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "typescript-json-schema": "^0.65.1"
   }
 }
