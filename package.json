@@ -2,7 +2,7 @@
   "name": "@0x-jerry/v2ray-schema",
   "version": "1.0.5",
   "author": "Jerry Wang<x.jerry.wang@gmail.com>",
-  "repository": "https://github.com/0x-jerry/v2ray-config-json-schema.git",
+  "repository": "https://github.com/0x-jerry/v2fly-schema.git",
   "types": "src/index.d.ts",
   "main": "src/index.ts",
   "type": "module",

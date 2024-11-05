@@ -6,9 +6,9 @@ import path, { join } from 'path'
 import { type Arrayable, ensureArray } from '@0x-jerry/utils'
 import { spawnSync } from 'child_process'
 
-const v4config: GenerateConfig = {
+const config: GenerateConfig = {
   interfaceMap: {
-    概述: 'V2FlyConfig',
+    基础配置模块: 'V2FlyConfig',
   },
   typeMap: {
     bool: 'boolean',
@@ -20,6 +20,9 @@ const v4config: GenerateConfig = {
     // fix type,
     HttpHeaderobject: 'HttpHeaderObject',
     QUICObject: 'QuicObject',
+  },
+  skipProperty(propKey, def) {
+    return propKey === 'Tony'
   },
 }
 
@@ -27,41 +30,7 @@ const genConf = {
   extension: '.d.ts',
 }
 
-await generateConfigDts('v2fly-docs/docs/config', 'types/v4', v4config)
-
-// fix inbounds.ts & outbounds.ts
-await unshiftText(
-  `types/v4/inbounds${genConf.extension}`,
-  `import { InboundConfigurationObject } from '../extra/v4'`
-)
-await unshiftText(
-  `types/v4/outbounds${genConf.extension}`,
-  `import { OutboundConfigurationObject } from '../extra/v4'`
-)
-
-const v5config: GenerateConfig = {
-  interfaceMap: {
-    概述: 'V2FlyConfig',
-    'VMess 入站': 'VMessInbound',
-    'VMess 出站': 'VMessOutbound',
-    'Router 路由': 'RoutingObject',
-    TLS: 'TLSConfig',
-  },
-  typeMap: {
-    bool: 'boolean',
-    address: 'string',
-    'string: CIDR': 'string',
-    address_port: 'string',
-    int: 'number',
-    数组: 'any',
-    // fix type,
-    HttpHeaderobject: 'HttpHeaderObject',
-    QUICObject: 'QuicObject',
-    FakeDnsObject: 'FakeDNSObject',
-  },
-}
-
-await generateConfigDts('v2fly-docs/docs/v5/config', 'types/v5', v5config)
+await generateConfigDts('xray-docs/docs/config', 'types', config)
 
 formatCodes()
 

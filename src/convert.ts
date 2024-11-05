@@ -4,6 +4,7 @@ import type { ElementOf } from '@0x-jerry/utils'
 export interface GenerateConfig {
   interfaceMap?: Record<string, string>
   typeMap?: Record<string, string>
+  skipProperty?(propKey: string, def: InterfaceDef): boolean
 }
 
 export function parseType(str: string, conf?: GenerateConfig) {
@@ -53,10 +54,17 @@ export function parseType(str: string, conf?: GenerateConfig) {
       }
     } else if (item.type === 'blockquote') {
       const txt = itemContent
-      const isProp = /^>\s+\`([\w\d_]+)\`\s*[:：](.+)/
+      const isProp = /^>\s+\`?([\w\d_]+)\`?\s*[:：]([^\n]+)/
       const [_, propKey, content] = txt.match(isProp) || []
 
-      if (propKey && currentDef) {
+      if (currentDef && conf?.skipProperty?.(propKey, currentDef)) {
+        if (currentProps) {
+          currentProps.comment.push(itemContent)
+        } else if (currentDef) {
+          currentDef.comment.push(itemContent)
+        }
+      } else if (propKey && currentDef) {
+        // console.log(propKey, '=>', content)
         currentProps = {
           key: propKey,
           type: convertPropType(content, currentDef),
@@ -79,11 +87,8 @@ export function parseType(str: string, conf?: GenerateConfig) {
   return defs
 
   function convertPropType(content: string, def: InterfaceDef): string {
-    if (!content) {
-      console.log(def)
-    }
-
-    content = content.trim()
+    // remove html
+    content = content.replace(/<([^>]+)>/g, '').trim()
 
     // array
     if (/^\\?\[/.test(content) && /\\?\]$/.test(content)) {
@@ -102,7 +107,7 @@ export function parseType(str: string, conf?: GenerateConfig) {
     // map
     else if (content.startsWith('map')) {
       const reg = /map\s*\\?\{\s*([\w\d]+)\s*[:,]\s*([^}]+)}/
-      let [_, keyType, type] = content.match(reg) || []
+      let [_, keyType = 'string', type = 'string\\'] = content.match(reg) || []
 
       // map \{string: string\}, remove the last `\`
       type = type.endsWith('\\') ? type.slice(0, -1) : type
@@ -124,9 +129,14 @@ export function parseType(str: string, conf?: GenerateConfig) {
       }
 
       return realType
+    } else if (content.includes('/')) {
+      return content
+        .split('/')
+        .map((n) => convertPropType(n, def))
+        .join(' | ')
     } else {
-      if (content.includes(' ')) {
-        return 'any'
+      if (content.includes(' ') || !content) {
+        return 'unkown'
       }
 
       return conf?.typeMap?.[content] || content
@@ -161,7 +171,7 @@ export function generateTS(defs: InterfaceDef[]): string {
   ${generateComments(item.comment)}
  **/
 export interface ${item.name} {
-  [key: string]: any
+  [key: string]: unkown
   ${properties}
 }`
 
