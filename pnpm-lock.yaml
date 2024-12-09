@@ -1338,8 +1338,8 @@ packages:
   mz@2.7.0:
     resolution: {integrity: sha512-z81GNO7nnYMEhrGh9LeymoE4+Yr0Wn5McHIZMK5cfQCl+NDX08sCZgUc9/6MHni9IWuFLm1Z3HTCXu2z9fN62Q==}
 
-  nanoid@5.0.8:
-    resolution: {integrity: sha512-TcJPw+9RV9dibz1hHUzlLVy8N4X9TnwirAjrU08Juo6BNKggzVfP2ZJ/3ZUSq15Xl5i85i+Z89XBO90pB2PghQ==}
+  nanoid@5.0.9:
+    resolution: {integrity: sha512-Aooyr6MXU6HpvvWXKoVoXwKMs/KyVakWwg7xQfv5/S/RIgJMy0Ifa45H9qqYy7pTCszrHzP21Uk4PZq2HpEM8Q==}
     engines: {node: ^18 || >=20}
     hasBin: true
 
@@ -1849,13 +1849,13 @@ snapshots:
   '@0x-jerry/utils@2.5.0':
     dependencies:
       fflate: 0.8.2
-      nanoid: 5.0.8
+      nanoid: 5.0.9
       picocolors: 1.1.1
 
   '@0x-jerry/utils@3.0.2':
     dependencies:
       fflate: 0.8.2
-      nanoid: 5.0.8
+      nanoid: 5.0.9
       picocolors: 1.1.1
 
   '@0x-jerry/x-release@2.2.2':
@@ -3095,7 +3095,7 @@ snapshots:
       object-assign: 4.1.1
       thenify-all: 1.6.0
 
-  nanoid@5.0.8: {}
+  nanoid@5.0.9: {}
 
   nice-try@1.0.5: {}
 
