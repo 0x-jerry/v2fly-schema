@@ -23,7 +23,7 @@
     "types"
   ],
   "dependencies": {
-    "@0x-jerry/utils": "^3.0.2",
+    "@0x-jerry/utils": "^4.0.0",
     "@biomejs/biome": "^1.9.4",
     "remark": "^15.0.1"
   },

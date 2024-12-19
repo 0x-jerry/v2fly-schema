@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@0x-jerry/utils':
-        specifier: ^3.0.2
-        version: 3.0.2
+        specifier: ^4.0.0
+        version: 4.0.1
       '@biomejs/biome':
         specifier: ^1.9.4
         version: 1.9.4
@@ -57,8 +57,8 @@ packages:
   '@0x-jerry/utils@2.5.0':
     resolution: {integrity: sha512-kap/xFuwwaCF0ZbIzujBsZWIC4AdqYdOqhAlw/SCmEjm6yCS6XY/25RfRPz930DoNOrQ/nqshVgEuRFiM71ZjQ==}
 
-  '@0x-jerry/utils@3.0.2':
-    resolution: {integrity: sha512-tY1EfOS4T74ek31OqKL5mR4qQGqMI906TpHS4q3QYVdQ9r1UNPUlHRmnng5YhupVFC0A2k8FcLy9BkpYASBL+g==}
+  '@0x-jerry/utils@4.0.1':
+    resolution: {integrity: sha512-q//1rKmCtiFTakXQB+9BneZJsEVpK/LLKJ1XRlSfc4DcR92tObay1SNT7luZ47olx+1ofBwoCE99U87xNAH4cA==}
 
   '@0x-jerry/x-release@2.2.2':
     resolution: {integrity: sha512-WgOXuzoLhZeyeQnjXAsOfMmG45DzFZx7BUCPABjT5uaBOOIIpzXmo5JO1vu3jE2TlNpermfOE//YSXhUyPxURQ==}
@@ -1343,6 +1343,11 @@ packages:
     engines: {node: ^18 || >=20}
     hasBin: true
 
+  nanoid@5.0.9:
+    resolution: {integrity: sha512-Aooyr6MXU6HpvvWXKoVoXwKMs/KyVakWwg7xQfv5/S/RIgJMy0Ifa45H9qqYy7pTCszrHzP21Uk4PZq2HpEM8Q==}
+    engines: {node: ^18 || >=20}
+    hasBin: true
+
   nice-try@1.0.5:
     resolution: {integrity: sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==}
 
@@ -1852,10 +1857,10 @@ snapshots:
       nanoid: 5.0.8
       picocolors: 1.1.1
 
-  '@0x-jerry/utils@3.0.2':
+  '@0x-jerry/utils@4.0.1':
     dependencies:
       fflate: 0.8.2
-      nanoid: 5.0.8
+      nanoid: 5.0.9
       picocolors: 1.1.1
 
   '@0x-jerry/x-release@2.2.2':
@@ -3096,6 +3101,8 @@ snapshots:
       thenify-all: 1.6.0
 
   nanoid@5.0.8: {}
+
+  nanoid@5.0.9: {}
 
   nice-try@1.0.5: {}
 
