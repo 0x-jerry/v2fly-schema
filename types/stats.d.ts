@@ -40,5 +40,5 @@
  *     特定 outbound 的下行流量，单位字节。
  **/
 export interface StatsObject {
-	[key: string]: unkown;
+  [key: string]: unknown
 }

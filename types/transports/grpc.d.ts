@@ -2,6 +2,9 @@
  * 基于 gRPC 的传输方式。
  * 它基于 HTTP/2 协议，理论上可以通过其它支持 HTTP/2 的服务器（如 Nginx）进行中转。
  * gRPC（HTTP/2）内置多路复用，不建议使用 gRPC 与 HTTP/2 时启用 mux.cool。
+ * ::: danger
+ * **推荐换用 [XHTTP](https://github.com/XTLS/Xray-core/discussions/4113)，其相较于 gRPC 的优势已在 STREAM-UP/ONE 小节中注明。**
+ * :::
  * ::: warning ⚠⚠⚠
  * - gRPC 不支持指定 Host。请在出站代理地址中填写 **正确的域名** ，或在 `(x)tlsSettings` 中填写 `ServerName`，否则无法连接。
  * - gRPC 不支持回落到其他服务。
@@ -22,7 +25,7 @@
  *   :::
  **/
 export interface gRPC {
-	[key: string]: unkown;
+  [key: string]: unknown
 }
 /**
  * `GRPCObject` 对应传输配置的 `grpcSettings` 项。
@@ -40,71 +43,71 @@ export interface gRPC {
  * ```
  **/
 export interface GRPCObject {
-	[key: string]: unkown;
-	/**
-	 * 一个字符串，可以当 Host 来用，实现一些其它用途。
-	 **/
-	authority?: string;
-	/**
-	 * 一个字符串，指定服务名称，**类似于** HTTP/2 中的 Path。
-	 * 客户端会使用此名称进行通信，服务端会验证服务名称是否匹配。
-	 * ::: tip
-	 * 当 `serviceName` 起始为斜杠时可以自定义 path，至少要两个斜杠。<br>
-	 * 例如在服务端填写 `"serviceName": "/my/sample/path1|path2"`，客户端可填写 `"serviceName": "/my/sample/path1"` 或 `"/my/sample/path2"`。
-	 * :::
-	 **/
-	serviceName?: string;
-	/**
-	 * ::: tip
-	 * **只需**在**出站**（**客户端**）配置。
-	 * :::
-	 * 设置 gRPC 的用户代理，可能能防止某些 CDN 阻止 gRPC 流量。
-	 **/
-	user_agent?: string;
-	/**
-	 * `true` 启用 `multiMode`，默认值为： `false`。
-	 * 这是一个 **实验性** 选项，可能不会被长期保留，也不保证跨版本兼容。此模式在 **测试环境中** 能够带来约 20% 的性能提升，实际效果因传输速率不同而不同。
-	 * ::: tip
-	 * **只需**在**出站**（**客户端**）配置。
-	 * :::
-	 **/
-	multiMode?: true | false;
-	/**
-	 * 单位秒，当这段时间内没有数据传输时，将会进行健康检查。如果此值设置为 `10` 以下，将会使用 `10`，即最小值。
-	 * ::: tip
-	 * 如果没有使用 Caddy 或 Nginx 等反向代理工具（**通常不会**），设为 `60` 以下，服务端可能发送意外的 h2 GOAWAY 帧以关闭现有连接。
-	 * :::
-	 * 健康检查默认**不启用**。
-	 * ::: tip
-	 * **只需**在**出站**（**客户端**）配置。
-	 * :::
-	 * ::: tip
-	 * 可能会解决一些“断流”问题。
-	 * :::
-	 **/
-	idle_timeout?: number;
-	/**
-	 * 单位秒，健康检查的超时时间。如果在这段时间内没有完成健康检查，且仍然没有数据传输时，即认为健康检查失败。默认值为 `20`。
-	 * ::: tip
-	 * **只需**在**出站**（**客户端**）配置。
-	 * :::
-	 **/
-	health_check_timeout?: number;
-	/**
-	 * `true` 允许在没有子连接时进行健康检查。默认值为 `false`。
-	 * ::: tip
-	 * **只需**在**出站**（**客户端**）配置。
-	 * :::
-	 **/
-	permit_without_stream?: true | false;
-	/**
-	 * h2 Stream 初始窗口大小。当值小于等于 `0` 时，此功能不生效。当值大于 `65535` 时，动态窗口机制（Dynamic Window）会被禁用。默认值为 `0`，即不生效。
-	 * ::: tip
-	 * **只需**在**出站**（**客户端**）配置。
-	 * :::
-	 * ::: tip
-	 * 通过 Cloudflare CDN 时，可将值设为 `65536` 及以上，即禁用动态窗口机制（Dynamic Window），可防止 Cloudflare CDN 发送意外的 h2 GOAWAY 帧以关闭现有连接。
-	 * :::
-	 **/
-	initial_windows_size?: number;
+  [key: string]: unknown
+  /**
+   * 一个字符串，可以当 Host 来用，实现一些其它用途。
+   **/
+  authority?: string
+  /**
+   * 一个字符串，指定服务名称，**类似于** HTTP/2 中的 Path。
+   * 客户端会使用此名称进行通信，服务端会验证服务名称是否匹配。
+   * ::: tip
+   * 当 `serviceName` 起始为斜杠时可以自定义 path，至少要两个斜杠。<br>
+   * 例如在服务端填写 `"serviceName": "/my/sample/path1|path2"`，客户端可填写 `"serviceName": "/my/sample/path1"` 或 `"/my/sample/path2"`。
+   * :::
+   **/
+  serviceName?: string
+  /**
+   * ::: tip
+   * **只需**在**出站**（**客户端**）配置。
+   * :::
+   * 设置 gRPC 的用户代理，可能能防止某些 CDN 阻止 gRPC 流量。
+   **/
+  user_agent?: string
+  /**
+   * `true` 启用 `multiMode`，默认值为： `false`。
+   * 这是一个 **实验性** 选项，可能不会被长期保留，也不保证跨版本兼容。此模式在 **测试环境中** 能够带来约 20% 的性能提升，实际效果因传输速率不同而不同。
+   * ::: tip
+   * **只需**在**出站**（**客户端**）配置。
+   * :::
+   **/
+  multiMode?: true | false
+  /**
+   * 单位秒，当这段时间内没有数据传输时，将会进行健康检查。如果此值设置为 `10` 以下，将会使用 `10`，即最小值。
+   * ::: tip
+   * 如果没有使用 Caddy 或 Nginx 等反向代理工具（**通常不会**），设为 `60` 以下，服务端可能发送意外的 h2 GOAWAY 帧以关闭现有连接。
+   * :::
+   * 健康检查默认**不启用**。
+   * ::: tip
+   * **只需**在**出站**（**客户端**）配置。
+   * :::
+   * ::: tip
+   * 可能会解决一些“断流”问题。
+   * :::
+   **/
+  idle_timeout?: number
+  /**
+   * 单位秒，健康检查的超时时间。如果在这段时间内没有完成健康检查，且仍然没有数据传输时，即认为健康检查失败。默认值为 `20`。
+   * ::: tip
+   * **只需**在**出站**（**客户端**）配置。
+   * :::
+   **/
+  health_check_timeout?: number
+  /**
+   * `true` 允许在没有子连接时进行健康检查。默认值为 `false`。
+   * ::: tip
+   * **只需**在**出站**（**客户端**）配置。
+   * :::
+   **/
+  permit_without_stream?: true | false
+  /**
+   * h2 Stream 初始窗口大小。当值小于等于 `0` 时，此功能不生效。当值大于 `65535` 时，动态窗口机制（Dynamic Window）会被禁用。默认值为 `0`，即不生效。
+   * ::: tip
+   * **只需**在**出站**（**客户端**）配置。
+   * :::
+   * ::: tip
+   * 通过 Cloudflare CDN 时，可将值设为 `65536` 及以上，即禁用动态窗口机制（Dynamic Window），可防止 Cloudflare CDN 发送意外的 h2 GOAWAY 帧以关闭现有连接。
+   * :::
+   **/
+  initial_windows_size?: number
 }

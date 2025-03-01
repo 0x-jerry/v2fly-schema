@@ -14,7 +14,7 @@
  *   :::
  **/
 export interface HTTP {
-	[key: string]: unkown;
+  [key: string]: unknown
 }
 /**
  * ```json
@@ -31,24 +31,24 @@ export interface HTTP {
  * ```
  **/
 export interface InboundConfigurationObject {
-	[key: string]: unkown;
-	/**
-	 * 一个数组，数组中每个元素为一个用户帐号。默认值为空。
-	 * 当 `accounts` 非空时，HTTP 代理将对入站连接进行 Basic Authentication 验证。
-	 **/
-	accounts?: Array<AccountObject>;
-	/**
-	 * 当为 `true` 时，会转发所有 HTTP 请求，而非只是代理请求。
-	 * ::: tip
-	 * 若配置不当，开启此选项会导致死循环。
-	 * :::
-	 **/
-	allowTransparent?: true | false;
-	/**
-	 * 用户等级，连接会使用这个用户等级对应的 [本地策略](../policy.md#levelpolicyobject)。
-	 * userLevel 的值, 对应 [policy](../policy.md#policyobject) 中 `level` 的值。 如不指定, 默认为 0。
-	 **/
-	userLevel?: number;
+  [key: string]: unknown
+  /**
+   * 一个数组，数组中每个元素为一个用户帐号。默认值为空。
+   * 当 `accounts` 非空时，HTTP 代理将对入站连接进行 Basic Authentication 验证。
+   **/
+  accounts?: Array<AccountObject>
+  /**
+   * 当为 `true` 时，会转发所有 HTTP 请求，而非只是代理请求。
+   * ::: tip
+   * 若配置不当，开启此选项会导致死循环。
+   * :::
+   **/
+  allowTransparent?: true | false
+  /**
+   * 用户等级，连接会使用这个用户等级对应的 [本地策略](../policy.md#levelpolicyobject)。
+   * userLevel 的值, 对应 [policy](../policy.md#policyobject) 中 `level` 的值。 如不指定, 默认为 0。
+   **/
+  userLevel?: number
 }
 /**
  * ```json
@@ -59,13 +59,13 @@ export interface InboundConfigurationObject {
  * ```
  **/
 export interface AccountObject {
-	[key: string]: unkown;
-	/**
-	 * 用户名，字符串类型。必填。
-	 **/
-	user?: string;
-	/**
-	 * 密码，字符串类型。必填。
-	 **/
-	pass?: string;
+  [key: string]: unknown
+  /**
+   * 用户名，字符串类型。必填。
+   **/
+  user?: string
+  /**
+   * 密码，字符串类型。必填。
+   **/
+  pass?: string
 }

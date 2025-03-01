@@ -22,7 +22,7 @@
  * :::
  **/
 export interface Shadowsocks {
-	[key: string]: unkown;
+  [key: string]: unknown
 }
 /**
  * ```json
@@ -43,11 +43,11 @@ export interface Shadowsocks {
  * ```
  **/
 export interface OutboundConfigurationObject {
-	[key: string]: unkown;
-	/**
-	 * 一个数组，代表一组 Shadowsocks 服务端设置, 其中每一项是一个 [ServerObject](#serverobject)。
-	 **/
-	servers?: Array<ServerObject>;
+  [key: string]: unknown
+  /**
+   * 一个数组，代表一组 Shadowsocks 服务端设置, 其中每一项是一个 [ServerObject](#serverobject)。
+   **/
+  servers?: Array<ServerObject>
 }
 /**
  * ```json
@@ -64,50 +64,50 @@ export interface OutboundConfigurationObject {
  * ```
  **/
 export interface ServerObject {
-	[key: string]: unkown;
-	/**
-	 * 邮件地址，可选，用于标识用户
-	 **/
-	email?: string;
-	/**
-	 * Shadowsocks 服务端地址，支持 IPv4、IPv6 和域名。必填。
-	 **/
-	address?: string;
-	/**
-	 * Shadowsocks 服务端端口。必填。
-	 **/
-	port?: number;
-	/**
-	 * 必填。
-	 **/
-	method?: string;
-	/**
-	 * 必填。
-	 **/
-	password?: string;
-	/**
-	 * 启用`udp over tcp`。
-	 **/
-	uot?: boolean;
-	/**
-	 * `UDP over TCP` 的实现版本。
-	 * 当前可选值：`1`, `2`
-	 * - Shadowsocks 2022
-	 * 使用与 WireGuard 类似的预共享密钥作为密码。
-	 * 使用 `openssl rand -base64 <长度>` 以生成与 shadowsocks-rust 兼容的密钥，长度取决于所使用的加密方法。
-	 * | 加密方法                      | 密钥长度 |
-	 * | ----------------------------- | -------: |
-	 * | 2022-blake3-aes-128-gcm       |       16 |
-	 * | 2022-blake3-aes-256-gcm       |       32 |
-	 * | 2022-blake3-chacha20-poly1305 |       32 |
-	 * 在 Go 实现中，32 位密钥始终工作。
-	 * - 其他加密方法
-	 * 任意字符串。不限制密码长度，但短密码会更可能被破解，建议使用 16 字符或更长的密码。
-	 **/
-	UoTVersion?: number;
-	/**
-	 * 用户等级，连接会使用这个用户等级对应的 [本地策略](../policy.md#levelpolicyobject)。
-	 * `level` 的值, 对应 [policy](../policy.md#policyobject) 中 `level` 的值。 如不指定, 默认为 0。
-	 **/
-	level?: number;
+  [key: string]: unknown
+  /**
+   * 邮件地址，可选，用于标识用户
+   **/
+  email?: string
+  /**
+   * Shadowsocks 服务端地址，支持 IPv4、IPv6 和域名。必填。
+   **/
+  address?: string
+  /**
+   * Shadowsocks 服务端端口。必填。
+   **/
+  port?: number
+  /**
+   * 必填。
+   **/
+  method?: string
+  /**
+   * 必填。
+   **/
+  password?: string
+  /**
+   * 启用`udp over tcp`。
+   **/
+  uot?: boolean
+  /**
+   * `UDP over TCP` 的实现版本。
+   * 当前可选值：`1`, `2`
+   * - Shadowsocks 2022
+   * 使用与 WireGuard 类似的预共享密钥作为密码。
+   * 使用 `openssl rand -base64 <长度>` 以生成与 shadowsocks-rust 兼容的密钥，长度取决于所使用的加密方法。
+   * | 加密方法                      | 密钥长度 |
+   * | ----------------------------- | -------: |
+   * | 2022-blake3-aes-128-gcm       |       16 |
+   * | 2022-blake3-aes-256-gcm       |       32 |
+   * | 2022-blake3-chacha20-poly1305 |       32 |
+   * 在 Go 实现中，32 位密钥始终工作。
+   * - 其他加密方法
+   * 任意字符串。不限制密码长度，但短密码会更可能被破解，建议使用 16 字符或更长的密码。
+   **/
+  UoTVersion?: number
+  /**
+   * 用户等级，连接会使用这个用户等级对应的 [本地策略](../policy.md#levelpolicyobject)。
+   * `level` 的值, 对应 [policy](../policy.md#policyobject) 中 `level` 的值。 如不指定, 默认为 0。
+   **/
+  level?: number
 }

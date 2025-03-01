@@ -6,13 +6,13 @@
  * - 此外，由于 [Xray-core#375](https://github.com/XTLS/Xray-core/pull/375) 推荐 `?ed=2048`，这个 PR 顺便将服务端一处 `MaxHeaderBytes` 扩至了 4096。 ~~（虽然好像不改也没问题）~~
  **/
 export interface WebSocket {
-	[key: string]: unkown;
+  [key: string]: unknown
 }
 /**
  * <Badge text="v1.8.19+" type="warning"/>
- * SplitHTTP 本身支持 QUIC，如果想使用浏览器自己的 QUIC 网络栈，Chrome 可以在 `chrome://flags` 中设定。其它浏览器也有相关选项。
+ * [XHTTP](https://github.com/XTLS/Xray-core/discussions/4113) 本身支持 QUIC，如果想使用浏览器自己的 QUIC 网络栈，Chrome 可以在 `chrome://flags` 中设定。其它浏览器也有相关选项。
  * 原理上说 `tlsSettings` 项会被忽略，使用哪个 HTTP 版本将完全由浏览器决定。
  **/
-export interface SplitHTTP {
-	[key: string]: unkown;
+export interface XHTTP {
+  [key: string]: unknown
 }

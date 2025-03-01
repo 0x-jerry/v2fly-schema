@@ -22,7 +22,7 @@
  * :::
  **/
 export interface Shadowsocks {
-	[key: string]: unkown;
+  [key: string]: unknown
 }
 /**
  * ```json
@@ -44,39 +44,39 @@ export interface Shadowsocks {
  * ```
  **/
 export interface InboundConfigurationObject {
-	[key: string]: unkown;
-	/**
-	 * 可接收的网络协议类型。比如当指定为 `"tcp"` 时，仅会接收 TCP 流量。默认值为 `"tcp"`。
-	 **/
-	network?: "tcp" | "udp" | "tcp,udp";
-	/**
-	 * 加密方式，可选项见上。
-	 **/
-	method?: string;
-	/**
-	 * 必填。
-	 * - Shadowsocks 2022
-	 * 使用与 WireGuard 类似的预共享密钥作为密码。
-	 * 使用 `openssl rand -base64 <长度>` 以生成与 shadowsocks-rust 兼容的密钥，长度取决于所使用的加密方法。
-	 * | 加密方法                      | 密钥长度 |
-	 * | ----------------------------- | -------: |
-	 * | 2022-blake3-aes-128-gcm       |       16 |
-	 * | 2022-blake3-aes-256-gcm       |       32 |
-	 * | 2022-blake3-chacha20-poly1305 |       32 |
-	 * 在 Go 实现中，32 位密钥始终工作。
-	 * - 其他加密方法
-	 * 任意字符串。 不限制密码长度，但短密码会更可能被破解，建议使用 16 字符或更长的密码。
-	 **/
-	password?: string;
-	/**
-	 * 用户等级，连接会使用这个用户等级对应的 [本地策略](../policy.md#levelpolicyobject)。
-	 * `level` 的值, 对应 [policy](../policy.md#levelpolicyobject) 中 `level` 的值。 如不指定, 默认为 0。
-	 **/
-	level?: number;
-	/**
-	 * 用户邮箱，用于区分不同用户的流量（日志、统计）。
-	 **/
-	email?: string;
+  [key: string]: unknown
+  /**
+   * 可接收的网络协议类型。比如当指定为 `"tcp"` 时，仅会接收 TCP 流量。默认值为 `"tcp"`。
+   **/
+  network?: 'tcp' | 'udp' | 'tcp,udp'
+  /**
+   * 加密方式，可选项见上。
+   **/
+  method?: string
+  /**
+   * 必填。
+   * - Shadowsocks 2022
+   * 使用与 WireGuard 类似的预共享密钥作为密码。
+   * 使用 `openssl rand -base64 <长度>` 以生成与 shadowsocks-rust 兼容的密钥，长度取决于所使用的加密方法。
+   * | 加密方法                      | 密钥长度 |
+   * | ----------------------------- | -------: |
+   * | 2022-blake3-aes-128-gcm       |       16 |
+   * | 2022-blake3-aes-256-gcm       |       32 |
+   * | 2022-blake3-chacha20-poly1305 |       32 |
+   * 在 Go 实现中，32 位密钥始终工作。
+   * - 其他加密方法
+   * 任意字符串。 不限制密码长度，但短密码会更可能被破解，建议使用 16 字符或更长的密码。
+   **/
+  password?: string
+  /**
+   * 用户等级，连接会使用这个用户等级对应的 [本地策略](../policy.md#levelpolicyobject)。
+   * `level` 的值, 对应 [policy](../policy.md#levelpolicyobject) 中 `level` 的值。 如不指定, 默认为 0。
+   **/
+  level?: number
+  /**
+   * 用户邮箱，用于区分不同用户的流量（日志、统计）。
+   **/
+  email?: string
 }
 /**
  * ```json
@@ -94,5 +94,5 @@ export interface InboundConfigurationObject {
  * 其余选项与 InboundConfigurationObject 中的含义一致。
  **/
 export interface ClientObject {
-	[key: string]: unkown;
+  [key: string]: unknown
 }

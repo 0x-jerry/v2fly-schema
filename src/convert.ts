@@ -14,6 +14,7 @@ export function parseType(str: string, conf?: GenerateConfig) {
 
   type Content = ElementOf<typeof items>
   const getContent = (item: Content) =>
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
     str.slice(item.position!.start.offset!, item.position!.end.offset!)
 
   let idx = 0
@@ -86,9 +87,9 @@ export function parseType(str: string, conf?: GenerateConfig) {
 
   return defs
 
-  function convertPropType(content: string, def: InterfaceDef): string {
+  function convertPropType(_content: string, def: InterfaceDef): string {
     // remove html
-    content = content.replace(/<([^>]+)>/g, '').trim()
+    const content = _content.replace(/<([^>]+)>/g, '').trim()
 
     // array
     if (/^\\?\[/.test(content) && /\\?\]$/.test(content)) {
@@ -97,15 +98,17 @@ export function parseType(str: string, conf?: GenerateConfig) {
       const t = content.slice(count, -count)
       return `Array<${convertPropType(t, def)}>`
     }
+
     // or operator
-    else if (content.includes('|')) {
+    if (content.includes('|')) {
       return content
         .split('|')
         .map((n) => convertPropType(n, def))
         .join(' | ')
     }
+
     // map
-    else if (content.startsWith('map')) {
+    if (content.startsWith('map')) {
       const reg = /map\s*\\?\{\s*([\w\d]+)\s*[:,]\s*([^}]+)}/
       let [_, keyType = 'string', type = 'string\\'] = content.match(reg) || []
 
@@ -114,8 +117,9 @@ export function parseType(str: string, conf?: GenerateConfig) {
 
       return `Record<${keyType}, ${convertPropType(type, def)}>`
     }
+
     // link node
-    else if (content.startsWith('[')) {
+    if (content.startsWith('[')) {
       const reg = /^\[([^\]]+)\]\(([^)]+)\)/
       const [_, type, link] = content.match(reg) || []
 
@@ -129,33 +133,34 @@ export function parseType(str: string, conf?: GenerateConfig) {
       }
 
       return realType
-    } else if (content.includes('/')) {
+    }
+
+    if (content.includes('/')) {
       return content
         .split('/')
         .map((n) => convertPropType(n, def))
         .join(' | ')
-    } else {
-      if (content.includes(' ') || !content) {
-        return 'unkown'
-      }
-
-      return conf?.typeMap?.[content] || content
     }
+
+    if (content.includes(' ') || !content) {
+      return 'unknown'
+    }
+
+    return conf?.typeMap?.[content] || content
   }
 }
 
 export function generateTS(defs: InterfaceDef[]): string {
   const output: string[] = []
   const heads = defs
-    .map((n) =>
+    .flatMap((n) =>
       n.head.map(
         (item) =>
-          `import { ${item.name} } from ${JSON.stringify(
-            (item.from.startsWith('.') ? '' : './') + item.from
-          )}`
-      )
+          `import type { ${item.name} } from ${JSON.stringify(
+            (item.from.startsWith('.') ? '' : './') + item.from,
+          )}`,
+      ),
     )
-    .flat()
     .filter(Boolean)
 
   const headScript = [...new Set(heads)].join('\n')
@@ -164,6 +169,7 @@ export function generateTS(defs: InterfaceDef[]): string {
     output.push(headScript)
   }
 
+  // biome-ignore lint/complexity/noForEach: <explanation>
   defs.forEach((item) => {
     const properties = item.properties.map(generateProperty).join('\n')
 
@@ -171,7 +177,7 @@ export function generateTS(defs: InterfaceDef[]): string {
   ${generateComments(item.comment)}
  **/
 export interface ${item.name} {
-  [key: string]: unkown
+  [key: string]: unknown
   ${properties}
 }`
 

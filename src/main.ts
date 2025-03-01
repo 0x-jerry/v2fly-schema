@@ -1,10 +1,10 @@
 import fs, { emptyDir, ensureDir, ensureFile } from 'fs-extra'
-import { writeFile } from 'fs/promises'
+import { writeFile } from 'node:fs/promises'
 import { parseType, generateTS, type GenerateConfig } from './convert'
 import glob from 'fast-glob'
-import path, { join } from 'path'
+import path, { join } from 'node:path'
 import { type Arrayable, ensureArray } from '@0x-jerry/utils'
-import { spawnSync } from 'child_process'
+import { spawnSync } from 'node:child_process'
 
 const config: GenerateConfig = {
   interfaceMap: {
@@ -34,7 +34,11 @@ await generateConfigDts('xray-docs/docs/config', 'types', config)
 
 formatCodes()
 
-async function generateConfigDts(inputDir: string, outputDir: string, conf?: GenerateConfig) {
+async function generateConfigDts(
+  inputDir: string,
+  outputDir: string,
+  conf?: GenerateConfig,
+) {
   const files = await glob('**/*.md', {
     cwd: inputDir,
   })
@@ -75,7 +79,7 @@ async function generateIndexDts(folder: string) {
     .filter((n) => n.endsWith(genConf.extension))
     .map((n) => {
       const name = n.replace(genConf.extension, '')
-      return `export * as ${name} from ${JSON.stringify('./' + name)}`
+      return `export * as ${name} from ${JSON.stringify(`./${name}`)}`
     })
 
   await writeFile(indexFile, lines.join('\n'))
@@ -97,7 +101,9 @@ async function unshiftText(file: string, content: Arrayable<string>) {
 function formatCodes() {
   const biomeBin = path.resolve('node_modules/.bin/biome')
 
-  const resp = spawnSync(biomeBin, ['format', '--write', 'types'], { shell: true })
+  const resp = spawnSync(biomeBin, ['format', '--write', 'types'], {
+    shell: true,
+  })
   if (resp.error) {
     console.log(resp.error?.toString())
   } else {

@@ -8,7 +8,7 @@
  * :::
  **/
 export interface HTTP {
-	[key: string]: unkown;
+  [key: string]: unknown
 }
 /**
  * ```json
@@ -36,15 +36,15 @@ export interface HTTP {
  * :::
  **/
 export interface OutboundConfigurationObject {
-	[key: string]: unkown;
-	/**
-	 * HTTP 服务器列表，其中每一项是一个服务器配置，若配置多个，循环使用 (RoundRobin)。
-	 **/
-	servers?: Array<ServerObject>;
-	/**
-	 * HTTP 头，一个键值对，每个键表示一个 HTTP 头的名称，每次请求会附上所有的键值对
-	 **/
-	headers?: Record<string, string>;
+  [key: string]: unknown
+  /**
+   * HTTP 服务器列表，其中每一项是一个服务器配置，若配置多个，循环使用 (RoundRobin)。
+   **/
+  servers?: Array<ServerObject>
+  /**
+   * HTTP 头，一个键值对，每个键表示一个 HTTP 头的名称，每次请求会附上所有的键值对
+   **/
+  headers?: Record<string, string>
 }
 /**
  * ```json
@@ -61,19 +61,19 @@ export interface OutboundConfigurationObject {
  * ```
  **/
 export interface ServerObject {
-	[key: string]: unkown;
-	/**
-	 * HTTP 代理服务器地址，必填。
-	 **/
-	address?: string;
-	/**
-	 * HTTP 代理服务器端口，必填。
-	 **/
-	port?: number;
-	/**
-	 * 一个数组，数组中每个元素为一个用户帐号。默认值为空。
-	 **/
-	user?: Array<AccountObject>;
+  [key: string]: unknown
+  /**
+   * HTTP 代理服务器地址，必填。
+   **/
+  address?: string
+  /**
+   * HTTP 代理服务器端口，必填。
+   **/
+  port?: number
+  /**
+   * 一个数组，数组中每个元素为一个用户帐号。默认值为空。
+   **/
+  user?: Array<AccountObject>
 }
 /**
  * ```json
@@ -84,13 +84,13 @@ export interface ServerObject {
  * ```
  **/
 export interface AccountObject {
-	[key: string]: unkown;
-	/**
-	 * 用户名，字符串类型。必填。
-	 **/
-	user?: string;
-	/**
-	 * 密码，字符串类型。必填。
-	 **/
-	pass?: string;
+  [key: string]: unknown
+  /**
+   * 用户名，字符串类型。必填。
+   **/
+  user?: string
+  /**
+   * 密码，字符串类型。必填。
+   **/
+  pass?: string
 }
