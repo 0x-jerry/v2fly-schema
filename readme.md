@@ -17,7 +17,7 @@
   "json.schemas": [
     {
       "fileMatch": ["/*.json", "/*.jsonc"],
-      "url": "https://raw.githubusercontent.com/0x-jerry/v2ray-config-json-schema/master/v4.schema.json"
+      "url": "https://raw.githubusercontent.com/0x-jerry/v2ray-config-json-schema/master/v2fly.schema.json"
     }
   ]
 }
@@ -25,24 +25,14 @@
 
 ### Nodejs
 
-安装：`yarn add @0x-jerry/v2ray-schema`
+安装：`pnpm i @0x-jerry/v2ray-schema -D`
 
 `typescript`:
 
 ```ts
-import type { V4Config } from '@0x-jerry/v2ray-schema'
+import type { V2FlyConfig } from '@0x-jerry/v2ray-schema'
 
-const v2raySchema: V4Config = {
-  ...
-}
-```
-
-### Deno
-
-```ts
-import { V4Config } from 'npm:@0x-jerry/v2ray-schema'
-
-const v2raySchema: V4Config = {
+const v2raySchema: V2FlyConfig = {
   ...
 }
 ```

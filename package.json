@@ -9,9 +9,9 @@
   "license": "MIT",
   "scripts": {
     "dev": "tsx src/main.ts",
-    "build": "run-s build:types build:schema:*",
+    "build": "run-s build:types build:schema",
     "build:types": "tsx src/main.ts",
-    "build:schema:v4": "typescript-json-schema src/index.ts V4Config -o v4.schema.json",
+    "build:schema": "typescript-json-schema src/index.ts V2FlyConfig -o v2fly.schema.json --ignoreErrors",
     "release": "x-release"
   },
   "publishConfig": {
