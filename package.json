@@ -24,7 +24,7 @@
   ],
   "dependencies": {
     "@0x-jerry/utils": "^4.2.2",
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "^2.0.0",
     "remark": "^15.0.1"
   },
   "devDependencies": {
